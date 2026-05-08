@@ -1,0 +1,38 @@
+<Project Sdk="Godot.NET.Sdk/4.5.1">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <RootNamespace>Frontier</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lib.Harmony" Version="2.3.3" />
+    <PackageReference Include="Alchyr.Sts2.BaseLib" Version="*" />
+    <Reference Include="sts2">
+      <HintPath>D:\SteamLibrary\steamapps\common\Slay the Spire 2\data_sts2_windows_x86_64\sts2.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="images\**\*.cs" />
+    <Compile Remove="audio\**\*.cs" />
+    <Compile Remove="scenes\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="localization\eng\*.json" />
+    <AdditionalFiles Include="localization\kor\*.json" />
+  </ItemGroup>
+
+  <Target Name="CopyToModsFolder" AfterTargets="Build">
+    <PropertyGroup>
+      <ModsFolder>D:\SteamLibrary\steamapps\common\Slay the Spire 2\mods\Frontier</ModsFolder>
+      <SourceDll>$(OutputPath)Frontier.dll</SourceDll>
+    </PropertyGroup>
+    <Message Text="Copying DLL to STS2 mods folder..." Importance="high" />
+    <Copy SourceFiles="$(SourceDll)" DestinationFolder="$(ModsFolder)" SkipUnchangedFiles="false" />
+    <Message Text="Successfully copied $(SourceDll) to $(ModsFolder)" Importance="high" />
+  </Target>
+</Project>

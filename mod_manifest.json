@@ -1,0 +1,11 @@
+{
+	"id": "sts2-frontier",
+	"name": "Frontier",
+	"author": "RiceInSoup",
+	"description": "Frontier character mod with custom cards, relics, and heat-forging systems.",
+	"version": "0.1.0",
+	"has_pck": false,
+	"has_dll": true,
+	"dependencies": ["BaseLib"],
+	"affects_gameplay": true
+}
