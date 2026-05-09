@@ -1,0 +1,17 @@
+{
+  "FRONTIER-SHUMIT_CHARACTER.title": "Shumit",
+  "FRONTIER-SHUMIT_CHARACTER.titleObject": "Shumit",
+  "FRONTIER-SHUMIT_CHARACTER.banter.alive.endTurnPing": "One more strike.",
+  "FRONTIER-SHUMIT_CHARACTER.banter.dead.endTurnPing": "...Not done yet.",
+  "FRONTIER-SHUMIT_CHARACTER.description": "One of the pioneers dragged into another world. He raises his hammer and carves a path to return to his home world. By trade, he is a blacksmith who forges gear for the battlefield.",
+  "FRONTIER-SHUMIT_CHARACTER.aromaPrinciple": "[sine][orange]Steel remembers every strike.[/orange][/sine]",
+  "FRONTIER-SHUMIT_CHARACTER.cardsModifierDescription": "Shumit cards will now appear in rewards and shops.",
+  "FRONTIER-SHUMIT_CHARACTER.cardsModifierTitle": "Shumit Cards",
+  "FRONTIER-SHUMIT_CHARACTER.eventDeathPrevention": "Shumit endured this trial.",
+  "FRONTIER-SHUMIT_CHARACTER.goldMonologue": "[sine]Enough iron, and I can forge a road home.[/sine]",
+  "FRONTIER-SHUMIT_CHARACTER.possessiveAdjective": "his",
+  "FRONTIER-SHUMIT_CHARACTER.pronounObject": "him",
+  "FRONTIER-SHUMIT_CHARACTER.pronounPossessive": "his",
+  "FRONTIER-SHUMIT_CHARACTER.pronounSubject": "he",
+  "FRONTIER-SHUMIT_CHARACTER.unlockText": "A blacksmith from another world, forging his way home."
+}

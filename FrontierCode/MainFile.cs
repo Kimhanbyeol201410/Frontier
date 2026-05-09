@@ -1,10 +1,11 @@
+﻿using Frontier.Cards;
+using Godot.Bridge;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
 using System.Collections.Generic;
 using System.Linq;
 using Frontier.Characters;
-using Frontier.Cards.Rare;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -15,6 +16,9 @@ using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.ValueProps;
 using BaseLib.Abstracts;
+using BaseLib.Patches.UI;
+using Frontier.Localization;
+using Frontier.Relics;
 using System.Threading.Tasks;
 
 [ModInitializer("ModInit")]
@@ -22,26 +26,46 @@ public static class ModStart
 {
     public static void ModInit()
     {
+        // BaseLib/Pool 모델 인식을 위해 어셈블리 스크립트 등록
+        ScriptManagerBridge.LookupScriptsInAssembly(typeof(ModStart).Assembly);
+
 		Harmony harmony = new Harmony("sts2-frontier");
         harmony.PatchAll();
 
+        RegisterRelicPlaceholderIcons();
+
         GD.Print("[Frontier] Mod Initialized");
+    }
+
+    private static void RegisterRelicPlaceholderIcons()
+    {
+        var icon = new RelicIconData(FrontierAssetPaths.VanillaRelicFallbackPng, FrontierAssetPaths.VanillaRelicFallbackPng, FrontierAssetPaths.VanillaRelicFallbackPng);
+        RelicImageOverridePatch.AddOverride<BrokenForgeRelic>(icon);
+        RelicImageOverridePatch.AddOverride<GreatForgeRelic>(icon);
+        RelicImageOverridePatch.AddOverride<HeatproofApronRelic>(icon);
+        RelicImageOverridePatch.AddOverride<SmelterShardRelic>(icon);
+        RelicImageOverridePatch.AddOverride<HeartOfFlameRelic>(icon);
+        RelicImageOverridePatch.AddOverride<BlastFurnaceShardRelic>(icon);
+        RelicImageOverridePatch.AddOverride<GrindingRoomShardRelic>(icon);
+        RelicImageOverridePatch.AddOverride<HephaestusBloodRelic>(icon);
+        RelicImageOverridePatch.AddOverride<AncientAnvilRelic>(icon);
+        RelicImageOverridePatch.AddOverride<FusionerHammerRelic>(icon);
+        RelicImageOverridePatch.AddOverride<FusionerTongsRelic>(icon);
+        RelicImageOverridePatch.AddOverride<FusionerAnvilRelic>(icon);
     }
 }
 
 internal static class FrontierRules
 {
-    // Reforge/Masterpiece 수치가 0 이하이면 "무한 강화" 취급.
+    // 재련/걸작 수치가 0 이하이면 "무한 강화"로 취급합니다.
     public const int InfiniteUpgradeCap = 999;
     private static readonly Dictionary<string, int> ReforgeByCardId = new()
     {
-        // "재련." 표기는 기본 1로 처리
         ["BellowsCard"] = 1,
         ["AnvilMemoryCard"] = 1,
         ["BurningStrikeCard"] = 1,
-        // 수치가 명시된 재련
-        ["SparkBurstCard"] = 5,
-        ["SteamReleaseCard"] = 10
+        ["SparkBurstCard"] = 10,
+        ["SteamReleaseCard"] = 10,
     };
 
     private static readonly Dictionary<string, int> MasterpieceByCardId = new()
@@ -50,7 +74,8 @@ internal static class FrontierRules
     };
     private static readonly Dictionary<string, System.Func<MegaCrit.Sts2.Core.Entities.Players.Player, CardModel>> MasterpieceTransformByCardId = new()
     {
-        ["AnvilEchoCard"] = static (MegaCrit.Sts2.Core.Entities.Players.Player owner) => owner.RunState.CreateCard<AnvilMemoryCard>(owner)
+        ["AnvilEchoCard"] = static (MegaCrit.Sts2.Core.Entities.Players.Player owner) =>
+            owner.Creature.CombatState!.CreateCard<AnvilMemoryCard>(owner)
     };
 
     public static bool IsShumit(CardModel card)
@@ -116,9 +141,10 @@ public static class FrontierUpgradeCapPatch
 
         int reforge = FrontierRules.GetReforgeBonus(__instance);
         int masterpiece = FrontierRules.GetMasterpieceValue(__instance);
-        if (reforge <= 0 && masterpiece <= 0)
+        // 슈미트.md 기준: "재련" 키워드가 없는 카드는 최대 강화 1.
+        if (reforge <= 0)
         {
-            __result = FrontierRules.InfiniteUpgradeCap;
+            __result = 1;
             return;
         }
 
@@ -178,12 +204,6 @@ public sealed class HeatPower : CustomPowerModel
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    public override List<(string, string)> Localization => new()
-    {
-        ("title", "열기"),
-        ("description", "열기가 70 이상이면 턴 종료 시 버린 카드 더미에 화상 1장을 추가합니다. 열기가 200 이상이면 턴 종료 시 열기 100마다 신체 화상을 1 얻습니다.")
-    };
-
     public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
     {
         if (side != CombatSide.Player || !Owner.IsPlayer)
@@ -199,7 +219,7 @@ public sealed class HeatPower : CustomPowerModel
 
         if (Amount >= 200)
         {
-            int gainedBodyBurn = Amount / 100;
+            decimal gainedBodyBurn = Amount / 100m;
             await PowerCmd.Apply<BodyBurnPower>(new[] { Owner }, gainedBodyBurn, Owner, null, false);
         }
     }
@@ -209,12 +229,6 @@ public sealed class BodyBurnPower : CustomPowerModel
 {
     public override PowerType Type => PowerType.Debuff;
     public override PowerStackType StackType => PowerStackType.Counter;
-
-    public override List<(string, string)> Localization => new()
-    {
-        ("title", "신체 화상"),
-        ("description", "카드를 사용할 때마다 신체 화상 수치만큼 피해를 받습니다. 턴 종료 시 1 감소합니다.")
-    };
 
     public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
     {
@@ -234,3 +248,4 @@ public sealed class BodyBurnPower : CustomPowerModel
         }
     }
 }
+

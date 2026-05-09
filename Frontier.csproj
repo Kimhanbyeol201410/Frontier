@@ -4,6 +4,8 @@
     <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>Frontier</RootNamespace>
+    <!-- 게임은 {mod_manifest.id}.dll 만 로드함 (sts2-frontier.dll). Frontier.dll 이 한 개 더 생기지 않게 출력 이름을 id 와 맞춘다. -->
+    <AssemblyName>sts2-frontier</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,23 +18,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="images\**\*.cs" />
+    <Compile Remove="sts2-frontier\images\**\*.cs" />
     <Compile Remove="audio\**\*.cs" />
     <Compile Remove="scenes\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="localization\eng\*.json" />
-    <AdditionalFiles Include="localization\kor\*.json" />
+    <AdditionalFiles Include="sts2-frontier\localization\eng\*.json" />
+    <AdditionalFiles Include="sts2-frontier\localization\kor\*.json" />
   </ItemGroup>
 
   <Target Name="CopyToModsFolder" AfterTargets="Build">
     <PropertyGroup>
-      <ModsFolder>D:\SteamLibrary\steamapps\common\Slay the Spire 2\mods\Frontier</ModsFolder>
-      <SourceDll>$(OutputPath)Frontier.dll</SourceDll>
+      <Sts2GameRoot>D:\SteamLibrary\steamapps\common\Slay the Spire 2</Sts2GameRoot>
+      <ModsFolder>$(Sts2GameRoot)\mods\Frontier</ModsFolder>
+      <BuiltDll>$(OutputPath)$(AssemblyName).dll</BuiltDll>
     </PropertyGroup>
-    <Message Text="Copying DLL to STS2 mods folder..." Importance="high" />
-    <Copy SourceFiles="$(SourceDll)" DestinationFolder="$(ModsFolder)" SkipUnchangedFiles="false" />
-    <Message Text="Successfully copied $(SourceDll) to $(ModsFolder)" Importance="high" />
+    <!-- mods/Frontier: mod_manifest.json + sts2-frontier.dll (+ 선택 sts2-frontier.pck). 이미지 등 리소스는 PCK에 넣거나 별도 배포 — 폴더에 풀지 않음. -->
+    <Message Text="Copying $(AssemblyName).dll and mod_manifest.json to $(ModsFolder)..." Importance="high" />
+    <Copy SourceFiles="$(BuiltDll)" DestinationFolder="$(ModsFolder)" SkipUnchangedFiles="false" ContinueOnError="WarnAndContinue" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\mod_manifest.json" DestinationFolder="$(ModsFolder)" SkipUnchangedFiles="true" ContinueOnError="WarnAndContinue" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\sts2-frontier.pck" DestinationFolder="$(ModsFolder)" SkipUnchangedFiles="true" ContinueOnError="WarnAndContinue" Condition="Exists('$(MSBuildProjectDirectory)\sts2-frontier.pck')" />
+    <Message Text="Done: $(ModsFolder)" Importance="high" />
   </Target>
 </Project>

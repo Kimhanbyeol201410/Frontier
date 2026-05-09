@@ -1,0 +1,8 @@
+{
+  "HeatPower.title": "Heat",
+  "HeatPower.description": "If Heat is 70 or higher, add 1 Burn to discard at end of turn. If Heat is 200 or higher, gain 1 Body Burn per 100 Heat at end of turn.",
+  "BodyBurnPower.title": "Body Burn",
+  "BodyBurnPower.description": "Whenever you play a card, take damage equal to Body Burn. At end of turn, lose 1.",
+  "FoldedSteelReplayPower.title": "Folded Steel",
+  "FoldedSteelReplayPower.description": "Upgraded cards you play this turn resolve an additional time (remaining charges)."
+}

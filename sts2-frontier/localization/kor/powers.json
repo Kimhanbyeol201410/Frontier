@@ -1,0 +1,8 @@
+{
+  "HeatPower.title": "열기",
+  "HeatPower.description": "열기가 70 이상이면 턴 종료 시 버린 카드 더미에 화상 1장을 추가합니다. 열기가 200 이상이면 턴 종료 시 열기 100마다 신체 화상을 1 얻습니다.",
+  "BodyBurnPower.title": "신체 화상",
+  "BodyBurnPower.description": "카드를 사용할 때마다 신체 화상 수치만큼 피해를 받습니다. 턴 종료 시 1 감소합니다.",
+  "FoldedSteelReplayPower.title": "접쇠 (재생)",
+  "FoldedSteelReplayPower.description": "이번 턴 남은 횟수만큼, 강화된 카드가 효과를 한 번 더 발동합니다."
+}

@@ -1,0 +1,45 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using BaseLib.Utils;
+using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
+using Frontier.Characters;
+
+namespace Frontier.Cards;
+
+// 화력발전기
+[Pool(typeof(ShumitCardPool))]
+public sealed class FirePowerPlantCard : ShumitCard
+{
+    public FirePowerPlantCard()
+        : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)
+    {
+    }
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        CardSelectorPrefs prefs = new(CardSelectorPrefs.ExhaustSelectionPrompt, 1);
+        IEnumerable<CardModel> picked = await CardSelectCmd.FromHandForDiscard(
+            choiceContext,
+            Owner,
+            prefs,
+            (CardModel c) => !ReferenceEquals(c, this),
+            this);
+        CardModel? victim = picked.FirstOrDefault();
+        if (victim != null)
+        {
+            bool isBurn = victim.GetType() == typeof(Burn);
+            await CardCmd.Exhaust(choiceContext, victim);
+            int energy = CurrentUpgradeLevel > 0 ? 2 : 1;
+            if (isBurn)
+            {
+                await PlayerCmd.GainEnergy(energy, Owner);
+            }
+        }
+    }
+}

@@ -1,12 +1,13 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using MegaCrit.Sts2.Core.Combat;
 using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using BaseLib.Utils;
 using Frontier.Cards;
+using Frontier.Localization;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
@@ -25,14 +26,20 @@ public sealed class BrokenForgeRelic : CustomRelicModel
     private const string ForgeCountKey = "ForgeCount";
     public override RelicRarity Rarity => RelicRarity.Starter;
     protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(DrawPenaltyKey, 1m), new DynamicVar(ForgeCountKey, 1m) };
-    public override List<(string, string)> Localization => new() { ("title", "부서진 대장간"), ("description", "전투 시작 시 뽑을 카드 더미에 [gold]대장간[/gold]을 {ForgeCount:diff()}장 추가합니다.") };
 
     public override async Task BeforeCombatStart()
     {
+        List<CardModel> generated = new();
+        CombatState combatState = base.Owner.Creature.CombatState
+            ?? throw new InvalidOperationException("BrokenForgeRelic.BeforeCombatStart requires an active CombatState.");
         for (int i = 0; i < base.DynamicVars[ForgeCountKey].IntValue; i++)
         {
-            CardModel forge = base.Owner.RunState.CreateCard<ForgeCard>(base.Owner);
-            await CardPileCmd.Add(forge, PileType.Draw, CardPilePosition.Random);
+            generated.Add(combatState.CreateCard<ForgeCard>(base.Owner));
+        }
+
+        if (generated.Count > 0)
+        {
+            await CardPileCmd.AddGeneratedCardsToCombat(generated, PileType.Draw, addedByPlayer: true, CardPilePosition.Random);
         }
         Flash();
     }
@@ -52,18 +59,21 @@ public sealed class BrokenForgeRelic : CustomRelicModel
         for (int i = 0; i < upgradeCount; i++)
         {
             CardModel selected = await CardSelectCmd.FromHandForUpgrade(choiceContext, base.Owner, this);
-            if (selected == null || selected is ForgeCard) break;
+            if (selected == null || selected is ForgeCard or GreatForgeCard) break;
             CardCmd.Upgrade(selected, CardPreviewStyle.HorizontalLayout);
         }
         Flash();
     }
 
-    private bool HasForgeInHand() => PileType.Hand.GetPile(base.Owner).Cards.Any((CardModel c) => c is ForgeCard);
+    private bool HasForgeInHand() => PileType.Hand.GetPile(base.Owner).Cards.Any((CardModel c) => c is ForgeCard or GreatForgeCard);
 
     private int GetForgeUpgradeCount()
     {
-        IReadOnlyList<CardModel> forgeCards = PileType.Hand.GetPile(base.Owner).Cards.Where((CardModel c) => c is ForgeCard).ToList();
+        IReadOnlyList<CardModel> forgeCards = PileType.Hand.GetPile(base.Owner).Cards.Where((CardModel c) => c is ForgeCard or GreatForgeCard).ToList();
         if (forgeCards.Count == 0) return 0;
         return forgeCards.Max((CardModel c) => c.DynamicVars["UpgradesPerTurn"].IntValue);
     }
+
+    public override List<(string, string)>? Localization => FrontierEmbeddedLoc.ForRelic(GetType());
 }
+
