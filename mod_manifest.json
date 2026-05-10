@@ -3,7 +3,7 @@
 	"name": "Frontier",
 	"author": "RiceInSoup",
 	"description": "Slay the Spire 2용 캐릭터 모드입니다. 이세계 대장장이 슈미트(Shumit)를 추가하며, 열기(Heat) 자원과 재련(Reforge)·걸작(Masterpiece) 성장, 맞춤 카드·유물·인챈트로 전투를 풀어갑니다. 한국어·영어 UI를 지원합니다. BaseLib가 필요합니다.\n\nA character mod for Slay the Spire 2. Adds Shumit, a forge-themed traveler: manage Heat, push Reforge and Masterpiece upgrades, and fight with custom cards, relics, and enchant systems. Korean and English supported. Requires BaseLib.\n\n『Slay the Spire 2』向けキャラクターMOD。異世界の鍛冶師シュミットを追加し、熱量(Heat)とリフォージ・傑作(Masterpiece)の成長、オリジナルのカード・遺物・エンチャントで戦います。韓国語・英語UIに対応。BaseLibが必要です。",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"min_game_version": "0.0.0",
 	"has_pck": true,
 	"has_dll": true,
