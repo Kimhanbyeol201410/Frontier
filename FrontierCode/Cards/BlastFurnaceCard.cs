@@ -14,7 +14,7 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 용광로 (2코 토큰): 보존, 턴 시작 시 손에 있으면 열기 및 손패 소멸.
+// 용광로 (0코 토큰): 보존, 턴 시작 시 손에 있으면 열기 및 손패 소멸.
 [Pool(typeof(ShumitCardPool))]
 public sealed class BlastFurnaceCard : TokenCardBase
 {
@@ -30,7 +30,7 @@ public sealed class BlastFurnaceCard : TokenCardBase
     };
 
     public BlastFurnaceCard()
-        : base(2, CardType.Skill, TargetType.None)
+        : base(0, CardType.Skill, TargetType.None)
     {
     }
 

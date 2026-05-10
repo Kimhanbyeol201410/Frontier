@@ -13,14 +13,14 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 제련소 (1코 토큰): 보존, 턴 시작 시 손에 있으면 열기 감소 후 손패 1장 강화.
+// 제련소 (0코 토큰): 보존, 턴 시작 시 손에 있으면 열기 감소 후 손패 1장 강화.
 [Pool(typeof(ShumitCardPool))]
 public sealed class SmelterCard : TokenCardBase
 {
     protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
 
     public SmelterCard()
-        : base(1, CardType.Skill, TargetType.None)
+        : base(0, CardType.Skill, TargetType.None)
     {
     }
 
