@@ -18,11 +18,12 @@ namespace Frontier.Cards;
 [Pool(typeof(ShumitCardPool))]
 public sealed class HeatingCard : ShumitCard
 {
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain };
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new DamageVar(10m, ValueProp.Move),
+        new DynamicVar("DrawWhenHeatZero", 1m),
         new DynamicVar("HeatGain", 15m),
     };
 
@@ -57,15 +58,16 @@ public sealed class HeatingCard : ShumitCard
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).Execute(choiceContext);
         if (heatBefore == 0)
         {
-            int draws = CurrentUpgradeLevel > 0 ? 2 : 1;
+            int draws = DynamicVars["DrawWhenHeatZero"].IntValue;
             await CardPileCmd.Draw(choiceContext, draws, Owner);
         }
 
-        await FrontierHeatUtil.ApplyHeat(Owner.Creature, DynamicVars["HeatGain"].BaseValue, this);
+        await FrontierHeatUtil.ApplyHeat(choiceContext, Owner.Creature, DynamicVars["HeatGain"].BaseValue, this);
     }
 
     protected override void OnUpgrade()
     {
         DynamicVars.Damage.UpgradeValueBy(2m);
+        DynamicVars["DrawWhenHeatZero"].UpgradeValueBy(1m);
     }
 }

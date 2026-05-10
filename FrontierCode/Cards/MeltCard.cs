@@ -17,6 +17,8 @@ namespace Frontier.Cards;
 [Pool(typeof(ShumitCardPool))]
 public sealed class MeltCard : ShumitCard
 {
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Exhaust };
+
     protected override bool IsPlayable =>
         base.IsPlayable && PileType.Hand.GetPile(Owner).Cards.Any(static (CardModel c) => c is ForgeCard or BlastFurnaceCard);
 
@@ -40,7 +42,7 @@ public sealed class MeltCard : ShumitCard
             await CardCmd.Exhaust(choiceContext, victim);
         }
 
-        await FrontierHeatUtil.ApplyHeat(Owner.Creature, 20m, this);
+        await FrontierHeatUtil.ApplyHeat(choiceContext, Owner.Creature, 20m, this);
         await CardCmd.Exhaust(choiceContext, this);
     }
 }

@@ -15,7 +15,7 @@ namespace Frontier.Cards;
 [Pool(typeof(ShumitCardPool))]
 public sealed class ForgeFacilityBlueprintCard : ShumitCard
 {
-    protected override bool IsPlayable => base.IsPlayable && FrontierSession.UpgradesThisCombat >= 5;
+    protected override bool IsPlayable => base.IsPlayable && FrontierSession.GetUpgradesThisCombat(Owner) >= 5;
 
     public ForgeFacilityBlueprintCard()
         : base(2, CardType.Power, CardRarity.Uncommon, TargetType.None)
@@ -24,8 +24,10 @@ public sealed class ForgeFacilityBlueprintCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        CombatState cs = Owner.Creature.CombatState
-            ?? throw new System.InvalidOperationException("ForgeFacilityBlueprintCard requires CombatState.");
+        if (Owner.Creature.CombatState is not CombatState cs)
+        {
+            throw new System.InvalidOperationException("ForgeFacilityBlueprintCard requires CombatState.");
+        }
         CardModel a = cs.CreateCard<GrindingRoomCard>(Owner);
         CardModel b = cs.CreateCard<SmelterCard>(Owner);
         CardModel? pick = await CardSelectCmd.FromChooseACardScreen(choiceContext, new List<CardModel> { a, b }, Owner);

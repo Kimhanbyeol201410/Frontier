@@ -45,7 +45,7 @@ public sealed class ImpurityCompressionCard : ShumitCard
         decimal bonus = n * DynamicVars[PerBurnKey].BaseValue;
         decimal total = DynamicVars.Damage.BaseValue + bonus;
         await DamageCmd.Attack(total).FromCard(this).TargetingAllOpponents(Owner.Creature.CombatState!).Execute(choiceContext);
-        await PowerCmd.Apply<HeatPower>(Owner.Creature, DynamicVars[HeatKey].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<HeatPower>(choiceContext, Owner.Creature, DynamicVars[HeatKey].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

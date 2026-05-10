@@ -29,7 +29,11 @@ public sealed class ForgingCard : ShumitCard
         new DamageVar(8m, ValueProp.Move),
         new DynamicVar(HeatGainKey, 10m),
     };
-public ForgingCard() : base(2, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy) { }
+
+    public ForgingCard()
+        : base(2, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+    {
+    }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -39,10 +43,12 @@ public ForgingCard() : base(2, CardType.Attack, CardRarity.Common, TargetType.An
             .Targeting(cardPlay.Target)
             .Execute(choiceContext);
 
-        await PowerCmd.Apply<HeatPower>(base.Owner.Creature, base.DynamicVars[HeatGainKey].BaseValue, base.Owner.Creature, this);
+        await PowerCmd.Apply<HeatPower>(choiceContext, base.Owner.Creature, base.DynamicVars[HeatGainKey].BaseValue, base.Owner.Creature, this);
 
-        CombatState combatState = base.Owner.Creature.CombatState
-            ?? throw new System.InvalidOperationException("ForgingCard.OnPlay requires CombatState.");
+        if (base.Owner.Creature.CombatState is not CombatState combatState)
+        {
+            throw new System.InvalidOperationException("ForgingCard.OnPlay requires CombatState.");
+        }
         var candidates = PileType.Hand.GetPile(base.Owner).Cards
             .Where((c) => c != this && c.IsUpgradable)
             .ToList();

@@ -26,7 +26,11 @@ public sealed class OilCoolingCard : ShumitCard
         new BlockVar(7m, ValueProp.Move),
         new DynamicVar(HeatReductionKey, 5m),
     };
-public OilCoolingCard() : base(1, CardType.Skill, CardRarity.Common, TargetType.Self) { }
+
+    public OilCoolingCard()
+        : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
+    {
+    }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -36,7 +40,7 @@ public OilCoolingCard() : base(1, CardType.Skill, CardRarity.Common, TargetType.
         decimal reduceBy = System.Math.Min((decimal)currentHeat, base.DynamicVars[HeatReductionKey].BaseValue);
         if (reduceBy > 0m)
         {
-            await PowerCmd.Apply<HeatPower>(base.Owner.Creature, -reduceBy, base.Owner.Creature, this);
+            await PowerCmd.Apply<HeatPower>(choiceContext, base.Owner.Creature, -reduceBy, base.Owner.Creature, this);
         }
     }
 

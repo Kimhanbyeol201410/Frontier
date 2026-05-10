@@ -6,6 +6,8 @@
     <RootNamespace>Frontier</RootNamespace>
     <!-- 게임은 {mod_manifest.id}.dll 만 로드함 (sts2-frontier.dll). Frontier.dll 이 한 개 더 생기지 않게 출력 이름을 id 와 맞춘다. -->
     <AssemblyName>sts2-frontier</AssemblyName>
+    <!-- BaseLib/게임 모델과 nullable 주석(List<>?, Player? 등)을 함께 쓰려면 주석 컨텍스트 필요(CS8632 방지). -->
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +15,10 @@
     <PackageReference Include="Alchyr.Sts2.BaseLib" Version="*" />
     <Reference Include="sts2">
       <HintPath>D:\SteamLibrary\steamapps\common\Slay the Spire 2\data_sts2_windows_x86_64\sts2.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SmartFormat">
+      <HintPath>D:\SteamLibrary\steamapps\common\Slay the Spire 2\data_sts2_windows_x86_64\SmartFormat.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -40,5 +46,37 @@
     <Copy SourceFiles="$(MSBuildProjectDirectory)\mod_manifest.json" DestinationFolder="$(ModsFolder)" SkipUnchangedFiles="true" ContinueOnError="WarnAndContinue" />
     <Copy SourceFiles="$(MSBuildProjectDirectory)\sts2-frontier.pck" DestinationFolder="$(ModsFolder)" SkipUnchangedFiles="true" ContinueOnError="WarnAndContinue" Condition="Exists('$(MSBuildProjectDirectory)\sts2-frontier.pck')" />
     <Message Text="Done: $(ModsFolder)" Importance="high" />
+  </Target>
+
+  <Target Name="ExportPckOnBuild" BeforeTargets="CopyToModsFolder"
+          Condition="Exists('$(MSBuildProjectDirectory)\export_presets.cfg') and '$(EnablePckExport)' != 'false'">
+    <PropertyGroup>
+      <GodotCli Condition="'$(GodotCli)' == ''">D:\megadot-4.5.1-m.9-windows-x86_64-llvm-editor-csharp\MegaDot_v4.5.1-stable_mono_win64.exe</GodotCli>
+      <ExportPresetName>sts2-frontier-pck</ExportPresetName>
+      <ExportPckPath>$(MSBuildProjectDirectory)\sts2-frontier.pck</ExportPckPath>
+    </PropertyGroup>
+    <Message Text="Exporting PCK via Godot preset '$(ExportPresetName)'..." Importance="high" />
+    <Exec Command="&quot;$(GodotCli)&quot; --headless --path &quot;$(MSBuildProjectDirectory)&quot; --export-pack &quot;$(ExportPresetName)&quot; &quot;$(ExportPckPath)&quot;"
+          ContinueOnError="WarnAndContinue" />
+  </Target>
+
+  <Target Name="NeedGodotForPublish" BeforeTargets="Publish"
+          Condition="'$(EnablePckExport)' != 'false'">
+    <Error Text="MegaDot/Godot 경로를 찾을 수 없습니다: '$(GodotCli)'."
+           Condition="'$(GodotCli)' == '' or !Exists('$(GodotCli)')" />
+  </Target>
+
+  <Target Name="GodotPublishPck" AfterTargets="Publish"
+          Condition="'$(EnablePckExport)' != 'false' and Exists('$(MSBuildProjectDirectory)\export_presets.cfg') and Exists('$(GodotCli)') and '$(IsInnerGodotExport)' != 'true'">
+    <PropertyGroup>
+      <ExportPresetName>sts2-frontier-pck</ExportPresetName>
+      <Sts2GameRoot>D:\SteamLibrary\steamapps\common\Slay the Spire 2</Sts2GameRoot>
+      <ModsFolder>$(Sts2GameRoot)\mods\Frontier</ModsFolder>
+      <ExportPckPath>$(ModsFolder)\sts2-frontier.pck</ExportPckPath>
+    </PropertyGroup>
+    <Message Text="Publishing PCK to mods folder via preset '$(ExportPresetName)'..." Importance="high" />
+    <Exec Command="&quot;$(GodotCli)&quot; --headless --path &quot;$(MSBuildProjectDirectory)&quot; --export-pack &quot;$(ExportPresetName)&quot; &quot;$(ExportPckPath)&quot;"
+          EnvironmentVariables="IsInnerGodotExport=true;MSBUILDDISABLENODEREUSE=1"
+          ContinueOnError="WarnAndContinue" />
   </Target>
 </Project>

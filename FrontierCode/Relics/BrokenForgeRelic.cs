@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using BaseLib.Utils;
 using Frontier.Cards;
-using Frontier.Localization;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -15,7 +14,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.RelicPools;
-using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using Frontier.Utilities;
 
 namespace Frontier.Relics;
 
@@ -30,8 +29,10 @@ public sealed class BrokenForgeRelic : CustomRelicModel
     public override async Task BeforeCombatStart()
     {
         List<CardModel> generated = new();
-        CombatState combatState = base.Owner.Creature.CombatState
-            ?? throw new InvalidOperationException("BrokenForgeRelic.BeforeCombatStart requires an active CombatState.");
+        if (base.Owner.Creature.CombatState is not CombatState combatState)
+        {
+            throw new InvalidOperationException("BrokenForgeRelic.BeforeCombatStart requires an active CombatState.");
+        }
         for (int i = 0; i < base.DynamicVars[ForgeCountKey].IntValue; i++)
         {
             generated.Add(combatState.CreateCard<ForgeCard>(base.Owner));
@@ -39,7 +40,7 @@ public sealed class BrokenForgeRelic : CustomRelicModel
 
         if (generated.Count > 0)
         {
-            await CardPileCmd.AddGeneratedCardsToCombat(generated, PileType.Draw, addedByPlayer: true, CardPilePosition.Random);
+            await CardPileCmd.AddGeneratedCardsToCombat(generated, PileType.Draw, base.Owner, CardPilePosition.Random);
         }
         Flash();
     }
@@ -58,9 +59,10 @@ public sealed class BrokenForgeRelic : CustomRelicModel
 
         for (int i = 0; i < upgradeCount; i++)
         {
-            CardModel selected = await CardSelectCmd.FromHandForUpgrade(choiceContext, base.Owner, this);
-            if (selected == null || selected is ForgeCard or GreatForgeCard) break;
-            CardCmd.Upgrade(selected, CardPreviewStyle.HorizontalLayout);
+            if (!FrontierHandForgeUpgrade.TryUpgradeOneRandomFromHand(base.Owner))
+            {
+                break;
+            }
         }
         Flash();
     }
@@ -73,7 +75,5 @@ public sealed class BrokenForgeRelic : CustomRelicModel
         if (forgeCards.Count == 0) return 0;
         return forgeCards.Max((CardModel c) => c.DynamicVars["UpgradesPerTurn"].IntValue);
     }
-
-    public override List<(string, string)>? Localization => FrontierEmbeddedLoc.ForRelic(GetType());
 }
 

@@ -16,6 +16,8 @@ namespace Frontier.Cards;
 [Pool(typeof(ShumitCardPool))]
 public sealed class MasterPrideCard : ShumitCard
 {
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Exhaust };
+
     public MasterPrideCard()
         : base(3, CardType.Skill, CardRarity.Uncommon, TargetType.None)
     {
@@ -43,7 +45,7 @@ public sealed class MasterPrideCard : ShumitCard
             decimal need = 50m - heat;
             if (need > 0m)
             {
-                await PowerCmd.Apply<HeatPower>(Owner.Creature, need, Owner.Creature, this);
+                await PowerCmd.Apply<HeatPower>(choiceContext, Owner.Creature, need, Owner.Creature, this);
             }
         }
 

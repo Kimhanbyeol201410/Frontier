@@ -8,7 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using Frontier.Utilities;
 using Frontier.Characters;
 
 namespace Frontier.Cards;
@@ -19,7 +19,7 @@ public sealed class GreatForgeCard : TokenCardBase
 {
     private const string UpgradesPerTurnKey = "UpgradesPerTurn";
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain };
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(UpgradesPerTurnKey, 2m) };
 
@@ -43,13 +43,10 @@ public sealed class GreatForgeCard : TokenCardBase
         int upgradeCount = DynamicVars[UpgradesPerTurnKey].IntValue;
         for (int i = 0; i < upgradeCount; i++)
         {
-            CardModel? selected = await CardSelectCmd.FromHandForUpgrade(choiceContext, Owner, this);
-            if (selected == null || selected is ForgeCard or GreatForgeCard)
+            if (!FrontierHandForgeUpgrade.TryUpgradeOneRandomFromHand(Owner))
             {
                 break;
             }
-
-            CardCmd.Upgrade(selected, CardPreviewStyle.HorizontalLayout);
         }
     }
 

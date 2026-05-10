@@ -21,7 +21,7 @@ public sealed class BlastFurnaceCard : TokenCardBase
     private const string HeatPerTurnKey = "HeatPerTurn";
     private const string ExhaustCountKey = "ExhaustCount";
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain };
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
@@ -46,7 +46,7 @@ public sealed class BlastFurnaceCard : TokenCardBase
             return;
         }
 
-        await FrontierHeatUtil.ApplyHeat(Owner.Creature, DynamicVars[HeatPerTurnKey].BaseValue, null);
+        await FrontierHeatUtil.ApplyHeat(choiceContext, Owner.Creature, DynamicVars[HeatPerTurnKey].BaseValue, null);
 
         int exhaustTimes = DynamicVars[ExhaustCountKey].IntValue;
         CardSelectorPrefs prefs = new(CardSelectorPrefs.ExhaustSelectionPrompt, 1);

@@ -4,6 +4,7 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
@@ -22,18 +23,16 @@ internal static class FrontierCombatStartSessionPatch
 	}
 }
 
-[HarmonyPatch(typeof(Hook), nameof(Hook.AfterTurnEnd))]
-internal static class FrontierAfterTurnEndSessionPatch
+/// <summary>
+/// 플레이어마다 턴이 끝날 때 손패를 버리기 전에 호출된다(멀티에서 각 NetId별로 분리).
+/// </summary>
+[HarmonyPatch(typeof(Hook), nameof(Hook.BeforeFlush))]
+internal static class FrontierBeforeFlushSessionPatch
 {
 	[HarmonyPrefix]
-	private static void ResetTurnCounters(CombatState combatState, CombatSide side)
+	private static void ResetPerPlayerTurnCounters(CombatState combatState, Player player)
 	{
-		if (side != CombatSide.Player)
-		{
-			return;
-		}
-
-		FrontierSession.OnPlayerTurnEnded();
+		FrontierSession.OnPlayerBeforeHandFlush(player);
 	}
 }
 
@@ -47,7 +46,7 @@ internal static class FrontierUpgradeCountPatch
 		{
 			if (c?.Owner?.Character?.Id?.Entry == ShumitCharacter.CharacterId)
 			{
-				FrontierSession.RegisterUpgrade();
+				FrontierSession.RegisterUpgrade(c.Owner);
 			}
 		}
 	}
@@ -66,7 +65,7 @@ internal static class FrontierAfterCardExhaustedTrackPatch
 
 		if (card is Burn)
 		{
-			FrontierSession.RegisterBurnExhausted();
+			FrontierSession.RegisterBurnExhausted(card.Owner);
 		}
 	}
 }

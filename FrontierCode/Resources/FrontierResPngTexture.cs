@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Frontier.Localization;
+namespace Frontier.Resources;
 
 /// <summary>
 /// 모드 PNG가 <c>ResourceLoader</c>로는 로드되지 않을 때(임포트·PCK 미동기화) <c>FileAccess</c>로 바이너리를 읽어 텍스처를 만든다.

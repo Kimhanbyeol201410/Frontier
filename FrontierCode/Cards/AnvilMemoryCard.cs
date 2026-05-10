@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using Frontier.Characters;
 
@@ -16,7 +17,7 @@ public sealed class AnvilMemoryCard : ShumitCard
 {
     private const string HitsKey = "Hits";
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain };
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
@@ -28,6 +29,9 @@ public sealed class AnvilMemoryCard : ShumitCard
         : base(2, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
     {
     }
+
+    /// <summary>보상·상점은 <see cref="ShumitCardPool"/> 필터로 제외. 여기서는 전투 중 무작위 생성(포션·일부 효과)만 막는다. 걸작 변환은 <c>CreateCard</c>로 정상 생성.</summary>
+    public override bool CanBeGeneratedInCombat => false;
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

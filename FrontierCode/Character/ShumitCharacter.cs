@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Frontier.Cards;
-using Frontier.Localization;
 using BaseLib.Abstracts;
 using BaseLib.Utils.NodeFactories;
 using Godot;
@@ -12,6 +11,7 @@ using MegaCrit.Sts2.Core.Models.PotionPools;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Models.Relics;
 using Frontier.Relics;
+using Frontier.Resources;
 
 namespace Frontier.Characters;
 
@@ -21,9 +21,9 @@ public sealed class ShumitCharacter : PlaceholderCharacterModel
 	/// <summary>ModelDb/PrefixIdPatch 기준 캐릭터 엔트리 ID (characters 테이블 키 접두사와 동일).</summary>
 	public const string CharacterId = "FRONTIER-SHUMIT_CHARACTER";
 
-	public override Color NameColor => new Color("A5D6FF");
-	public override CharacterGender Gender => CharacterGender.Masculine;
-	public override int StartingHp => 72;
+	public override Color NameColor => new Color("FFB74D");
+	public override CharacterGender Gender => CharacterGender.Feminine;
+	public override int StartingHp => 70;
 
 	/// <summary>보상/상점 등 캐릭터 카드 풀. Ironclad 풀을 쓰면 슈미트 카드가 보상에 나오지 않으므로 전용 풀을 둔다.</summary>
 	public override CardPoolModel CardPool => ModelDb.CardPool<ShumitCardPool>();
@@ -66,7 +66,7 @@ public sealed class ShumitCharacter : PlaceholderCharacterModel
 	{
 		get
 		{
-			Texture2D? tex = FrontierResPngTexture.TryLoadTexture2DFromRes(FrontierShumitCharUiPaths.TopBarIcon);
+			Texture2D? tex = FrontierResPngTexture.TryLoadTexture2DFromRes(ShumitCharUiPaths.TopBarIcon);
 			if (tex != null)
 			{
 				TextureRect tr = new();
@@ -82,7 +82,5 @@ public sealed class ShumitCharacter : PlaceholderCharacterModel
 		}
 	}
 
-	/// <summary>JSON 로캘이 마운트되지 않는 환경에서도 characters 테이블 키를 채운다.</summary>
-	public override List<(string, string)>? Localization => FrontierEmbeddedLoc.ShumitCharacter();
 }
 

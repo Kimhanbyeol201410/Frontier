@@ -14,23 +14,27 @@ namespace Frontier.Cards;
 [Pool(typeof(ShumitCardPool))]
 public sealed class MaterialGatherCard : ShumitCard
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(9m, ValueProp.Move) };
+    public override bool GainsBlock => true;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new BlockVar(5m, ValueProp.Move),
+    };
 
     public MaterialGatherCard()
-        : base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+        : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        System.ArgumentNullException.ThrowIfNull(cardPlay.Target);
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).Execute(choiceContext);
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
         int n = CurrentUpgradeLevel > 0 ? 2 : 1;
         await CardPileCmd.Draw(choiceContext, n, Owner);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(1m);
+        DynamicVars.Block.UpgradeValueBy(3m);
     }
 }

@@ -23,7 +23,10 @@ public sealed class StrikeShumitCard : ShumitCard
     {
         new DamageVar(6m, ValueProp.Move),
     };
-public StrikeShumitCard() : base(1, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy) { }
+    public StrikeShumitCard()
+        : base(1, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy)
+    {
+    }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

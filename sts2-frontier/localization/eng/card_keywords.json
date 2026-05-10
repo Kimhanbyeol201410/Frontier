@@ -1,0 +1,12 @@
+{
+  "FRONTIER-HEAT.title": "Heat",
+  "FRONTIER-HEAT.description": "If Heat is 70 or higher, add 1 [gold]Burn[/gold] to your discard at end of turn. If Heat is 200 or higher, gain 1 Body Burn per 100 Heat at end of turn.",
+  "FRONTIER-BODYBURN.title": "Body Burn",
+  "FRONTIER-BODYBURN.description": "Whenever you play a card, take damage equal to Body Burn. At end of turn, lose 1.",
+  "FRONTIER-REFORGE.title": "Reforge",
+  "FRONTIER-REFORGE.description": "A unique upgrade limit that increases this card's maximum upgrade count.",
+  "FRONTIER-MASTERPIECE.title": "Masterpiece",
+  "FRONTIER-MASTERPIECE.description": "When the masterpiece condition is met, the card reaches a special stage or transforms into another card.",
+  "FRONTIER-ENCHANT.title": "Enchant",
+  "FRONTIER-ENCHANT.description": "A special enhancement applied to cards after combat."
+}

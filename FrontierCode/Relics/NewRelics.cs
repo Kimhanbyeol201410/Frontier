@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using BaseLib.Utils;
-using Frontier.Localization;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.RelicPools;
@@ -22,14 +22,15 @@ public abstract class TokenSpawnerRelic<TCard> : CustomRelicModel where TCard : 
 {
     protected TokenSpawnerRelic() { }
 
-    public override List<(string, string)>? Localization => FrontierEmbeddedLoc.ForRelic(GetType());
-
     public override async Task BeforeCombatStart()
     {
-        CombatState combatState = Owner.Creature.CombatState
-            ?? throw new InvalidOperationException("TokenSpawnerRelic.BeforeCombatStart requires an active CombatState.");
+        if (Owner.Creature.CombatState is not CombatState combatState)
+        {
+            throw new InvalidOperationException("TokenSpawnerRelic.BeforeCombatStart requires an active CombatState.");
+        }
+
         CardModel token = combatState.CreateCard<TCard>(Owner);
-        await CardPileCmd.AddGeneratedCardsToCombat(new[] { token }, PileType.Draw, addedByPlayer: true, CardPilePosition.Random);
+        await CardPileCmd.AddGeneratedCardsToCombat(new[] { token }, PileType.Draw, Owner, CardPilePosition.Random);
         Flash();
     }
 }
@@ -45,7 +46,6 @@ public sealed class GreatForgeRelic : TokenSpawnerRelic<GreatForgeCard>
 public sealed class HeatproofApronRelic : CustomRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Common;
-    public override List<(string, string)>? Localization => FrontierEmbeddedLoc.ForRelic(GetType());
     // TODO: Heat/Reforge/Masterpiece/Enchant/CondPlay 추후 구현
 }
 
@@ -60,7 +60,6 @@ public sealed class SmelterShardRelic : TokenSpawnerRelic<SmelterCard>
 public sealed class HeartOfFlameRelic : CustomRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Uncommon;
-    public override List<(string, string)>? Localization => FrontierEmbeddedLoc.ForRelic(GetType());
     // TODO: Heat/Reforge/Masterpiece/Enchant/CondPlay 異뷀썑 援ы쁽
 }
 
@@ -82,7 +81,6 @@ public sealed class GrindingRoomShardRelic : TokenSpawnerRelic<GrindingRoomCard>
 public sealed class HephaestusBloodRelic : CustomRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Rare;
-    public override List<(string, string)>? Localization => FrontierEmbeddedLoc.ForRelic(GetType());
     // TODO: Heat/Reforge/Masterpiece/Enchant/CondPlay 추후 구현
 }
 
@@ -90,7 +88,6 @@ public sealed class HephaestusBloodRelic : CustomRelicModel
 public sealed class AncientAnvilRelic : CustomRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Shop;
-    public override List<(string, string)>? Localization => FrontierEmbeddedLoc.ForRelic(GetType());
     public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
     {
         if (cardPlay.Card.Owner != base.Owner || cardPlay.Card.CurrentUpgradeLevel <= 0)
@@ -107,7 +104,6 @@ public sealed class AncientAnvilRelic : CustomRelicModel
 public sealed class FusionerHammerRelic : CustomRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Event;
-    public override List<(string, string)>? Localization => FrontierEmbeddedLoc.ForRelic(GetType());
     // TODO: Heat/Reforge/Masterpiece/Enchant/CondPlay 異뷀썑 援ы쁽
 }
 
@@ -115,7 +111,6 @@ public sealed class FusionerHammerRelic : CustomRelicModel
 public sealed class FusionerTongsRelic : CustomRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Event;
-    public override List<(string, string)>? Localization => FrontierEmbeddedLoc.ForRelic(GetType());
     public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
     {
         if (cardPlay.Card.Owner != base.Owner || cardPlay.Card.CurrentUpgradeLevel <= 0)
@@ -124,7 +119,7 @@ public sealed class FusionerTongsRelic : CustomRelicModel
         }
 
         Flash();
-        await PowerCmd.Apply<StrengthPower>(new[] { base.Owner.Creature }, 1m, base.Owner.Creature, cardPlay.Card, false);
+        await PowerCmd.Apply<StrengthPower>(context, new[] { base.Owner.Creature }, 1m, base.Owner.Creature, cardPlay.Card, false);
     }
 }
 
@@ -132,7 +127,6 @@ public sealed class FusionerTongsRelic : CustomRelicModel
 public sealed class FusionerAnvilRelic : CustomRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Event;
-    public override List<(string, string)>? Localization => FrontierEmbeddedLoc.ForRelic(GetType());
     public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
     {
         if (cardPlay.Card.Owner != base.Owner || cardPlay.Card.CurrentUpgradeLevel <= 0)

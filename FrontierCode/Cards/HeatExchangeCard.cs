@@ -41,11 +41,10 @@ public sealed class HeatExchangeCard : ShumitCard
             .Targeting(cardPlay.Target)
             .Execute(choiceContext);
 
-        CardSelectorPrefs prefs = new(CardSelectorPrefs.RemoveSelectionPrompt, 1);
         IEnumerable<CardModel> pick = await CardSelectCmd.FromHand(
             choiceContext,
             Owner,
-            prefs,
+            new CardSelectorPrefs(SelectionScreenPrompt, 1),
             (CardModel c) => !ReferenceEquals(c, this),
             this);
         CardModel? moveCard = pick.FirstOrDefault();
@@ -55,7 +54,7 @@ public sealed class HeatExchangeCard : ShumitCard
             CardCmd.Upgrade(moveCard, CardPreviewStyle.HorizontalLayout);
         }
 
-        await FrontierHeatUtil.ReduceHeat(Owner.Creature, DynamicVars[HeatLossKey].BaseValue, this);
+        await FrontierHeatUtil.ReduceHeat(choiceContext, Owner.Creature, DynamicVars[HeatLossKey].BaseValue, this);
     }
 
     protected override void OnUpgrade()

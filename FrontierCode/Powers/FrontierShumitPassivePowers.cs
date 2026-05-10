@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using Frontier.Cards;
@@ -9,6 +10,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -23,6 +25,8 @@ public sealed class ShumitCoolingSystemPower : CustomPowerModel
 
 	public override PowerStackType StackType => PowerStackType.Counter;
 
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
+
 	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
 	{
 		if (side != CombatSide.Player || !Owner.IsPlayer)
@@ -30,7 +34,7 @@ public sealed class ShumitCoolingSystemPower : CustomPowerModel
 			return;
 		}
 
-		await FrontierHeatUtil.ReduceHeat(Owner, Amount, null);
+		await FrontierHeatUtil.ReduceHeat(choiceContext, Owner, Amount, null);
 	}
 }
 
@@ -41,6 +45,8 @@ public sealed class ShumitHeatedForgePower : CustomPowerModel
 
 	public override PowerStackType StackType => PowerStackType.Counter;
 
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
+
 	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
 	{
 		if (side != CombatSide.Player || !Owner.IsPlayer)
@@ -48,7 +54,7 @@ public sealed class ShumitHeatedForgePower : CustomPowerModel
 			return;
 		}
 
-		await FrontierHeatUtil.ApplyHeat(Owner, Amount, null);
+		await FrontierHeatUtil.ApplyHeat(choiceContext, Owner, Amount, null);
 	}
 }
 
@@ -58,6 +64,8 @@ public sealed class ShumitExhaustSystemPower : CustomPowerModel
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
 
 	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
 	{
@@ -72,7 +80,7 @@ public sealed class ShumitExhaustSystemPower : CustomPowerModel
 			return;
 		}
 
-		await FrontierHeatUtil.ReduceHeat(Owner, 10m, null);
+		await FrontierHeatUtil.ReduceHeat(choiceContext, Owner, 10m, null);
 		await CardPileCmd.Draw(choiceContext, 1, player);
 	}
 }
@@ -84,14 +92,16 @@ public sealed class ShumitFearlessFlamePower : CustomPowerModel
 
 	public override PowerStackType StackType => PowerStackType.Counter;
 
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.FromCard<Burn>() };
+
 	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
 	{
-		if (player != Owner.Player || CombatState == null)
+		if (player != Owner.Player || Owner.CombatState is not CombatState combatState)
 		{
 			return;
 		}
 
-		CardModel burn = CombatState.CreateCard<Burn>(player);
+		CardModel burn = combatState.CreateCard<Burn>(player);
 		await CardPileCmd.Add(burn, PileType.Hand);
 	}
 }
@@ -99,11 +109,24 @@ public sealed class ShumitFearlessFlamePower : CustomPowerModel
 /// <summary>턴 동안 열기가 감소했으면 적 전체 피해 (증기 배출 — 단순화).</summary>
 public sealed class ShumitSteamVentPower : CustomPowerModel
 {
-	private int _heatAtTurnStart;
+	/// <summary>열기 감소 판정 기준. 턴 시작 시 설정되며, 턴 중 첫 부여는 <see cref="AfterApplied"/>에서만 잡는다.</summary>
+	private int _heatBaseline = int.MinValue;
 
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
+
+	public override Task AfterApplied(Creature? applier, CardModel? cardSource)
+	{
+		if (_heatBaseline == int.MinValue)
+		{
+			_heatBaseline = Owner.GetPower<HeatPower>()?.Amount ?? 0;
+		}
+
+		return base.AfterApplied(applier, cardSource);
+	}
 
 	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
 	{
@@ -112,7 +135,7 @@ public sealed class ShumitSteamVentPower : CustomPowerModel
 			return;
 		}
 
-		_heatAtTurnStart = Owner.GetPower<HeatPower>()?.Amount ?? 0;
+		_heatBaseline = Owner.GetPower<HeatPower>()?.Amount ?? 0;
 	}
 
 	public override async Task BeforeTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
@@ -123,7 +146,8 @@ public sealed class ShumitSteamVentPower : CustomPowerModel
 		}
 
 		int now = Owner.GetPower<HeatPower>()?.Amount ?? 0;
-		if (now >= _heatAtTurnStart)
+		int baseline = _heatBaseline == int.MinValue ? now : _heatBaseline;
+		if (now >= baseline)
 		{
 			return;
 		}
@@ -139,6 +163,8 @@ public sealed class ShumitStripStrengthAtTurnEndPower : CustomPowerModel
 
 	public override PowerStackType StackType => PowerStackType.Single;
 
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.FromPower<StrengthPower>() };
+
 	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
 	{
 		if (side != CombatSide.Player || !Owner.IsPlayer || Amount <= 0)
@@ -146,7 +172,7 @@ public sealed class ShumitStripStrengthAtTurnEndPower : CustomPowerModel
 			return;
 		}
 
-		await PowerCmd.Apply<StrengthPower>(Owner, -Amount, Owner, null, silent: true);
+		await PowerCmd.Apply<StrengthPower>(choiceContext, Owner, -Amount, Owner, null, silent: true);
 		await PowerCmd.Remove(this);
 	}
 }
@@ -157,6 +183,8 @@ public sealed class ShumitTurnEnergyPenaltyPower : CustomPowerModel
 	public override PowerType Type => PowerType.Debuff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.ForEnergy(this) };
 
 	public override decimal ModifyEnergyGain(Player player, decimal amount)
 	{
@@ -184,6 +212,12 @@ public sealed class ShumitFlameArmorPower : CustomPowerModel
 
 	public override PowerStackType StackType => PowerStackType.Counter;
 
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+	{
+		HoverTipFactory.FromCard<Burn>(),
+		HoverTipFactory.Static(StaticHoverTip.Block),
+	};
+
 	public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
 	{
 		if (!Owner.IsPlayer || Amount <= 0 || cardPlay.Card is not Burn)
@@ -206,6 +240,13 @@ public sealed class ShumitHeartOfFlameImmunityPower : CustomPowerModel
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Single;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+	{
+		HoverTipFactory.FromKeyword(FrontierKeywords.Heat),
+		HoverTipFactory.FromKeyword(FrontierKeywords.BodyBurn),
+		HoverTipFactory.FromCard<Burn>(),
+	};
 }
 
 /// <summary>다음으로 사용하는 공격에 열기 부가 (제련 설계).</summary>
@@ -215,6 +256,8 @@ public sealed class ShumitNextAttackHeatPower : CustomPowerModel
 
 	public override PowerStackType StackType => PowerStackType.Counter;
 
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
+
 	public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
 	{
 		if (Amount <= 0 || cardPlay.Card?.Owner?.Creature != Owner || cardPlay.Card.Type != CardType.Attack)
@@ -222,7 +265,7 @@ public sealed class ShumitNextAttackHeatPower : CustomPowerModel
 			return;
 		}
 
-		await FrontierHeatUtil.ApplyHeat(Owner, Amount, cardPlay.Card);
+		await FrontierHeatUtil.ApplyHeat(context, Owner, Amount, cardPlay.Card);
 		await PowerCmd.Remove(this);
 	}
 }
@@ -233,6 +276,8 @@ public sealed class ShumitUpgradedAttackBonusHeatPower : CustomPowerModel
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
 
 	public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
 	{
@@ -246,7 +291,7 @@ public sealed class ShumitUpgradedAttackBonusHeatPower : CustomPowerModel
 			return;
 		}
 
-		await FrontierHeatUtil.ApplyHeat(Owner, Amount, cardPlay.Card);
+		await FrontierHeatUtil.ApplyHeat(context, Owner, Amount, cardPlay.Card);
 	}
 
 	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
@@ -264,6 +309,8 @@ public sealed class FoldedSteelReplayPower : CustomPowerModel
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.Static(StaticHoverTip.ReplayStatic) };
 
 	public override int ModifyCardPlayCount(CardModel card, Creature? target, int playCount)
 	{
@@ -286,6 +333,14 @@ public sealed class FoldedSteelReplayPower : CustomPowerModel
 		{
 			await PowerCmd.Remove(this);
 		}
+	}
+}
+
+internal static class ShumitPowerKeywordHoverTips
+{
+	internal static IEnumerable<IHoverTip> Heat()
+	{
+		yield return HoverTipFactory.FromKeyword(FrontierKeywords.Heat);
 	}
 }
 

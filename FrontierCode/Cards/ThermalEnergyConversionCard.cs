@@ -19,11 +19,15 @@ public sealed class ThermalEnergyConversionCard : ShumitCard
 {
     private const string HeatPerEnergyKey = "HeatPerEnergy";
 
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Exhaust };
+
     protected override bool HasEnergyCostX => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
+        new EnergyXVar(),
         new DynamicVar(HeatPerEnergyKey, 20m),
+        new EnergyVar("ThermalEnergyPer", 1),
     };
 
     public ThermalEnergyConversionCard()
@@ -44,7 +48,7 @@ public sealed class ThermalEnergyConversionCard : ShumitCard
             }
         }
 
-        await FrontierHeatUtil.ReduceHeat(Owner.Creature, heat, this);
+        await FrontierHeatUtil.ReduceHeat(choiceContext, Owner.Creature, heat, this);
 
         int x = ResolveEnergyXValue();
         if (x > 0)

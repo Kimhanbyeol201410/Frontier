@@ -24,6 +24,7 @@ public sealed class UntilExhaustionCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
+        new EnergyXVar(),
         new DamageVar(4m, ValueProp.Move),
         new DynamicVar("HeatPer", 10m),
     };
@@ -35,8 +36,10 @@ public sealed class UntilExhaustionCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        CombatState combatState = Owner.Creature.CombatState
-            ?? throw new System.InvalidOperationException("UntilExhaustionCard requires CombatState.");
+        if (Owner.Creature.CombatState is not CombatState combatState)
+        {
+            throw new System.InvalidOperationException("UntilExhaustionCard requires CombatState.");
+        }
 
         int x = ResolveEnergyXValue();
         if (x <= 0)
@@ -70,7 +73,7 @@ public sealed class UntilExhaustionCard : ShumitCard
                 CardCmd.Upgrade(upgradable[u], CardPreviewStyle.HorizontalLayout);
             }
 
-            await FrontierHeatUtil.ApplyHeat(Owner.Creature, heatEach, this);
+            await FrontierHeatUtil.ApplyHeat(choiceContext, Owner.Creature, heatEach, this);
         }
 
         PlayerCmd.EndTurn(Owner, false);

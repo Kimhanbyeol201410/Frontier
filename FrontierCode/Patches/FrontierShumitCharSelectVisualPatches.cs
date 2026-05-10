@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Frontier.Characters;
-using Frontier.Localization;
+using Frontier.Resources;
 using HarmonyLib;
 using Godot;
 using MegaCrit.Sts2.Core.Helpers;
@@ -66,8 +66,8 @@ internal static class FrontierShumitCharSelectVisualPatches
 			}
 
 			string path = __instance.IsLocked
-				? FrontierShumitCharUiPaths.SelectPortraitLocked
-				: FrontierShumitCharUiPaths.SelectPortrait;
+				? ShumitCharUiPaths.SelectPortraitLocked
+				: ShumitCharUiPaths.SelectPortrait;
 			Texture2D? tex = FrontierResPngTexture.TryLoadTexture2DFromRes(path);
 			if (tex == null)
 			{
@@ -94,7 +94,7 @@ internal static class FrontierShumitCharSelectVisualPatches
 			}
 
 			Control? bg = BgField.Value.GetValue(__instance) as Control;
-			ReplaceBgContainer(bg, characterModel, FrontierShumitCharUiPaths.SelectPortrait);
+			ReplaceBgContainer(bg, characterModel, ShumitCharUiPaths.SelectPortrait);
 		}
 	}
 
@@ -113,7 +113,7 @@ internal static class FrontierShumitCharSelectVisualPatches
 			}
 
 			Control? bg = BgField.Value.GetValue(__instance) as Control;
-			ReplaceBgContainer(bg, characterModel, FrontierShumitCharUiPaths.SelectPortrait);
+			ReplaceBgContainer(bg, characterModel, ShumitCharUiPaths.SelectPortrait);
 		}
 	}
 
@@ -148,7 +148,7 @@ internal static class FrontierShumitCharSelectVisualPatches
 			}
 
 			Control? bg = BgField.Value.GetValue(__instance) as Control;
-			ReplaceBgContainer(bg, byId, FrontierShumitCharUiPaths.SelectPortrait);
+			ReplaceBgContainer(bg, byId, ShumitCharUiPaths.SelectPortrait);
 		}
 	}
 }

@@ -26,7 +26,10 @@ public sealed class FaultBreakCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        CombatState cs = Owner.Creature.CombatState!;
+        if (Owner.Creature.CombatState is not CombatState cs)
+        {
+            throw new System.InvalidOperationException("FaultBreakCard requires CombatState.");
+        }
         foreach (Creature e in cs.HittableEnemies.ToList())
         {
             decimal hadBlock = e.Block;

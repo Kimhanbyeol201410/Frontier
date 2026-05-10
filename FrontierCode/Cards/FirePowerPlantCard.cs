@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using Frontier.Characters;
 
 namespace Frontier.Cards;
@@ -16,9 +17,18 @@ namespace Frontier.Cards;
 [Pool(typeof(ShumitCardPool))]
 public sealed class FirePowerPlantCard : ShumitCard
 {
+    private const string EnergyOnBurnKey = "EnergyOnBurn";
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(EnergyOnBurnKey, 1m) };
+
     public FirePowerPlantCard()
         : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)
     {
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars[EnergyOnBurnKey].UpgradeValueBy(1m);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -35,7 +45,7 @@ public sealed class FirePowerPlantCard : ShumitCard
         {
             bool isBurn = victim.GetType() == typeof(Burn);
             await CardCmd.Exhaust(choiceContext, victim);
-            int energy = CurrentUpgradeLevel > 0 ? 2 : 1;
+            int energy = DynamicVars[EnergyOnBurnKey].IntValue;
             if (isBurn)
             {
                 await PlayerCmd.GainEnergy(energy, Owner);

@@ -20,7 +20,7 @@ public sealed class ReuseAestheticsCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        int n = FrontierSession.BurnsExhaustedThisPlayerTurn;
+        int n = FrontierSession.GetBurnsExhaustedThisPlayerTurn(Owner);
         if (n > 0)
         {
             await CardPileCmd.Draw(choiceContext, n, Owner);

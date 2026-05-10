@@ -20,7 +20,13 @@ public sealed class ImpurityRemovalCard : ShumitCard
 {
     public override bool GainsBlock => true;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new BlockVar(5m, ValueProp.Move) };
+    private const string BurnExhaustTimesKey = "BurnExhaustTimes";
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new BlockVar(5m, ValueProp.Move),
+        new DynamicVar(BurnExhaustTimesKey, 1m),
+    };
 
     public ImpurityRemovalCard()
         : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
@@ -30,7 +36,7 @@ public sealed class ImpurityRemovalCard : ShumitCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        int times = CurrentUpgradeLevel > 0 ? 2 : 1;
+        int times = DynamicVars[BurnExhaustTimesKey].IntValue;
         for (int t = 0; t < times; t++)
         {
             List<CardModel> burns = PileType.Hand.GetPile(Owner).Cards
@@ -60,5 +66,6 @@ public sealed class ImpurityRemovalCard : ShumitCard
     protected override void OnUpgrade()
     {
         DynamicVars.Block.UpgradeValueBy(2m);
+        DynamicVars[BurnExhaustTimesKey].UpgradeValueBy(1m);
     }
 }

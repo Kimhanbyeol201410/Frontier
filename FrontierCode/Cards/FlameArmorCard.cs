@@ -33,6 +33,7 @@ public sealed class FlameArmorCard : ShumitCard
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
         await PowerCmd.Apply<ShumitFlameArmorPower>(
+            choiceContext,
             Owner.Creature,
             DynamicVars[BlockOnBurnKey].BaseValue,
             Owner.Creature,

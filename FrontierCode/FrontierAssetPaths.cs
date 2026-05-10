@@ -1,8 +1,8 @@
-namespace Frontier.Localization;
+namespace Frontier;
 
 /// <summary>
-/// DLL-only 배포에서는 <c>res://sts2-frontier/...</c> 가 마운트되지 않는다.
-/// 유물 아이콘 오버라이드는 베이스 게임에 항상 있는 PNG를 쓴다 (RelicModel 미포함 아이콘과 동일 계열).
+/// DLL-only 배포에서는 <c>res://sts2-frontier/...</c> 가 마운트되지 않을 수 있다.
+/// 유물 아이콘 오버라이드는 베이스 게임에 항상 있는 PNG를 쓴다.
 /// </summary>
 public static class FrontierAssetPaths
 {

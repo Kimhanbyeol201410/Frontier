@@ -7,17 +7,26 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.ValueProps;
 using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 임시 담금질: 열기 감소, 소멸.
+// 임시 담금질: 방어도, 열기 감소, 소멸.
 [Pool(typeof(ShumitCardPool))]
 public sealed class TemporaryQuenchingCard : ShumitCard
 {
     private const string HeatReductionKey = "HeatReduction";
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(HeatReductionKey, 10m) };
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Exhaust };
+
+    public override bool GainsBlock => true;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new BlockVar(7m, ValueProp.Move),
+        new DynamicVar(HeatReductionKey, 10m),
+    };
 
     public TemporaryQuenchingCard()
         : base(0, CardType.Skill, CardRarity.Common, TargetType.None)
@@ -26,12 +35,14 @@ public sealed class TemporaryQuenchingCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await FrontierHeatUtil.ReduceHeat(Owner.Creature, DynamicVars[HeatReductionKey].BaseValue, this);
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+        await FrontierHeatUtil.ReduceHeat(choiceContext, Owner.Creature, DynamicVars[HeatReductionKey].BaseValue, this);
         await CardCmd.Exhaust(choiceContext, this);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars[HeatReductionKey].UpgradeValueBy(5m);
+        DynamicVars.Block.UpgradeValueBy(3m);
+        DynamicVars[HeatReductionKey].UpgradeValueBy(3m);
     }
 }

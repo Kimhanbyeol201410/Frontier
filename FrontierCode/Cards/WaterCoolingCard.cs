@@ -32,7 +32,7 @@ public sealed class WaterCoolingCard : ShumitCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        await FrontierHeatUtil.ReduceHeat(Owner.Creature, DynamicVars[HeatReductionKey].BaseValue, this);
+        await FrontierHeatUtil.ReduceHeat(choiceContext, Owner.Creature, DynamicVars[HeatReductionKey].BaseValue, this);
     }
 
     protected override void OnUpgrade()

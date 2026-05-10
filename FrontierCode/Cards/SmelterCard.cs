@@ -17,7 +17,7 @@ namespace Frontier.Cards;
 [Pool(typeof(ShumitCardPool))]
 public sealed class SmelterCard : TokenCardBase
 {
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain };
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
 
     public SmelterCard()
         : base(1, CardType.Skill, TargetType.None)
@@ -36,7 +36,7 @@ public sealed class SmelterCard : TokenCardBase
             return;
         }
 
-        await FrontierHeatUtil.ReduceHeat(Owner.Creature, 15m, null);
+        await FrontierHeatUtil.ReduceHeat(choiceContext, Owner.Creature, 15m, null);
 
         CardModel? selected = await CardSelectCmd.FromHandForUpgrade(choiceContext, Owner, this);
         if (selected != null && !ReferenceEquals(selected, this))

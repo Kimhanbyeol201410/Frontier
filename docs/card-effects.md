@@ -6,6 +6,17 @@
 
 ---
 
+## 0. 규칙·문서와의 정합
+
+워크스페이스 규칙에 맞춰 작업할 때 아래를 교차 확인한다.
+
+- **필수 핸드북:** `.cursor/rules/sts2-mod-authoring-handbook.mdc` — Soldoros 레퍼런스, `unpack/docs/*`, 본 문서 링크.
+- **로캘:** `.cursor/rules/loc-key-coverage.mdc` — **`sts2-frontier/localization/{eng,kor}`** 를 Soldoros와 동일하게 원천으로 두고, 카드·유물·캐릭터·파워 등 해당 테이블 JSON을 동시에 갱신한다. **카드** 문구는 주로 `cards.json`(및 eng/kor 키 일치)이다.
+- **Frontier 전용:** `.cursor/rules/frontier-character-mod.RULE.md` — ID·폴더·manifest.
+- **카드 시스템 분석:** `unpack/docs/cards-system-analysis.md` — 신규 카드 훅·풀 등록.
+
+---
+
 ## 1. 공통 시스템 (카드 외)
 
 ### 1.1 열기 (HeatPower)
@@ -34,7 +45,7 @@
 | 카드 클래스 | 재련 보너스 | 걸작 보너스 | 비고 |
 |-------------|------------|-------------|------|
 | `BellowsCard` | +1 | — | |
-| `AnvilMemoryCard` | +1 | — | |
+| `AnvilMemoryCard` | +1 | — | `ShumitCardPool.FilterThroughEpochs`로 **일반 획득 제외**; `AnvilEcho` 걸작 변환만 |
 | `BurningStrikeCard` | +1 | — | |
 | `SparkBurstCard` | +5 | — | |
 | `SteamReleaseCard` | +10 | — | |

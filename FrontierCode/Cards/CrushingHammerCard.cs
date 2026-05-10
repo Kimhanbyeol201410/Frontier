@@ -20,7 +20,7 @@ public sealed class CrushingHammerCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(10m, ValueProp.Move),
+        new DamageVar(8m, ValueProp.Move),
         new DynamicVar(HeatKey, 5m),
     };
 
@@ -38,11 +38,11 @@ public sealed class CrushingHammerCard : ShumitCard
             await CreatureCmd.LoseBlock(cardPlay.Target, cardPlay.Target.Block);
         }
 
-        await PowerCmd.Apply<HeatPower>(Owner.Creature, DynamicVars[HeatKey].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<HeatPower>(choiceContext, Owner.Creature, DynamicVars[HeatKey].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars.Damage.UpgradeValueBy(2m);
     }
 }

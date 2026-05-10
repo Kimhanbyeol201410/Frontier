@@ -20,7 +20,7 @@ public sealed class MasterpieceHammerCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(24m, ValueProp.Move),
+        new DamageVar(16m, ValueProp.Move),
         new DynamicVar(HeatGainKey, 30m),
     };
 
@@ -33,11 +33,11 @@ public sealed class MasterpieceHammerCard : ShumitCard
     {
         System.ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).Execute(choiceContext);
-        await FrontierHeatUtil.ApplyHeat(Owner.Creature, DynamicVars[HeatGainKey].BaseValue, this);
+        await FrontierHeatUtil.ApplyHeat(choiceContext, Owner.Creature, DynamicVars[HeatGainKey].BaseValue, this);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(6m);
+        DynamicVars.Damage.UpgradeValueBy(8m);
     }
 }

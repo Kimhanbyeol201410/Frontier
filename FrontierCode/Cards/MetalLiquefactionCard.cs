@@ -45,13 +45,16 @@ public sealed class MetalLiquefactionCard : ShumitCard
         }
 
         await PowerCmd.Apply<ShumitUpgradedAttackBonusHeatPower>(
+            choiceContext,
             Owner.Creature,
             DynamicVars[BonusHeatKey].BaseValue,
             Owner.Creature,
             this);
 
-        CombatState combatState = Owner.Creature.CombatState
-            ?? throw new System.InvalidOperationException("MetalLiquefactionCard requires CombatState.");
+        if (Owner.Creature.CombatState is not CombatState combatState)
+        {
+            throw new System.InvalidOperationException("MetalLiquefactionCard requires CombatState.");
+        }
         for (int i = 0; i < 2; i++)
         {
             CardModel burn = combatState.CreateCard<Burn>(Owner);

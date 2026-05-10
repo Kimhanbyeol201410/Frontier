@@ -32,11 +32,11 @@ public sealed class HeatCycleCard : ShumitCard
         decimal delta = DynamicVars[HeatMoveKey].BaseValue;
         if (heat < 70)
         {
-            await FrontierHeatUtil.ApplyHeat(Owner.Creature, delta, this);
+            await FrontierHeatUtil.ApplyHeat(choiceContext, Owner.Creature, delta, this);
         }
         else
         {
-            await FrontierHeatUtil.ReduceHeat(Owner.Creature, delta, this);
+            await FrontierHeatUtil.ReduceHeat(choiceContext, Owner.Creature, delta, this);
         }
     }
 }

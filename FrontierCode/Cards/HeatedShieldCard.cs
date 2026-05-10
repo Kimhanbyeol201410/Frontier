@@ -34,7 +34,7 @@ public sealed class HeatedShieldCard : ShumitCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        await PowerCmd.Apply<HeatPower>(Owner.Creature, DynamicVars[HeatKey].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<HeatPower>(choiceContext, Owner.Creature, DynamicVars[HeatKey].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

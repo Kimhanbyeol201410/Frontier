@@ -15,6 +15,8 @@ namespace Frontier.Cards;
 [Pool(typeof(ShumitCardPool))]
 public sealed class IronSwordCard : TokenCardBase
 {
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
+
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new DynamicVar("Str", 1m),
@@ -28,6 +30,7 @@ public sealed class IronSwordCard : TokenCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<StrengthPower>(
+            choiceContext,
             Owner.Creature,
             DynamicVars["Str"].BaseValue,
             Owner.Creature,

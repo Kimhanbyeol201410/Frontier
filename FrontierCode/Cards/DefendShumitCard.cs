@@ -23,7 +23,10 @@ public sealed class DefendShumitCard : ShumitCard
     {
         new BlockVar(5m, ValueProp.Move),
     };
-public DefendShumitCard() : base(1, CardType.Skill, CardRarity.Basic, TargetType.Self) { }
+    public DefendShumitCard()
+        : base(1, CardType.Skill, CardRarity.Basic, TargetType.Self)
+    {
+    }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

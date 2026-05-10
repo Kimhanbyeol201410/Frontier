@@ -29,7 +29,10 @@ public sealed class DoubleTapCard : ShumitCard
         new DynamicVar(HeatKey, 10m),
     };
 
-    public DoubleTapCard() : base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy) { }
+    public DoubleTapCard()
+        : base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+    {
+    }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -42,7 +45,7 @@ public sealed class DoubleTapCard : ShumitCard
                 .Execute(choiceContext);
         }
 
-        await FrontierHeatUtil.ApplyHeat(base.Owner.Creature, base.DynamicVars[HeatKey].BaseValue, this);
+        await FrontierHeatUtil.ApplyHeat(choiceContext, base.Owner.Creature, base.DynamicVars[HeatKey].BaseValue, this);
     }
 
     protected override void OnUpgrade()

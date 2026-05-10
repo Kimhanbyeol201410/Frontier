@@ -32,7 +32,7 @@ public sealed class BurningStrikeCard : ShumitCard
     {
         System.ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).Execute(choiceContext);
-        await FrontierHeatUtil.ApplyHeat(Owner.Creature, DynamicVars[HeatKey].BaseValue, this);
+        await FrontierHeatUtil.ApplyHeat(choiceContext, Owner.Creature, DynamicVars[HeatKey].BaseValue, this);
     }
 
     protected override void OnUpgrade()

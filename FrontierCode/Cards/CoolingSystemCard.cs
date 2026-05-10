@@ -26,6 +26,7 @@ public sealed class CoolingSystemCard : ShumitCard
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<ShumitCoolingSystemPower>(
+            choiceContext,
             Owner.Creature,
             DynamicVars[HeatLossKey].BaseValue,
             Owner.Creature,

@@ -32,7 +32,7 @@ public sealed class ColdGestureCard : ShumitCard
     {
         System.ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).Execute(choiceContext);
-        await FrontierHeatUtil.ReduceHeat(Owner.Creature, DynamicVars[HeatLossKey].BaseValue, this);
+        await FrontierHeatUtil.ReduceHeat(choiceContext, Owner.Creature, DynamicVars[HeatLossKey].BaseValue, this);
     }
 
     protected override void OnUpgrade()

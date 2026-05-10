@@ -28,7 +28,7 @@ public sealed class SparkBurstCard : ShumitCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).TargetingAllOpponents(Owner.Creature.CombatState!).Execute(choiceContext);
-        await PowerCmd.Apply<HeatPower>(Owner.Creature, DynamicVars["Heat"].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<HeatPower>(choiceContext, Owner.Creature, DynamicVars["Heat"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

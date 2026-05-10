@@ -40,8 +40,10 @@ public sealed class SmeltingStrikeCard : ShumitCard
         System.ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).Execute(choiceContext);
         int n = DynamicVars[UpgradesKey].IntValue;
-        CombatState combatState = Owner.Creature.CombatState
-            ?? throw new System.InvalidOperationException("SmeltingStrikeCard requires CombatState.");
+        if (Owner.Creature.CombatState is not CombatState combatState)
+        {
+            throw new System.InvalidOperationException("SmeltingStrikeCard requires CombatState.");
+        }
         for (int i = 0; i < n; i++)
         {
             var list = PileType.Hand.GetPile(Owner).Cards.Where((CardModel c) => !ReferenceEquals(c, this) && c.IsUpgradable).ToList();
@@ -54,11 +56,12 @@ public sealed class SmeltingStrikeCard : ShumitCard
             CardCmd.Upgrade(list[idx], CardPreviewStyle.HorizontalLayout);
         }
 
-        await PowerCmd.Apply<HeatPower>(Owner.Creature, DynamicVars[HeatGainKey].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<HeatPower>(choiceContext, Owner.Creature, DynamicVars[HeatGainKey].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Damage.UpgradeValueBy(2m);
         DynamicVars[UpgradesKey].UpgradeValueBy(1m);
     }
 }

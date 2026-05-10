@@ -1,0 +1,12 @@
+{
+  "FRONTIER-HEAT.title": "열기",
+  "FRONTIER-HEAT.description": "열기가 70 이상이면 턴 종료 시 버린 카드 더미에 [gold]화상[/gold] 1장을 추가합니다. 열기가 200 이상이면 턴 종료 시 열기 100마다 신체 [gold]화상[/gold]을 1 얻습니다.",
+  "FRONTIER-BODYBURN.title": "신체 화상",
+  "FRONTIER-BODYBURN.description": "카드를 사용할 때마다 신체 화상 수치만큼 피해를 받습니다. 턴 종료 시 1 잃습니다.",
+  "FRONTIER-REFORGE.title": "재련",
+  "FRONTIER-REFORGE.description": "해당 카드의 최대 강화 횟수를 추가로 늘리는 고유 강화 한도입니다.",
+  "FRONTIER-MASTERPIECE.title": "걸작",
+  "FRONTIER-MASTERPIECE.description": "걸작 조건을 달성하면 카드가 특수 단계에 도달하거나 다른 카드로 변환됩니다.",
+  "FRONTIER-ENCHANT.title": "인챈트",
+  "FRONTIER-ENCHANT.description": "전투 종료 후 카드에 부여되는 특수 강화 효과입니다."
+}

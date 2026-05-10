@@ -13,7 +13,7 @@ public sealed class ForgeCard : ShumitCard
 {
     private const string UpgradesPerTurnKey = "UpgradesPerTurn";
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => new[] { CardKeyword.Retain };
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
     public override int MaxUpgradeLevel => 0;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(UpgradesPerTurnKey, 1m) };

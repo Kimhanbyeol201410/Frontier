@@ -1,6 +1,6 @@
 {
   "FRONTIER-BROKEN_FORGE_RELIC.title": "부서진 대장간",
-  "FRONTIER-BROKEN_FORGE_RELIC.description": "전투 시작 시 대장간 장치가 가동됩니다. 드로우가 감소하며, 매 턴 손패 카드 1장을 직접 선택해 강화합니다.",
+  "FRONTIER-BROKEN_FORGE_RELIC.description": "전투 시작 시 뽑을 카드 더미에 [gold]대장간[/gold] 1장을 추가합니다.",
   "FRONTIER-GREAT_FORGE_RELIC.title": "위대한 대장간",
   "FRONTIER-GREAT_FORGE_RELIC.description": "전투 시작 시 뽑을 카드 더미에 [gold]위대한 대장간[/gold] 1장을 추가합니다.",
   "FRONTIER-HEATPROOF_APRON_RELIC.title": "내열 가죽 앞치마",

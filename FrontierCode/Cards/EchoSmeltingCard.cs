@@ -26,6 +26,7 @@ public sealed class EchoSmeltingCard : ShumitCard
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<PostCombatSpiralEnchantPower>(
+            choiceContext,
             Owner.Creature,
             DynamicVars[EnchKey].BaseValue,
             Owner.Creature,

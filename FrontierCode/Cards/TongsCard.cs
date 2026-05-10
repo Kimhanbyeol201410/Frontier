@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Utils;
 using Frontier.Utilities;
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -29,20 +27,14 @@ public sealed class TongsCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        CardSelectorPrefs prefs = new(CardSelectorPrefs.UpgradeSelectionPrompt, 1);
-        IEnumerable<CardModel> picked = await CardSelectCmd.FromHand(
-            choiceContext,
-            Owner,
-            prefs,
-            (CardModel c) => !ReferenceEquals(c, this),
-            this);
-        CardModel? target = picked.FirstOrDefault();
-        if (target != null && target.IsUpgradable)
+        // FromHand + SimpleSelect는 강화 미리보기가 없고, IsUpgradable이 아닌 카드도 골라질 수 있다. Armaments·제련소와 동일하게 FromHandForUpgrade 사용.
+        CardModel? target = await CardSelectCmd.FromHandForUpgrade(choiceContext, Owner, this);
+        if (target != null && !ReferenceEquals(target, this))
         {
             CardCmd.Upgrade(target, CardPreviewStyle.HorizontalLayout);
         }
 
-        await FrontierHeatUtil.ApplyHeat(Owner.Creature, DynamicVars[HeatToCardKey].BaseValue, this);
+        await FrontierHeatUtil.ApplyHeat(choiceContext, Owner.Creature, DynamicVars[HeatToCardKey].BaseValue, this);
     }
 
     protected override void OnUpgrade()

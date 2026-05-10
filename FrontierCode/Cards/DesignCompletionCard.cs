@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using Frontier.Characters;
 
 namespace Frontier.Cards;
@@ -16,9 +17,20 @@ namespace Frontier.Cards;
 [Pool(typeof(ShumitCardPool))]
 public sealed class DesignCompletionCard : ShumitCard
 {
+    private const string PickCountKey = "PickCount";
+
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Exhaust };
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(PickCountKey, 1m) };
+
     public DesignCompletionCard()
         : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)
     {
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars[PickCountKey].UpgradeValueBy(1m);
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -30,8 +42,7 @@ public sealed class DesignCompletionCard : ShumitCard
             return;
         }
 
-        int pickCount = CurrentUpgradeLevel > 0 ? 2 : 1;
-        pickCount = System.Math.Min(pickCount, drawCards.Count);
+        int pickCount = System.Math.Min(DynamicVars[PickCountKey].IntValue, drawCards.Count);
         CardSelectorPrefs prefs = new(CardSelectorPrefs.UpgradeSelectionPrompt, pickCount);
         IEnumerable<CardModel> picked = await CardSelectCmd.FromSimpleGrid(choiceContext, drawCards.ToList(), Owner, prefs);
         foreach (CardModel c in picked)

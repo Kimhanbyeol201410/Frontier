@@ -25,7 +25,7 @@ public sealed class BellowsCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await FrontierHeatUtil.ApplyHeat(Owner.Creature, DynamicVars[HeatKey].BaseValue, this);
+        await FrontierHeatUtil.ApplyHeat(choiceContext, Owner.Creature, DynamicVars[HeatKey].BaseValue, this);
         await CardPileCmd.Draw(choiceContext, 1, Owner);
     }
 
