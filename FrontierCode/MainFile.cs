@@ -72,11 +72,16 @@ internal static class FrontierRules
     public const string AnvilMemoryCardEntry = "FRONTIER-ANVIL_MEMORY_CARD";
 
     /// <summary>
-    /// 전투 종료 인챈트(기민함/메아리/숙련/예리함 제련) 및 미구현 «불사르지 않는 몸»을
-    /// 슈미트 카드 풀·해금 목록에서 제외한다.
+    /// <see cref="ShumitCharacter.StartingDeck"/> 카드(보상·상점 전용 풀에서 제외)와
+    /// 전투 종료 인챈트(기민함/메아리/숙련/예리함 제련), 미구현 «불사르지 않는 몸» 등
+    /// <see cref="ShumitCardPool.FilterThroughEpochs"/> 에서 걸러낼 엔트리.
     /// </summary>
     public static readonly HashSet<string> HiddenFromShumitCardPoolEntries = new(StringComparer.Ordinal)
     {
+        "FRONTIER-STRIKE_SHUMIT_CARD",
+        "FRONTIER-DEFEND_SHUMIT_CARD",
+        "FRONTIER-FORGING_CARD",
+        "FRONTIER-OIL_COOLING_CARD",
         "FRONTIER-AGILE_SMELTING_CARD",
         "FRONTIER-ECHO_SMELTING_CARD",
         "FRONTIER-MASTERY_SMELTING_CARD",
@@ -96,6 +101,7 @@ internal static class FrontierRules
         ["FRONTIER-BURNING_STRIKE_CARD"] = ReforgeUnlimited, // 불태우는 일격 — 재련.
         ["FRONTIER-SPARK_BURST_CARD"] = 9, // 불꽃 튀기기 — 재련 10 (베이스 1 + 보너스 9 = MaxUpgradeLevel 10).
         ["FRONTIER-STEAM_RELEASE_CARD"] = 10, // 증기 배출 — 재련 10.
+        ["FRONTIER-REFINING_CARD"] = ReforgeUnlimited, // 정련 — 처치 시 영구 강화, 재련 제한 없음.
     };
 
     private static readonly Dictionary<string, int> MasterpieceByCardId = new()
