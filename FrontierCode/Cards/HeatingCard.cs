@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
@@ -8,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using Frontier.Characters;
 using Frontier.Utilities;
@@ -32,23 +32,30 @@ public sealed class HeatingCard : ShumitCard
     {
     }
 
-    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    public override bool TryModifyEnergyCostInCombat(CardModel card, decimal originalCost, out decimal modifiedCost)
     {
-        if (player != Owner)
+        if (!ReferenceEquals(card, this))
         {
-            return;
+            modifiedCost = originalCost;
+            return false;
         }
 
-        if (!PileType.Hand.GetPile(Owner).Cards.Contains(this))
+        Player? owner = Owner;
+        if (owner?.Creature is not { } creature)
         {
-            return;
+            modifiedCost = originalCost;
+            return false;
         }
 
-        int h = Owner.Creature.GetPower<HeatPower>()?.Amount ?? 0;
+        int h = creature.GetPower<HeatPower>()?.Amount ?? 0;
         if (h == 0)
         {
-            EnergyCost.SetThisTurnOrUntilPlayed(0);
+            modifiedCost = 0m;
+            return true;
         }
+
+        modifiedCost = originalCost;
+        return false;
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

@@ -6,7 +6,7 @@
   "FRONTIER-REFORGE.title": "재련",
   "FRONTIER-REFORGE.description": "해당 카드의 최대 강화 횟수를 추가로 늘리는 고유 강화 한도입니다.",
   "FRONTIER-MASTERPIECE.title": "걸작",
-  "FRONTIER-MASTERPIECE.description": "이 카드의 최대 강화 한도가 늘어납니다. 걸작 단계(강화 수치)에 도달하면 다른 카드로 변환됩니다. (모루의 잔향은 강화 +10에서 모루의 기억으로 변환)",
+  "FRONTIER-MASTERPIECE.description": "이 카드의 최대 강화 한도가 늘어납니다. 걸작 단계(강화 수치)에 도달하면 다른 카드로 변환됩니다. (모루의 잔향은 강화 +5에서 모루의 기억으로 변환)",
   "FRONTIER-ENCHANT.title": "인챈트",
   "FRONTIER-ENCHANT.description": "전투 종료 후 카드에 부여되는 특수 강화 효과입니다."
 }

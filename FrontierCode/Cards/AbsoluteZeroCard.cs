@@ -3,31 +3,21 @@ using System.Threading.Tasks;
 using BaseLib.Utils;
 using Frontier.Utilities;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.HoverTips;
-using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 절대영도
+// 절대영도: 열기 전부 제거 → 제거한 양만큼 방어, 소멸. 강화 시 비용 -1.
 [Pool(typeof(ShumitCardPool))]
 public sealed class AbsoluteZeroCard : ShumitCard
 {
-    private const string BlockPerTenKey = "BlockPerTenHeat";
-
-    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Exhaust, FrontierKeywords.BodyBurn };
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Exhaust };
 
     public override bool GainsBlock => true;
-
-    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(BlockPerTenKey, 5m) };
-
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => HoverTipFactory.FromCardWithCardHoverTips<ColdBurnStatusCard>();
 
     public AbsoluteZeroCard()
         : base(2, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
@@ -37,33 +27,17 @@ public sealed class AbsoluteZeroCard : ShumitCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         int heatBefore = Owner.Creature.GetPower<HeatPower>()?.Amount ?? 0;
-        decimal bodyBurn = Owner.Creature.GetPower<BodyBurnPower>()?.Amount ?? 0m;
-
         await FrontierHeatUtil.ReduceHeat(choiceContext, Owner.Creature, heatBefore, this);
-        if (bodyBurn > 0m)
+        if (heatBefore > 0)
         {
-            await PowerCmd.Apply<BodyBurnPower>(Owner.Creature, -bodyBurn, Owner.Creature, this);
+            await CreatureCmd.GainBlock(Owner.Creature, heatBefore, ValueProp.Move, cardPlay);
         }
 
-        decimal perBlock = DynamicVars[BlockPerTenKey].BaseValue;
-        decimal block = (heatBefore / 10) * perBlock;
-        if (block > 0m)
-        {
-            await CreatureCmd.GainBlock(Owner.Creature, block, ValueProp.Move, cardPlay);
-        }
-
-        if (FrontierCombatStateHelper.TryGetFor(Owner) is not CombatState cs)
-        {
-            throw new System.InvalidOperationException("AbsoluteZeroCard requires CombatState.");
-        }
-
-        CardModel cold = cs.CreateCard<ColdBurnStatusCard>(Owner);
-        await CardPileCmd.Add(cold, PileType.Discard);
         await CardCmd.Exhaust(choiceContext, this);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars[BlockPerTenKey].UpgradeValueBy(3m);
+        EnergyCost.UpgradeBy(-1);
     }
 }

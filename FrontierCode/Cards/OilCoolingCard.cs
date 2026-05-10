@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace Frontier.Cards;
 using Frontier.Characters;
+using Frontier.Powers;
 
 // PDF 원문(슈미트.pdf) 기준 카드 정보
 // 유냉 (1코 / 스킬)
@@ -38,7 +39,7 @@ public sealed class OilCoolingCard : ShumitCard
 
         int currentHeat = base.Owner.Creature.GetPower<HeatPower>()?.Amount ?? 0;
         decimal reduceBy = System.Math.Min((decimal)currentHeat, base.DynamicVars[HeatReductionKey].BaseValue);
-        if (reduceBy > 0m)
+        if (reduceBy > 0m && !ShumitBetYourLifePower.IsActive(base.Owner.Creature))
         {
             await PowerCmd.Apply<HeatPower>(base.Owner.Creature, -reduceBy, base.Owner.Creature, this);
         }

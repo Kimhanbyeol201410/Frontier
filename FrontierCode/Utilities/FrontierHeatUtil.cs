@@ -1,3 +1,4 @@
+using Frontier.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -21,7 +22,7 @@ internal static class FrontierHeatUtil
 
 	internal static async System.Threading.Tasks.Task ReduceHeat(PlayerChoiceContext choiceContext, Creature creature, decimal amount, CardModel? source)
 	{
-		if (amount == 0m || creature == null)
+		if (amount == 0m || creature == null || ShumitBetYourLifePower.IsActive(creature))
 		{
 			return;
 		}

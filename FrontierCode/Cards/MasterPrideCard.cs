@@ -1,55 +1,36 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Utils;
+using Frontier.Characters;
+using Frontier.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-using MegaCrit.Sts2.Core.Nodes.CommonUi;
-using Frontier.Characters;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 
 namespace Frontier.Cards;
 
-// 명인의 긍지 (3→2코)
+// 명인의 긍지 (3→2코 파워): 강화 시 방어도 — ShumitMasterPridePower + CardCmd.Upgrade 패치.
 [Pool(typeof(ShumitCardPool))]
 public sealed class MasterPrideCard : ShumitCard
 {
-    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Exhaust };
+    private const string BlockPerUpgradeKey = "BlockPerUpgrade";
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(BlockPerUpgradeKey, 5m) };
 
     public MasterPrideCard()
-        : base(3, CardType.Skill, CardRarity.Uncommon, TargetType.None)
+        : base(3, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        void UpgradePile(PileType pile)
-        {
-            foreach (CardModel c in pile.GetPile(Owner).Cards.ToList())
-            {
-                if (c.IsUpgradable && !ReferenceEquals(c, this))
-                {
-                    CardCmd.Upgrade(c, CardPreviewStyle.HorizontalLayout);
-                }
-            }
-        }
-
-        UpgradePile(PileType.Hand);
-        UpgradePile(PileType.Draw);
-
-        int heat = Owner.Creature.GetPower<HeatPower>()?.Amount ?? 0;
-        if (heat <= 50)
-        {
-            decimal need = 50m - heat;
-            if (need > 0m)
-            {
-                await PowerCmd.Apply<HeatPower>(Owner.Creature, need, Owner.Creature, this);
-            }
-        }
-
-        await CardCmd.Exhaust(choiceContext, this);
+        await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
+        await PowerCmd.Apply<ShumitMasterPridePower>(
+            Owner.Creature,
+            DynamicVars[BlockPerUpgradeKey].BaseValue,
+            Owner.Creature,
+            this);
     }
 
     protected override void OnUpgrade()

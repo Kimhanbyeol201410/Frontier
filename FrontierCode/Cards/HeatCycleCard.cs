@@ -16,8 +16,13 @@ namespace Frontier.Cards;
 public sealed class HeatCycleCard : ShumitCard
 {
     private const string HeatMoveKey = "HeatMove";
+    private const string DrawCountKey = "DrawCount";
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(HeatMoveKey, 10m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new DynamicVar(DrawCountKey, 1m),
+        new DynamicVar(HeatMoveKey, 10m),
+    };
 
     public HeatCycleCard()
         : base(1, CardType.Skill, CardRarity.Common, TargetType.None)
@@ -26,7 +31,7 @@ public sealed class HeatCycleCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        int n = CurrentUpgradeLevel > 0 ? 2 : 1;
+        int n = DynamicVars[DrawCountKey].IntValue;
         await CardPileCmd.Draw(choiceContext, n, Owner);
         int heat = Owner.Creature.GetPower<HeatPower>()?.Amount ?? 0;
         decimal delta = DynamicVars[HeatMoveKey].BaseValue;
@@ -38,5 +43,10 @@ public sealed class HeatCycleCard : ShumitCard
         {
             await FrontierHeatUtil.ReduceHeat(choiceContext, Owner.Creature, delta, this);
         }
+    }
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars[DrawCountKey].UpgradeValueBy(1m);
     }
 }

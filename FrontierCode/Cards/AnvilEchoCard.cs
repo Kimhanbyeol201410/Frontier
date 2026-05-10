@@ -2,11 +2,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using Frontier.Characters;
+using Frontier.Utilities;
 
 namespace Frontier.Cards;
 
@@ -25,17 +27,17 @@ public sealed class AnvilEchoCard : ShumitCard
     };
 
     public AnvilEchoCard()
-        : base(2, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
+        : base(2, CardType.Attack, CardRarity.Uncommon, TargetType.AllEnemies)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        System.ArgumentNullException.ThrowIfNull(cardPlay.Target);
+        CombatState combatState = FrontierCombatStateHelper.RequireFor(Owner);
         int hits = DynamicVars[HitsKey].IntValue;
         for (int i = 0; i < hits; i++)
         {
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).Execute(choiceContext);
+            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).TargetingAllOpponents(combatState).Execute(choiceContext);
         }
     }
 

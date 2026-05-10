@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using Frontier.Characters;
+using Frontier.Utilities;
 
 namespace Frontier.Cards;
 
@@ -22,11 +24,11 @@ public sealed class AnvilMemoryCard : ShumitCard
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new DamageVar(3m, ValueProp.Move),
-        new DynamicVar(HitsKey, 15m),
+        new DynamicVar(HitsKey, 10m),
     };
 
     public AnvilMemoryCard()
-        : base(2, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
+        : base(2, CardType.Attack, CardRarity.Rare, TargetType.AllEnemies)
     {
     }
 
@@ -35,16 +37,16 @@ public sealed class AnvilMemoryCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        System.ArgumentNullException.ThrowIfNull(cardPlay.Target);
+        CombatState combatState = FrontierCombatStateHelper.RequireFor(Owner);
         int hits = DynamicVars[HitsKey].IntValue;
         for (int i = 0; i < hits; i++)
         {
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).Execute(choiceContext);
+            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).TargetingAllOpponents(combatState).Execute(choiceContext);
         }
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars[HitsKey].UpgradeValueBy(1m);
+        DynamicVars.Damage.UpgradeValueBy(2m);
     }
 }

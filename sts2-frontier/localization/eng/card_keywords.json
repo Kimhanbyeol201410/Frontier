@@ -6,7 +6,7 @@
   "FRONTIER-REFORGE.title": "Reforge",
   "FRONTIER-REFORGE.description": "A unique upgrade limit that increases this card's maximum upgrade count.",
   "FRONTIER-MASTERPIECE.title": "Masterpiece",
-  "FRONTIER-MASTERPIECE.description": "Raises this card's maximum upgrade cap. When upgrade level reaches the masterpiece threshold, the card transforms into another card (Anvil Echo becomes Anvil Memory at +10).",
+  "FRONTIER-MASTERPIECE.description": "Raises this card's maximum upgrade cap. When upgrade level reaches the masterpiece threshold, the card transforms into another card (Anvil Echo becomes Anvil Memory at +5).",
   "FRONTIER-ENCHANT.title": "Enchant",
   "FRONTIER-ENCHANT.description": "A special enhancement applied to cards after combat."
 }

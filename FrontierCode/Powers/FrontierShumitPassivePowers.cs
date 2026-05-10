@@ -58,12 +58,14 @@ public sealed class ShumitHeatedForgePower : CustomPowerModel
 	}
 }
 
-/// <summary>턴 시작 시 열기 임계 이상이면 열기 감소 + 드로우 (배기 시스템).</summary>
+/// <summary>턴 시작 시 열기 임계 이상이면 열기 감소 + 드로우 (배기 시스템). 카드마다 별도 인스턴스(임계값 독립).</summary>
 public sealed class ShumitExhaustSystemPower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
+
+	public override bool IsInstanced => true;
 
 	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
 
@@ -85,48 +87,15 @@ public sealed class ShumitExhaustSystemPower : CustomPowerModel
 	}
 }
 
-/// <summary>턴 시작 시 화상을 손패에 (화염을 무서워하지 않는 자).</summary>
+/// <summary>턴 시작 시 열기·힘 (뜨거운 노력). <see cref="CustomPowerModel.Amount"/>는 열기이며 힘은 열기 10당 1.</summary>
 public sealed class ShumitFearlessFlamePower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
 
-	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.FromCard<Burn>() };
-
-	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
-	{
-		if (player != Owner.Player || FrontierCombatStateHelper.TryGetFor(player) is not CombatState combatState)
-		{
-			return;
-		}
-
-		CardModel burn = combatState.CreateCard<Burn>(player);
-		await CardPileCmd.Add(burn, PileType.Hand);
-	}
-}
-
-/// <summary>턴 동안 열기가 감소했으면 적 전체 피해 (증기 배출 — 단순화).</summary>
-public sealed class ShumitSteamVentPower : CustomPowerModel
-{
-	/// <summary>열기 감소 판정 기준. 턴 시작 시 설정되며, 턴 중 첫 부여는 <see cref="AfterApplied"/>에서만 잡는다.</summary>
-	private int _heatBaseline = int.MinValue;
-
-	public override PowerType Type => PowerType.Buff;
-
-	public override PowerStackType StackType => PowerStackType.Counter;
-
-	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
-
-	public override Task AfterApplied(Creature? applier, CardModel? cardSource)
-	{
-		if (_heatBaseline == int.MinValue)
-		{
-			_heatBaseline = Owner.GetPower<HeatPower>()?.Amount ?? 0;
-		}
-
-		return base.AfterApplied(applier, cardSource);
-	}
+	protected override IEnumerable<IHoverTip> ExtraHoverTips
+		=> new IHoverTip[] { HoverTipFactory.FromKeyword(FrontierKeywords.Heat), HoverTipFactory.FromPower<StrengthPower>() };
 
 	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
 	{
@@ -135,24 +104,43 @@ public sealed class ShumitSteamVentPower : CustomPowerModel
 			return;
 		}
 
-		_heatBaseline = Owner.GetPower<HeatPower>()?.Amount ?? 0;
+		await FrontierHeatUtil.ApplyHeat(choiceContext, Owner, Amount, null);
+		decimal str = Amount / 10m;
+		if (str > 0m)
+		{
+			await PowerCmd.Apply<StrengthPower>(Owner, str, Owner, null, silent: false);
+		}
 	}
+}
 
-	public override async Task BeforeTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+/// <summary>열기가 감소할 때마다 적 전체 피해 (증기 배출).</summary>
+public sealed class ShumitSteamVentPower : CustomPowerModel
+{
+	public override PowerType Type => PowerType.Buff;
+
+	public override PowerStackType StackType => PowerStackType.Counter;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
+
+	public override async Task AfterPowerAmountChanged(PowerModel power, decimal amount, Creature? applier, CardModel? cardSource)
 	{
-		if (side != CombatSide.Player || !Owner.IsPlayer || FrontierCombatStateHelper.TryGetFor(Owner.Player) is not CombatState combatState)
+		if (amount >= 0m || power.Owner != Owner || !Owner.IsPlayer || power.Id.Entry != "FRONTIER-HEAT_POWER")
 		{
 			return;
 		}
 
-		int now = Owner.GetPower<HeatPower>()?.Amount ?? 0;
-		int baseline = _heatBaseline == int.MinValue ? now : _heatBaseline;
-		if (now >= baseline)
+		if (FrontierCombatStateHelper.TryGetFor(Owner.Player) is not CombatState combatState)
 		{
 			return;
 		}
 
-		await CreatureCmd.Damage(choiceContext, combatState.HittableEnemies, Amount, ValueProp.Move, Owner, null);
+		await CreatureCmd.Damage(
+			new BlockingPlayerChoiceContext(),
+			combatState.HittableEnemies,
+			Amount,
+			ValueProp.Move,
+			Owner,
+			null);
 	}
 }
 
@@ -332,6 +320,72 @@ public sealed class FoldedSteelReplayPower : CustomPowerModel
 		if (side == Owner.Side)
 		{
 			await PowerCmd.Remove(this);
+		}
+	}
+}
+
+/// <summary>명인의 긍지 — 카드 강화 시 방어도.</summary>
+public sealed class ShumitMasterPridePower : CustomPowerModel
+{
+	public override PowerType Type => PowerType.Buff;
+
+	public override PowerStackType StackType => PowerStackType.Single;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.Static(StaticHoverTip.Block) };
+}
+
+/// <summary>목숨을 걸어 — 열기·신체 화상 감소 무효, 카드 사용마다 힘·민첩·열기(세션에 저장된 양).</summary>
+public sealed class ShumitBetYourLifePower : CustomPowerModel
+{
+	public override PowerType Type => PowerType.Buff;
+
+	public override PowerStackType StackType => PowerStackType.Single;
+
+	public static bool IsActive(Creature? creature)
+		=> creature?.GetPower<ShumitBetYourLifePower>() != null;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+	{
+		HoverTipFactory.FromKeyword(FrontierKeywords.Heat),
+		HoverTipFactory.FromKeyword(FrontierKeywords.BodyBurn),
+		HoverTipFactory.FromPower<StrengthPower>(),
+		HoverTipFactory.FromPower<DexterityPower>(),
+	};
+
+	public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
+	{
+		if (cardPlay.Card?.Owner?.Creature != Owner)
+		{
+			return;
+		}
+
+		Player? player = Owner.Player;
+		if (player == null)
+		{
+			return;
+		}
+
+		int str = FrontierSession.GetBetYourLifeStrPerPlay(player);
+		int dex = FrontierSession.GetBetYourLifeDexPerPlay(player);
+		int heat = FrontierSession.GetBetYourLifeHeatPerPlay(player);
+		if (str <= 0 && dex <= 0 && heat <= 0)
+		{
+			return;
+		}
+
+		if (str > 0)
+		{
+			await PowerCmd.Apply<StrengthPower>(Owner, str, Owner, cardPlay.Card, silent: false);
+		}
+
+		if (dex > 0)
+		{
+			await PowerCmd.Apply<DexterityPower>(Owner, dex, Owner, cardPlay.Card, silent: false);
+		}
+
+		if (heat > 0)
+		{
+			await FrontierHeatUtil.ApplyHeat(context, Owner, heat, cardPlay.Card);
 		}
 	}
 }

@@ -15,6 +15,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.ValueProps;
 using BaseLib.Abstracts;
 using BaseLib.Patches.UI;
@@ -24,6 +25,7 @@ using System.Threading.Tasks;
 using Frontier;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.HoverTips;
+using Frontier.Powers;
 using Frontier.Utilities;
 
 /// <summary>
@@ -106,13 +108,22 @@ internal static class FrontierRules
 
     private static readonly Dictionary<string, int> MasterpieceByCardId = new()
     {
-        ["FRONTIER-ANVIL_ECHO_CARD"] = 10 // 모루의 잔향 — 걸작 10.
+        ["FRONTIER-ANVIL_ECHO_CARD"] = 5 // 모루의 잔향 — 걸작 5.
     };
 
-    private static readonly Dictionary<string, Func<Player, CardModel>> MasterpieceTransformByCardId = new()
+    /// <summary>두 번째 인자는 강화된 카드 — 비전투(휴식처 등)에서는 <see cref="CardModel.CardScope"/>가 런 스코프를 씁니다.</summary>
+    private static readonly Dictionary<string, Func<Player, CardModel, CardModel>> MasterpieceTransformByCardId = new()
     {
-        ["FRONTIER-ANVIL_ECHO_CARD"] = static (Player owner) =>
-            FrontierCombatStateHelper.RequireFor(owner).CreateCard<AnvilMemoryCard>(owner)
+        ["FRONTIER-ANVIL_ECHO_CARD"] = static (Player owner, CardModel source) =>
+        {
+            ICardScope? scope = source.CardScope;
+            if (scope == null)
+            {
+                throw new InvalidOperationException("Anvil Echo masterpiece: CardScope is null.");
+            }
+
+            return scope.CreateCard<AnvilMemoryCard>(owner);
+        },
     };
 
     public static bool IsShumit(CardModel card)
@@ -150,7 +161,7 @@ internal static class FrontierRules
         return 0;
     }
 
-    public static Func<Player, CardModel>? GetMasterpieceTransformFactory(CardModel card)
+    public static Func<Player, CardModel, CardModel>? GetMasterpieceTransformFactory(CardModel card)
     {
         string? entry = card?.Id?.Entry;
         if (entry == null)
@@ -181,22 +192,27 @@ public static class FrontierUpgradeCapPatch
             return;
         }
 
-        // 재련/걸작 보너스가 없으면 최대 강화 1. 걸작만 있는 카드(모루의 잔향)도 반영.
-        if (reforge <= 0 && masterpiece <= 0)
+        // 걸작만 있는 카드(모루의 잔향): 최대 강화 = 걸작 단계(+5까지만). 베이스 1에 더하면 +6까지 되는 문제 방지.
+        if (masterpiece > 0)
+        {
+            __result = masterpiece;
+            return;
+        }
+
+        // 재련 보너스가 없으면 최대 강화 1.
+        if (reforge <= 0)
         {
             __result = 1;
             return;
         }
 
-        __result += reforge + masterpiece;
+        __result += reforge;
     }
 }
 
 [HarmonyPatch(typeof(CardCmd), "Upgrade", new[] { typeof(IEnumerable<CardModel>), typeof(CardPreviewStyle) })]
 public static class FrontierMasterpieceTransformPatch
 {
-    private static readonly HashSet<int> TriggeredCards = new();
-
     public static void Postfix(IEnumerable<CardModel> cards)
     {
         foreach (CardModel card in cards.ToList())
@@ -212,26 +228,26 @@ public static class FrontierMasterpieceTransformPatch
                 continue;
             }
 
-            int cardRef = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(card);
-            if (!TriggeredCards.Add(cardRef))
-            {
-                continue;
-            }
-
-            Func<Player, CardModel>? transformFactory = FrontierRules.GetMasterpieceTransformFactory(card);
+            Func<Player, CardModel, CardModel>? transformFactory = FrontierRules.GetMasterpieceTransformFactory(card);
             if (transformFactory == null)
             {
                 GD.Print($"[Frontier] Masterpiece reached without transform mapping: {card.Id.Entry}");
                 continue;
             }
 
+            Player? owner = card.Owner;
+            if (owner == null)
+            {
+                continue;
+            }
+
             try
             {
-                CardModel transformed = transformFactory(card.Owner);
-                _ = CardCmd.Transform(card, transformed, CardPreviewStyle.HorizontalLayout);
+                CardModel transformed = transformFactory(owner, card);
+                CardCmd.Transform(card, transformed, CardPreviewStyle.HorizontalLayout).GetAwaiter().GetResult();
                 GD.Print($"[Frontier] Masterpiece transformed: {card.Id.Entry} -> {transformed.Id.Entry}");
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 GD.Print($"[Frontier] Masterpiece transform failed: {card.Id.Entry} ({e.Message})");
             }
@@ -301,6 +317,11 @@ public sealed class BodyBurnPower : CustomPowerModel
     {
         if (side == CombatSide.Player && Owner.IsPlayer)
         {
+            if (ShumitBetYourLifePower.IsActive(Owner))
+            {
+                return;
+            }
+
             await PowerCmd.Decrement(this);
         }
     }

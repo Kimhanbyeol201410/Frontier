@@ -7,16 +7,22 @@ using MegaCrit.Sts2.Core.Models;
 namespace Frontier.Cards;
 using Frontier.Characters;
 
-// 대장간 (0코 토큰): 보존. 드로우 감소·턴당 강화는 BrokenForgeRelic 이 처리. OnPlay 불필요.
+// 대장간 (0코 토큰): 보존. 턴 시작 시 열기·무작위 강화는 BrokenForgeRelic 이 처리. OnPlay 불필요.
 [Pool(typeof(ShumitCardPool))]
 public sealed class ForgeCard : ShumitCard
 {
     private const string UpgradesPerTurnKey = "UpgradesPerTurn";
 
+    public const string TurnStartHeatKey = "TurnStartHeat";
+
     protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
     public override int MaxUpgradeLevel => 0;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(UpgradesPerTurnKey, 1m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new DynamicVar(TurnStartHeatKey, 10m),
+        new DynamicVar(UpgradesPerTurnKey, 1m),
+    };
 
     public ForgeCard()
         : base(0, CardType.Skill, CardRarity.Event, TargetType.None, showInCardLibrary: false)

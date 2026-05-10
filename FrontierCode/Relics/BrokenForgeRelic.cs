@@ -21,10 +21,9 @@ namespace Frontier.Relics;
 [Pool(typeof(EventRelicPool))]
 public sealed class BrokenForgeRelic : CustomRelicModel
 {
-    private const string DrawPenaltyKey = "DrawPenalty";
     private const string ForgeCountKey = "ForgeCount";
     public override RelicRarity Rarity => RelicRarity.Starter;
-    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(DrawPenaltyKey, 1m), new DynamicVar(ForgeCountKey, 1m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(ForgeCountKey, 1m) };
 
     public override async Task BeforeCombatStart()
     {
@@ -45,26 +44,42 @@ public sealed class BrokenForgeRelic : CustomRelicModel
         Flash();
     }
 
-    public override decimal ModifyHandDraw(Player player, decimal count)
-    {
-        if (player != base.Owner || !HasForgeInHand()) return count;
-        return Math.Max(0m, count - base.DynamicVars[DrawPenaltyKey].BaseValue);
-    }
-
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
         if (player != base.Owner) return;
-        int upgradeCount = GetForgeUpgradeCount();
-        if (upgradeCount <= 0) return;
 
-        for (int i = 0; i < upgradeCount; i++)
+        bool didSomething = false;
+        foreach (CardModel card in PileType.Hand.GetPile(base.Owner).Cards)
         {
-            if (!FrontierHandForgeUpgrade.TryUpgradeOneRandomFromHand(base.Owner))
+            if (card is ForgeCard forge)
             {
-                break;
+                decimal heat = forge.DynamicVars[ForgeCard.TurnStartHeatKey].BaseValue;
+                if (heat > 0m)
+                {
+                    await FrontierHeatUtil.ApplyHeat(choiceContext, base.Owner.Creature, heat, forge);
+                    didSomething = true;
+                }
             }
         }
-        Flash();
+
+        int upgradeCount = GetForgeUpgradeCount();
+        if (upgradeCount > 0)
+        {
+            for (int i = 0; i < upgradeCount; i++)
+            {
+                if (!FrontierHandForgeUpgrade.TryUpgradeOneRandomFromHand(base.Owner))
+                {
+                    break;
+                }
+            }
+
+            didSomething = true;
+        }
+
+        if (didSomething)
+        {
+            Flash();
+        }
     }
 
     private bool HasForgeInHand() => PileType.Hand.GetPile(base.Owner).Cards.Any((CardModel c) => c is ForgeCard or GreatForgeCard);

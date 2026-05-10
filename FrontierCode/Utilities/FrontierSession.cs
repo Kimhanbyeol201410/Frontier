@@ -13,6 +13,13 @@ internal static class FrontierSession
 		internal int UpgradesThisCombat;
 		internal int BurnsExhaustedThisPlayerTurn;
 		internal bool BurnCardExhaustedThisPlayerTurn;
+
+		/// <summary>목숨을 걸어: 카드 1회 사용당 부여할 힘·민첩·열기(기본 1/1/10, 강화 2/2/20).</summary>
+		internal int BetYourLifeStrPerPlay;
+
+		internal int BetYourLifeDexPerPlay;
+
+		internal int BetYourLifeHeatPerPlay;
 	}
 
 	private static readonly Dictionary<ulong, Bucket> Buckets = new();
@@ -69,6 +76,34 @@ internal static class FrontierSession
 	internal static void OnCombatStarted()
 	{
 		Buckets.Clear();
+	}
+
+	internal static void SetBetYourLifePerPlayBonuses(Player player, int str, int dex, int heat)
+	{
+		if (player == null)
+		{
+			return;
+		}
+
+		Bucket b = GetOrCreate(player.NetId);
+		b.BetYourLifeStrPerPlay = str;
+		b.BetYourLifeDexPerPlay = dex;
+		b.BetYourLifeHeatPerPlay = heat;
+	}
+
+	internal static int GetBetYourLifeStrPerPlay(Player player)
+	{
+		return player != null && Buckets.TryGetValue(player.NetId, out Bucket? b) ? b.BetYourLifeStrPerPlay : 0;
+	}
+
+	internal static int GetBetYourLifeDexPerPlay(Player player)
+	{
+		return player != null && Buckets.TryGetValue(player.NetId, out Bucket? b) ? b.BetYourLifeDexPerPlay : 0;
+	}
+
+	internal static int GetBetYourLifeHeatPerPlay(Player player)
+	{
+		return player != null && Buckets.TryGetValue(player.NetId, out Bucket? b) ? b.BetYourLifeHeatPerPlay : 0;
 	}
 
 	/// <summary>플레이어 턴 종료 직전(손패 버리기 전). 해당 플레이어의 턴 한정 카운터만 초기화.</summary>

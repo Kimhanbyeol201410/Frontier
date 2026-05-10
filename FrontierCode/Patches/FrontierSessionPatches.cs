@@ -1,5 +1,9 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Frontier.Characters;
+using Frontier.Powers;
 using Frontier.Utilities;
+using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
@@ -9,7 +13,9 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.ValueProps;
 
 namespace Frontier.Patches;
 
@@ -36,11 +42,11 @@ internal static class FrontierBeforeFlushSessionPatch
 	}
 }
 
-[HarmonyPatch(typeof(CardCmd), nameof(CardCmd.Upgrade), typeof(System.Collections.Generic.IEnumerable<CardModel>), typeof(MegaCrit.Sts2.Core.Nodes.CommonUi.CardPreviewStyle))]
+[HarmonyPatch(typeof(CardCmd), nameof(CardCmd.Upgrade), typeof(IEnumerable<CardModel>), typeof(CardPreviewStyle))]
 internal static class FrontierUpgradeCountPatch
 {
 	[HarmonyPostfix]
-	private static void CountShumitUpgrades(System.Collections.Generic.IEnumerable<CardModel> cards)
+	private static void CountShumitUpgrades(IEnumerable<CardModel> cards)
 	{
 		foreach (CardModel c in cards)
 		{
@@ -48,6 +54,55 @@ internal static class FrontierUpgradeCountPatch
 			{
 				FrontierSession.RegisterUpgrade(c.Owner);
 			}
+		}
+	}
+}
+
+[HarmonyPatch(typeof(CardCmd), nameof(CardCmd.Upgrade), typeof(IEnumerable<CardModel>), typeof(CardPreviewStyle))]
+internal static class FrontierMasterPrideBlockOnUpgradePatch
+{
+	[HarmonyPrefix]
+	private static void Prefix(IEnumerable<CardModel> cards, ref List<CardModel>? __state)
+	{
+		__state = new List<CardModel>();
+		foreach (CardModel c in cards)
+		{
+			if (c != null && c.IsUpgradable)
+			{
+				__state.Add(c);
+			}
+		}
+	}
+
+	[HarmonyPostfix]
+	private static void Postfix(ref List<CardModel>? __state)
+	{
+		if (__state == null || __state.Count == 0 || CombatManager.Instance.IsOverOrEnding)
+		{
+			return;
+		}
+
+		List<CardModel> upgraded = new List<CardModel>(__state);
+		Callable.From(() => MasterPrideGainBlockDeferred(upgraded)).CallDeferred();
+	}
+
+	private static async Task MasterPrideGainBlockDeferred(List<CardModel> upgraded)
+	{
+		foreach (CardModel c in upgraded)
+		{
+			Player? owner = c.Owner;
+			if (owner?.Character?.Id?.Entry != ShumitCharacter.CharacterId)
+			{
+				continue;
+			}
+
+			ShumitMasterPridePower? p = owner.Creature.GetPower<ShumitMasterPridePower>();
+			if (p == null || p.Amount <= 0m)
+			{
+				continue;
+			}
+
+			await CreatureCmd.GainBlock(owner.Creature, p.Amount, ValueProp.Move, null, fast: true);
 		}
 	}
 }

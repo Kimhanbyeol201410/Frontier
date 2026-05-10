@@ -34,7 +34,7 @@ public sealed class ShumitCardPool : CustomCardPoolModel
 	public override float V => 0.92f;
 
 	/// <summary>
-	/// 걸작(모루의 잔향 +10) 변환으로만 얻도록, <see cref="CardPoolModel.GetUnlockedCards"/> 결과에서 제외한다.
+	/// 걸작(모루의 잔향 +5) 변환으로만 얻도록, <see cref="CardPoolModel.GetUnlockedCards"/> 결과에서 제외한다.
 	/// (전투 보상·상점·<see cref="MegaCrit.Sts2.Core.Runs.CardCreationOptions.GetPossibleCards"/> 등이 이 경로를 사용한다.)
 	/// </summary>
 	protected override IEnumerable<CardModel> FilterThroughEpochs(UnlockState unlockState, IEnumerable<CardModel> cards)
@@ -59,7 +59,9 @@ public sealed class ShumitCardPool : CustomCardPoolModel
 			ModelDb.Card<AnvilEchoCard>(),
 			ModelDb.Card<ApproachingDreadCard>(),
 			ModelDb.Card<BellowsCard>(),
+			ModelDb.Card<BetYourLifeCard>(),
 			ModelDb.Card<BlastFurnaceCard>(),
+			ModelDb.Card<BlacksmithsBlessingCard>(),
 			ModelDb.Card<BurningStrikeCard>(),
 			ModelDb.Card<ColdBurnStatusCard>(),
 			ModelDb.Card<ColdGestureCard>(),
