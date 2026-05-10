@@ -20,7 +20,7 @@ public sealed class FearlessOfFlameCard : ShumitCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        await PowerCmd.Apply<ShumitFearlessFlamePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+        await PowerCmd.Apply<ShumitFearlessFlamePower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

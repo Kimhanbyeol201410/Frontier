@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.ValueProps;
 using Frontier.Characters;
+using Frontier.Utilities;
 
 namespace Frontier.Cards;
 
@@ -44,8 +45,8 @@ public sealed class ImpurityCompressionCard : ShumitCard
 
         decimal bonus = n * DynamicVars[PerBurnKey].BaseValue;
         decimal total = DynamicVars.Damage.BaseValue + bonus;
-        await DamageCmd.Attack(total).FromCard(this).TargetingAllOpponents(Owner.Creature.CombatState!).Execute(choiceContext);
-        await PowerCmd.Apply<HeatPower>(choiceContext, Owner.Creature, DynamicVars[HeatKey].BaseValue, Owner.Creature, this);
+        await DamageCmd.Attack(total).FromCard(this).TargetingAllOpponents(FrontierCombatStateHelper.RequireFor(Owner)).Execute(choiceContext);
+        await PowerCmd.Apply<HeatPower>(Owner.Creature, DynamicVars[HeatKey].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

@@ -30,7 +30,6 @@ public sealed class IronSwordCard : TokenCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<StrengthPower>(
-            choiceContext,
             Owner.Creature,
             DynamicVars["Str"].BaseValue,
             Owner.Creature,

@@ -29,7 +29,7 @@ public sealed class BrokenForgeRelic : CustomRelicModel
     public override async Task BeforeCombatStart()
     {
         List<CardModel> generated = new();
-        if (base.Owner.Creature.CombatState is not CombatState combatState)
+        if (FrontierCombatStateHelper.TryGetFor(base.Owner) is not CombatState combatState)
         {
             throw new InvalidOperationException("BrokenForgeRelic.BeforeCombatStart requires an active CombatState.");
         }
@@ -40,7 +40,7 @@ public sealed class BrokenForgeRelic : CustomRelicModel
 
         if (generated.Count > 0)
         {
-            await CardPileCmd.AddGeneratedCardsToCombat(generated, PileType.Draw, base.Owner, CardPilePosition.Random);
+            await CardPileCmd.AddGeneratedCardsToCombat(generated, PileType.Draw, addedByPlayer: true, CardPilePosition.Random);
         }
         Flash();
     }

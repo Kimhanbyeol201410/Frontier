@@ -45,7 +45,7 @@ public sealed class MasterPrideCard : ShumitCard
             decimal need = 50m - heat;
             if (need > 0m)
             {
-                await PowerCmd.Apply<HeatPower>(choiceContext, Owner.Creature, need, Owner.Creature, this);
+                await PowerCmd.Apply<HeatPower>(Owner.Creature, need, Owner.Creature, this);
             }
         }
 

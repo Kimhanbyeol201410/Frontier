@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using Frontier;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.HoverTips;
+using Frontier.Utilities;
 
 /// <summary>
 /// Frontier 모드 초기화 진입점.
@@ -93,7 +94,7 @@ internal static class FrontierRules
         ["FRONTIER-BELLOWS_CARD"] = ReforgeUnlimited, // 풀무질 — 재련.
         [AnvilMemoryCardEntry] = ReforgeUnlimited, // 모루의 기억 — 재련.
         ["FRONTIER-BURNING_STRIKE_CARD"] = ReforgeUnlimited, // 불태우는 일격 — 재련.
-        ["FRONTIER-SPARK_BURST_CARD"] = 10, // 불꽃 튀기기 — 재련 10.
+        ["FRONTIER-SPARK_BURST_CARD"] = 9, // 불꽃 튀기기 — 재련 10 (베이스 1 + 보너스 9 = MaxUpgradeLevel 10).
         ["FRONTIER-STEAM_RELEASE_CARD"] = 10, // 증기 배출 — 재련 10.
     };
 
@@ -105,7 +106,7 @@ internal static class FrontierRules
     private static readonly Dictionary<string, Func<Player, CardModel>> MasterpieceTransformByCardId = new()
     {
         ["FRONTIER-ANVIL_ECHO_CARD"] = static (Player owner) =>
-            owner.Creature.CombatState!.CreateCard<AnvilMemoryCard>(owner)
+            FrontierCombatStateHelper.RequireFor(owner).CreateCard<AnvilMemoryCard>(owner)
     };
 
     public static bool IsShumit(CardModel card)
@@ -256,7 +257,7 @@ public sealed class HeatPower : CustomPowerModel
             Player? burnOwner = Owner.Player;
             if (burnOwner != null)
             {
-                CardModel burn = CombatState.CreateCard<Burn>(burnOwner);
+                CardModel burn = FrontierCombatStateHelper.RequireFor(burnOwner).CreateCard<Burn>(burnOwner);
                 await CardPileCmd.Add(burn, PileType.Discard);
             }
         }
@@ -264,7 +265,7 @@ public sealed class HeatPower : CustomPowerModel
         if (Amount >= 200)
         {
             decimal gainedBodyBurn = Amount / 100m;
-            await PowerCmd.Apply<BodyBurnPower>(choiceContext, new[] { Owner }, gainedBodyBurn, Owner, null, false);
+            await PowerCmd.Apply<BodyBurnPower>(new[] { Owner }, gainedBodyBurn, Owner, null, false);
         }
     }
 }

@@ -35,7 +35,7 @@ public sealed class UnstoppableHeatCard : ShumitCard
         int divisor = System.Math.Max(1, DynamicVars[HeatDivisorKey].IntValue);
         decimal bonus = heat / divisor;
         decimal total = DynamicVars.Damage.BaseValue + bonus;
-        await DamageCmd.Attack(total).FromCard(this).TargetingAllOpponents(Owner.Creature.CombatState!).Execute(choiceContext);
+        await DamageCmd.Attack(total).FromCard(this).TargetingAllOpponents(FrontierCombatStateHelper.RequireFor(Owner)).Execute(choiceContext);
     }
 
     protected override void OnUpgrade()

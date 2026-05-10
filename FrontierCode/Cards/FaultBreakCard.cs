@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 using Frontier.Characters;
+using Frontier.Utilities;
 
 namespace Frontier.Cards;
 
@@ -26,7 +27,7 @@ public sealed class FaultBreakCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner.Creature.CombatState is not CombatState cs)
+        if (FrontierCombatStateHelper.TryGetFor(Owner) is not CombatState cs)
         {
             throw new System.InvalidOperationException("FaultBreakCard requires CombatState.");
         }

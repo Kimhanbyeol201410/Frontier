@@ -70,6 +70,7 @@ Slay the Spire 2/
 ## 모드 정보
 
 - Mod ID: `sts2-frontier`
+- 게임 버전: 기본 공개 버전
 - 이름: `Frontier`
 - 의존성: `BaseLib`
 - 게임플레이 영향: `true`

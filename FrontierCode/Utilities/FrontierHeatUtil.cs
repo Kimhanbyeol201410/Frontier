@@ -16,7 +16,7 @@ internal static class FrontierHeatUtil
 			return;
 		}
 
-		await PowerCmd.Apply<HeatPower>(choiceContext, creature, amount, creature, source);
+		await PowerCmd.Apply<HeatPower>(creature, amount, creature, source);
 	}
 
 	internal static async System.Threading.Tasks.Task ReduceHeat(PlayerChoiceContext choiceContext, Creature creature, decimal amount, CardModel? source)
@@ -30,7 +30,7 @@ internal static class FrontierHeatUtil
 		decimal reduceBy = System.Math.Min((decimal)current, amount);
 		if (reduceBy > 0m)
 		{
-			await PowerCmd.Apply<HeatPower>(choiceContext, creature, -reduceBy, creature, source);
+			await PowerCmd.Apply<HeatPower>(creature, -reduceBy, creature, source);
 		}
 	}
 }

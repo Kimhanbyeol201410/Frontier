@@ -40,8 +40,8 @@ public sealed class GrindingRoomCard : TokenCardBase
         }
 
         await CardPileCmd.Draw(choiceContext, 1, Owner);
-        await PowerCmd.Apply<StrengthPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
-        await PowerCmd.Apply<DexterityPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
-        await PowerCmd.Apply<ShumitTurnEnergyPenaltyPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this);
+        await PowerCmd.Apply<StrengthPower>(Owner.Creature, 1m, Owner.Creature, this);
+        await PowerCmd.Apply<DexterityPower>(Owner.Creature, 1m, Owner.Creature, this);
+        await PowerCmd.Apply<ShumitTurnEnergyPenaltyPower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 }

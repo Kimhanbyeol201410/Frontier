@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Utils;
 using Frontier.Cards;
+using Frontier.Utilities;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -43,9 +44,9 @@ public sealed class ForgingCard : ShumitCard
             .Targeting(cardPlay.Target)
             .Execute(choiceContext);
 
-        await PowerCmd.Apply<HeatPower>(choiceContext, base.Owner.Creature, base.DynamicVars[HeatGainKey].BaseValue, base.Owner.Creature, this);
+        await PowerCmd.Apply<HeatPower>(base.Owner.Creature, base.DynamicVars[HeatGainKey].BaseValue, base.Owner.Creature, this);
 
-        if (base.Owner.Creature.CombatState is not CombatState combatState)
+        if (FrontierCombatStateHelper.TryGetFor(base.Owner) is not CombatState combatState)
         {
             throw new System.InvalidOperationException("ForgingCard.OnPlay requires CombatState.");
         }

@@ -106,6 +106,7 @@ public sealed class ShumitCardPool : CustomCardPoolModel
 			ModelDb.Card<MeltCard>(),
 			ModelDb.Card<MeltingCard>(),
 			ModelDb.Card<MetalLiquefactionCard>(),
+			ModelDb.Card<NotThisOneCard>(),
 			ModelDb.Card<OilCoolingCard>(),
 			ModelDb.Card<RefiningCard>(),
 			ModelDb.Card<ReuseAestheticsCard>(),

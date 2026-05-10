@@ -36,7 +36,7 @@ public sealed class UntilExhaustionCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner.Creature.CombatState is not CombatState combatState)
+        if (FrontierCombatStateHelper.TryGetFor(Owner) is not CombatState combatState)
         {
             throw new System.InvalidOperationException("UntilExhaustionCard requires CombatState.");
         }

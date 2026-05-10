@@ -33,7 +33,7 @@ public sealed class FlameStrikeCard : ShumitCard
     {
         System.ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target).Execute(choiceContext);
-        await PowerCmd.Apply<HeatPower>(choiceContext, Owner.Creature, DynamicVars[HeatKey].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<HeatPower>(Owner.Creature, DynamicVars[HeatKey].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

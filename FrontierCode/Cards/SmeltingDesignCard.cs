@@ -28,7 +28,6 @@ public sealed class SmeltingDesignCard : ShumitCard
     {
         await CardPileCmd.Draw(choiceContext, 1, Owner);
         await PowerCmd.Apply<ShumitNextAttackHeatPower>(
-            choiceContext,
             Owner.Creature,
             DynamicVars[NextHeatKey].BaseValue,
             Owner.Creature,

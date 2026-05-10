@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using Frontier.Characters;
+using Frontier.Utilities;
 
 namespace Frontier.Cards;
 
@@ -45,13 +46,12 @@ public sealed class MetalLiquefactionCard : ShumitCard
         }
 
         await PowerCmd.Apply<ShumitUpgradedAttackBonusHeatPower>(
-            choiceContext,
             Owner.Creature,
             DynamicVars[BonusHeatKey].BaseValue,
             Owner.Creature,
             this);
 
-        if (Owner.Creature.CombatState is not CombatState combatState)
+        if (FrontierCombatStateHelper.TryGetFor(Owner) is not CombatState combatState)
         {
             throw new System.InvalidOperationException("MetalLiquefactionCard requires CombatState.");
         }

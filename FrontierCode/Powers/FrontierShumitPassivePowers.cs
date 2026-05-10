@@ -96,7 +96,7 @@ public sealed class ShumitFearlessFlamePower : CustomPowerModel
 
 	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
 	{
-		if (player != Owner.Player || Owner.CombatState is not CombatState combatState)
+		if (player != Owner.Player || FrontierCombatStateHelper.TryGetFor(player) is not CombatState combatState)
 		{
 			return;
 		}
@@ -140,7 +140,7 @@ public sealed class ShumitSteamVentPower : CustomPowerModel
 
 	public override async Task BeforeTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
 	{
-		if (side != CombatSide.Player || !Owner.IsPlayer || CombatState == null)
+		if (side != CombatSide.Player || !Owner.IsPlayer || FrontierCombatStateHelper.TryGetFor(Owner.Player) is not CombatState combatState)
 		{
 			return;
 		}
@@ -152,7 +152,7 @@ public sealed class ShumitSteamVentPower : CustomPowerModel
 			return;
 		}
 
-		await CreatureCmd.Damage(choiceContext, CombatState.HittableEnemies, Amount, ValueProp.Move, Owner, null);
+		await CreatureCmd.Damage(choiceContext, combatState.HittableEnemies, Amount, ValueProp.Move, Owner, null);
 	}
 }
 
@@ -172,7 +172,7 @@ public sealed class ShumitStripStrengthAtTurnEndPower : CustomPowerModel
 			return;
 		}
 
-		await PowerCmd.Apply<StrengthPower>(choiceContext, Owner, -Amount, Owner, null, silent: true);
+		await PowerCmd.Apply<StrengthPower>(Owner, -Amount, Owner, null, silent: true);
 		await PowerCmd.Remove(this);
 	}
 }

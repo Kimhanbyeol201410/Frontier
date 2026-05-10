@@ -42,8 +42,8 @@ public sealed class ApproachingDreadCard : ShumitCard
         decimal str = (heat / chunk) * DynamicVars[StrMultKey].BaseValue;
         if (str > 0m)
         {
-            await PowerCmd.Apply<StrengthPower>(choiceContext, Owner.Creature, str, Owner.Creature, this);
-            await PowerCmd.Apply<ShumitStripStrengthAtTurnEndPower>(choiceContext, Owner.Creature, str, Owner.Creature, this);
+            await PowerCmd.Apply<StrengthPower>(Owner.Creature, str, Owner.Creature, this);
+            await PowerCmd.Apply<ShumitStripStrengthAtTurnEndPower>(Owner.Creature, str, Owner.Creature, this);
         }
     }
 

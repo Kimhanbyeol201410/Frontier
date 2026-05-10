@@ -40,7 +40,7 @@ public sealed class OilCoolingCard : ShumitCard
         decimal reduceBy = System.Math.Min((decimal)currentHeat, base.DynamicVars[HeatReductionKey].BaseValue);
         if (reduceBy > 0m)
         {
-            await PowerCmd.Apply<HeatPower>(choiceContext, base.Owner.Creature, -reduceBy, base.Owner.Creature, this);
+            await PowerCmd.Apply<HeatPower>(base.Owner.Creature, -reduceBy, base.Owner.Creature, this);
         }
     }
 

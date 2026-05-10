@@ -26,7 +26,6 @@ public sealed class MasterySmeltingCard : ShumitCard
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<PostCombatAdroitEnchantPower>(
-            choiceContext,
             Owner.Creature,
             DynamicVars[EnchKey].BaseValue,
             Owner.Creature,

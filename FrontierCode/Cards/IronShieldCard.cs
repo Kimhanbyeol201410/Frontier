@@ -30,7 +30,6 @@ public sealed class IronShieldCard : TokenCardBase
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<DexterityPower>(
-            choiceContext,
             Owner.Creature,
             DynamicVars["Dex"].BaseValue,
             Owner.Creature,

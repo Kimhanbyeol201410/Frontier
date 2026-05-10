@@ -26,7 +26,6 @@ public sealed class SteamReleaseCard : ShumitCard
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<ShumitSteamVentPower>(
-            choiceContext,
             Owner.Creature,
             DynamicVars[VentDamageKey].BaseValue,
             Owner.Creature,

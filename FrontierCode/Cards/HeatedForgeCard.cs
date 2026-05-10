@@ -26,7 +26,6 @@ public sealed class HeatedForgeCard : ShumitCard
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<ShumitHeatedForgePower>(
-            choiceContext,
             Owner.Creature,
             DynamicVars[HeatKey].BaseValue,
             Owner.Creature,

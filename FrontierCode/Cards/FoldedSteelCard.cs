@@ -37,7 +37,7 @@ public sealed class FoldedSteelCard : ShumitCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         decimal n = DynamicVars[ReplaysKey].BaseValue;
-        await PowerCmd.Apply<FoldedSteelReplayPower>(choiceContext, Owner.Creature, n, Owner.Creature, this);
+        await PowerCmd.Apply<FoldedSteelReplayPower>(Owner.Creature, n, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

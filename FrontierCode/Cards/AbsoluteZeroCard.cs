@@ -42,7 +42,7 @@ public sealed class AbsoluteZeroCard : ShumitCard
         await FrontierHeatUtil.ReduceHeat(choiceContext, Owner.Creature, heatBefore, this);
         if (bodyBurn > 0m)
         {
-            await PowerCmd.Apply<BodyBurnPower>(choiceContext, Owner.Creature, -bodyBurn, Owner.Creature, this);
+            await PowerCmd.Apply<BodyBurnPower>(Owner.Creature, -bodyBurn, Owner.Creature, this);
         }
 
         decimal perBlock = DynamicVars[BlockPerTenKey].BaseValue;
@@ -52,7 +52,7 @@ public sealed class AbsoluteZeroCard : ShumitCard
             await CreatureCmd.GainBlock(Owner.Creature, block, ValueProp.Move, cardPlay);
         }
 
-        if (Owner.Creature.CombatState is not CombatState cs)
+        if (FrontierCombatStateHelper.TryGetFor(Owner) is not CombatState cs)
         {
             throw new System.InvalidOperationException("AbsoluteZeroCard requires CombatState.");
         }

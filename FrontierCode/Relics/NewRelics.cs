@@ -15,6 +15,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using Frontier.Utilities;
 
 namespace Frontier.Relics;
 
@@ -24,13 +25,13 @@ public abstract class TokenSpawnerRelic<TCard> : CustomRelicModel where TCard : 
 
     public override async Task BeforeCombatStart()
     {
-        if (Owner.Creature.CombatState is not CombatState combatState)
+        if (FrontierCombatStateHelper.TryGetFor(Owner) is not CombatState combatState)
         {
             throw new InvalidOperationException("TokenSpawnerRelic.BeforeCombatStart requires an active CombatState.");
         }
 
         CardModel token = combatState.CreateCard<TCard>(Owner);
-        await CardPileCmd.AddGeneratedCardsToCombat(new[] { token }, PileType.Draw, Owner, CardPilePosition.Random);
+        await CardPileCmd.AddGeneratedCardsToCombat(new[] { token }, PileType.Draw, addedByPlayer: true, CardPilePosition.Random);
         Flash();
     }
 }
@@ -119,7 +120,7 @@ public sealed class FusionerTongsRelic : CustomRelicModel
         }
 
         Flash();
-        await PowerCmd.Apply<StrengthPower>(context, new[] { base.Owner.Creature }, 1m, base.Owner.Creature, cardPlay.Card, false);
+        await PowerCmd.Apply<StrengthPower>(new[] { base.Owner.Creature }, 1m, base.Owner.Creature, cardPlay.Card, false);
     }
 }
 

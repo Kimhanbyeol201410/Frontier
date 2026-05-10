@@ -24,7 +24,7 @@ public sealed class ForgeBlueprintCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner.Creature.CombatState is not CombatState cs)
+        if (FrontierCombatStateHelper.TryGetFor(Owner) is not CombatState cs)
         {
             throw new System.InvalidOperationException("ForgeBlueprintCard requires CombatState.");
         }

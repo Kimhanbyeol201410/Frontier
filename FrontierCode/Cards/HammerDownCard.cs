@@ -35,7 +35,7 @@ public sealed class HammerDownCard : ShumitCard
             .FromCard(this)
             .Targeting(cardPlay.Target)
             .Execute(choiceContext);
-        await PowerCmd.Apply<VulnerablePower>(choiceContext, cardPlay.Target, base.DynamicVars[VulnKey].BaseValue, base.Owner.Creature, this);
+        await PowerCmd.Apply<VulnerablePower>(cardPlay.Target, base.DynamicVars[VulnKey].BaseValue, base.Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

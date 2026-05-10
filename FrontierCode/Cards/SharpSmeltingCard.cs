@@ -26,7 +26,6 @@ public sealed class SharpSmeltingCard : ShumitCard
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<PostCombatSharpEnchantPower>(
-            choiceContext,
             Owner.Creature,
             DynamicVars[EnchKey].BaseValue,
             Owner.Creature,

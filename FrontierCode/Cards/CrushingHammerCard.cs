@@ -38,7 +38,7 @@ public sealed class CrushingHammerCard : ShumitCard
             await CreatureCmd.LoseBlock(cardPlay.Target, cardPlay.Target.Block);
         }
 
-        await PowerCmd.Apply<HeatPower>(choiceContext, Owner.Creature, DynamicVars[HeatKey].BaseValue, Owner.Creature, this);
+        await PowerCmd.Apply<HeatPower>(Owner.Creature, DynamicVars[HeatKey].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

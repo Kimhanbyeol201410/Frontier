@@ -47,7 +47,7 @@
 | `BellowsCard` | +1 | — | |
 | `AnvilMemoryCard` | +1 | — | `ShumitCardPool.FilterThroughEpochs`로 **일반 획득 제외**; `AnvilEcho` 걸작 변환만 |
 | `BurningStrikeCard` | +1 | — | |
-| `SparkBurstCard` | +5 | — | |
+| `SparkBurstCard` | +9 | — | MaxUpgradeLevel 10 |
 | `SteamReleaseCard` | +10 | — | |
 | `AnvilEchoCard` | — | +10 | 강화 후 **+10 도달 시** `AnvilMemoryCard`로 변환 |
 

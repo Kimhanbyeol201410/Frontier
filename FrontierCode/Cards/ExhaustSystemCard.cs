@@ -26,7 +26,6 @@ public sealed class ExhaustSystemCard : ShumitCard
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<ShumitExhaustSystemPower>(
-            choiceContext,
             Owner.Creature,
             DynamicVars[ThresholdKey].BaseValue,
             Owner.Creature,
