@@ -11,7 +11,7 @@ using Frontier.Powers;
 
 namespace Frontier.Cards;
 
-// 화염의 갑옷: 플레이 시 방어 + 화상 플레이 시 방어 버프.
+// 화염의 갑옷: 플레이 시 방어 + 화염(Burn)이 생성되어 더미에 들어올 때마다 방어 버프.
 [Pool(typeof(ShumitCardPool))]
 public sealed class FlameArmorCard : ShumitCard
 {

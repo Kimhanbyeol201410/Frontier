@@ -16,6 +16,8 @@ public sealed class AnvilEchoCard : ShumitCard
 {
     private const string HitsKey = "Hits";
 
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { FrontierKeywords.Masterpiece };
+
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new DamageVar(2m, ValueProp.Move),

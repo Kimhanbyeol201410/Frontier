@@ -1,15 +1,12 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Utils;
-using Frontier.Cards;
-using Frontier.Utilities;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.ValueProps;
 
@@ -18,7 +15,7 @@ using Frontier.Characters;
 
 // PDF 원문(슈미트.pdf) 기준 카드 정보
 // 단조 (2코 / 공격)
-// - 피해 8, 손패 무작위 카드 1장 이번 턴 강화, 열기 +10
+// - 피해 8, 열기 +10, 손패에서 강화 가능한 카드 1장을 선택해 강화
 // 업그레이드: 피해 11
 [Pool(typeof(ShumitCardPool))]
 public sealed class ForgingCard : ShumitCard
@@ -46,17 +43,10 @@ public sealed class ForgingCard : ShumitCard
 
         await PowerCmd.Apply<HeatPower>(base.Owner.Creature, base.DynamicVars[HeatGainKey].BaseValue, base.Owner.Creature, this);
 
-        if (FrontierCombatStateHelper.TryGetFor(base.Owner) is not CombatState combatState)
+        CardModel? selected = await CardSelectCmd.FromHandForUpgrade(choiceContext, Owner, this);
+        if (selected != null && !ReferenceEquals(selected, this))
         {
-            throw new System.InvalidOperationException("ForgingCard.OnPlay requires CombatState.");
-        }
-        var candidates = PileType.Hand.GetPile(base.Owner).Cards
-            .Where((c) => c != this && c.IsUpgradable)
-            .ToList();
-        if (candidates.Count > 0)
-        {
-            int idx = combatState.RunState.Rng.Shuffle.NextInt(candidates.Count);
-            CardCmd.Upgrade(candidates[idx], CardPreviewStyle.HorizontalLayout);
+            CardCmd.Upgrade(selected, CardPreviewStyle.HorizontalLayout);
         }
     }
 

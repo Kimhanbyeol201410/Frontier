@@ -19,7 +19,7 @@ public sealed class FirePowerPlantCard : ShumitCard
 {
     private const string EnergyOnBurnKey = "EnergyOnBurn";
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(EnergyOnBurnKey, 1m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new EnergyVar(EnergyOnBurnKey, 1) };
 
     public FirePowerPlantCard()
         : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)

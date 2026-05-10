@@ -19,6 +19,8 @@ public sealed class DefendShumitCard : ShumitCard
 {
     public override bool GainsBlock => true;
 
+    protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Defend };
+
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new BlockVar(5m, ValueProp.Move),
