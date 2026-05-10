@@ -90,7 +90,7 @@
   "FRONTIER-IMPURITY_REMOVAL_CARD.title": "불순물 제거",
   "FRONTIER-IMPURITY_REMOVAL_CARD.description": "방어도를 {Block:diff()} 얻습니다.\n버린 카드 더미나 손패에 있는 [gold]화상[/gold] 카드를 {BurnExhaustTimes:diff()}장 [gold]소멸[/gold]시킵니다.",
   "FRONTIER-IRON_ARMOR_CARD.title": "철갑옷",
-  "FRONTIER-IRON_ARMOR_CARD.description": "[gold]도금[/gold]을 {Plating:diff()} 얻습니다.",
+  "FRONTIER-IRON_ARMOR_CARD.description": "[gold]판금[/gold]을 {Plating:diff()} 얻습니다.",
   "FRONTIER-IRON_SHIELD_CARD.title": "철방패",
   "FRONTIER-IRON_SHIELD_CARD.description": "[gold]민첩[/gold]을 {Dex:diff()} 얻습니다.",
   "FRONTIER-IRON_SWORD_CARD.title": "철검",
