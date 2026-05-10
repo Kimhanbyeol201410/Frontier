@@ -205,7 +205,7 @@ public sealed class ShumitTurnEnergyPenaltyPower : CustomPowerModel
 	}
 }
 
-/// <summary>플레이어가 손에서 화상을 플레이할 때마다 방어도 획득.</summary>
+/// <summary>플레이어 소유 [화염](Burn) 카드가 전투 더미에 새로 들어올 때마다(생성 직후 첫 입더미) 방어도 획득.</summary>
 public sealed class ShumitFlameArmorPower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
@@ -218,19 +218,19 @@ public sealed class ShumitFlameArmorPower : CustomPowerModel
 		HoverTipFactory.Static(StaticHoverTip.Block),
 	};
 
-	public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
+	public override async Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? source)
 	{
-		if (!Owner.IsPlayer || Amount <= 0 || cardPlay.Card is not Burn)
+		if (!Owner.IsPlayer || Amount <= 0 || oldPileType != PileType.None || card is not Burn)
 		{
 			return;
 		}
 
-		if (cardPlay.Card.Owner?.Creature != Owner)
+		if (card.Owner?.Creature != Owner)
 		{
 			return;
 		}
 
-		await CreatureCmd.GainBlock(Owner, Amount, ValueProp.Move, cardPlay);
+		await CreatureCmd.GainBlock(Owner, Amount, ValueProp.Move, null);
 	}
 }
 
