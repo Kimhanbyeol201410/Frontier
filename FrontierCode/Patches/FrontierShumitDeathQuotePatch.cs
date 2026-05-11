@@ -8,7 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Nodes.Screens.GameOverScreen;
 using MegaCrit.Sts2.Core.Random;
-using MegaCrit.Sts2.Core.Runs.History;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace Frontier.Patches;
 
@@ -59,7 +59,7 @@ internal static class FrontierShumitDeathQuotePatch
             IReadOnlyList<LocString> quotes = LocManager.Instance
                 .GetTable("game_over_screen")
                 .GetLocStringsWithPrefix(QuotePrefix);
-            if (quotes == null || quotes.Count == 0)
+            if (quotes.Count == 0)
             {
                 return;
             }
@@ -69,7 +69,11 @@ internal static class FrontierShumitDeathQuotePatch
                 return;
             }
 
-            LocString picked = Rng.Chaotic.NextItem(quotes);
+            LocString? picked = Rng.Chaotic.NextItem(quotes);
+            if (picked == null)
+            {
+                return;
+            }
             deathLabel.Text = picked.GetFormattedText();
         }
         catch (Exception e)

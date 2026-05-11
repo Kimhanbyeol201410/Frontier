@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Ancients;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Events;
 
 namespace Frontier.Patches;
@@ -21,14 +24,24 @@ namespace Frontier.Patches;
 internal static class FrontierAncientDialoguesPatch
 {
     /// <summary>슈미트 캐릭터의 <c>characters</c> 테이블 키. <see cref="Character.ShumitCharacter.CharacterId"/>와 동일 값을 유지한다.</summary>
-    private const string ShumitCharacterKey = "FRONTIER-SHUMIT_CHARACTER";
+    internal const string ShumitCharacterKey = "FRONTIER-SHUMIT_CHARACTER";
 
-    /// <summary>visitIndex 0의 단순 2줄 대사를 가진 <see cref="AncientDialogue"/> 1개 배열. ancient → char 흐름.</summary>
-    private static AncientDialogue[] BuildSimpleFirstVisit(string ancientSfx, string charSfx = "")
+    /// <summary>
+    /// <see cref="AncientDialogueSet"/> 인스턴스마다 "슈미트가 이 ancient를 진짜 처음 마주쳤을 때" 사용할
+    /// 별도 dialogue 객체를 매핑한다. 본가의 <see cref="AncientDialogueSet.FirstVisitEverDialogue"/>는
+    /// 캐릭터 무관하게 발동되므로, 슈미트 한정 분기를 위해 별도 저장소를 둔다.
+    /// </summary>
+    internal static readonly ConditionalWeakTable<AncientDialogueSet, AncientDialogue> ShumitFirstMeetings = new();
+
+    /// <summary>각 줄이 2-line(ancient → char) 인 dialogue 4세트 (visitIndex 0~3) 생성. SFX 4종이 그대로 visitIndex 0~3에 매핑된다.</summary>
+    private static AncientDialogue[] BuildShumitDialogues(string sfx0, string sfx1, string sfx2, string sfx3)
     {
         return new[]
         {
-            new AncientDialogue(ancientSfx, charSfx) { VisitIndex = 0 },
+            new AncientDialogue(sfx0, "") { VisitIndex = 0 },
+            new AncientDialogue(sfx1, "") { VisitIndex = 1 },
+            new AncientDialogue(sfx2, "") { VisitIndex = 2 },
+            new AncientDialogue(sfx3, "") { VisitIndex = 3 },
         };
     }
 
@@ -43,13 +56,47 @@ internal static class FrontierAncientDialoguesPatch
         }
     }
 
+    /// <summary>
+    /// 슈미트 전용 "최초의 만남" dialogue를 만들어 <paramref name="set"/>에 매핑한다.
+    /// charEntry 슬롯을 <c>FRONTIER-SHUMIT_CHARACTER.firstMeeting</c>으로 넘겨
+    /// <c>{ancient}.talk.FRONTIER-SHUMIT_CHARACTER.firstMeeting.0-N.{ancient|char|next}</c> 키 패턴을
+    /// 본가 <see cref="AncientDialogue.PopulateLines"/>가 자동 매핑하게 한다.
+    /// </summary>
+    private static void InjectFirstMeeting(AncientDialogueSet set, string ancientEntry, int lineCount, string sfx)
+    {
+        if (ShumitFirstMeetings.TryGetValue(set, out _)) { return; }
+
+        var sfxPaths = new string[lineCount];
+        for (int i = 0; i < lineCount; i++) { sfxPaths[i] = (i == 0) ? sfx : ""; }
+
+        var dialogue = new AncientDialogue(sfxPaths);
+        dialogue.PopulateLines(ancientEntry, $"{ShumitCharacterKey}.firstMeeting", 0);
+
+        for (int i = 0; i < dialogue.Lines.Count - 1; i++)
+        {
+            MegaCrit.Sts2.Core.Localization.LocString? lineText = dialogue.Lines[i].LineText;
+            if (lineText == null) { continue; }
+            string locEntryKey = lineText.LocEntryKey;
+            string baseKey = locEntryKey.Substring(0, locEntryKey.LastIndexOf('.'));
+            dialogue.Lines[i].NextButtonText = new MegaCrit.Sts2.Core.Localization.LocString("ancients", baseKey + ".next");
+        }
+
+        ShumitFirstMeetings.Add(set, dialogue);
+    }
+
     [HarmonyPatch(typeof(Neow), "DefineDialogues")]
     internal static class NeowPatch
     {
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "NEOW", BuildSimpleFirstVisit("event:/sfx/npcs/neow/neow_welcome"));
+            Inject(__result, "NEOW", BuildShumitDialogues(
+                "event:/sfx/npcs/neow/neow_welcome",
+                "event:/sfx/npcs/neow/neow_curious",
+                "event:/sfx/npcs/neow/neow_sleepy",
+                "event:/sfx/npcs/neow/neow_sleepy"));
+
+            InjectFirstMeeting(__result, "NEOW", lineCount: 5, sfx: "event:/sfx/npcs/neow/neow_welcome");
         }
     }
 
@@ -59,7 +106,11 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "DARV", BuildSimpleFirstVisit("event:/sfx/npcs/darv/darv_introduction"));
+            Inject(__result, "DARV", BuildShumitDialogues(
+                "event:/sfx/npcs/darv/darv_introduction",
+                "event:/sfx/npcs/darv/darv_excited",
+                "event:/sfx/npcs/darv/darv_endeared",
+                "event:/sfx/npcs/darv/darv_excited"));
         }
     }
 
@@ -69,7 +120,7 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "PAEL", BuildSimpleFirstVisit(""));
+            Inject(__result, "PAEL", BuildShumitDialogues("", "", "", ""));
         }
     }
 
@@ -79,7 +130,7 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "OROBAS", BuildSimpleFirstVisit(""));
+            Inject(__result, "OROBAS", BuildShumitDialogues("", "", "", ""));
         }
     }
 
@@ -89,7 +140,7 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "VAKUU", BuildSimpleFirstVisit(""));
+            Inject(__result, "VAKUU", BuildShumitDialogues("", "", "", ""));
         }
     }
 
@@ -99,7 +150,7 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "TEZCATARA", BuildSimpleFirstVisit(""));
+            Inject(__result, "TEZCATARA", BuildShumitDialogues("", "", "", ""));
         }
     }
 
@@ -109,7 +160,7 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "TANX", BuildSimpleFirstVisit(""));
+            Inject(__result, "TANX", BuildShumitDialogues("", "", "", ""));
         }
     }
 
@@ -119,7 +170,7 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "NONUPEIPE", BuildSimpleFirstVisit(""));
+            Inject(__result, "NONUPEIPE", BuildShumitDialogues("", "", "", ""));
         }
     }
 
@@ -136,7 +187,8 @@ internal static class FrontierAncientDialoguesPatch
         {
             return typeof(TheArchitect).GetMethod(
                 "DefineDialogues",
-                BindingFlags.NonPublic | BindingFlags.Static);
+                BindingFlags.NonPublic | BindingFlags.Static)
+                ?? throw new InvalidOperationException("TheArchitect.DefineDialogues not found");
         }
 
         [HarmonyPostfix]
@@ -168,5 +220,33 @@ internal static class FrontierAncientDialoguesPatch
 
             Inject(__result, "THE_ARCHITECT", dialogues);
         }
+    }
+}
+
+/// <summary>
+/// 슈미트로 게임을 시작해 NEow를 진짜 처음 만나는 시점(<c>totalVisits == 0</c>)에 본가의
+/// <see cref="AncientDialogueSet.FirstVisitEverDialogue"/> 대신 슈미트 전용 "최초의 만남" dialogue를 반환한다.
+/// 다른 캐릭터/다른 ancient에는 영향 없음.
+/// </summary>
+[HarmonyPatch(typeof(AncientDialogueSet), nameof(AncientDialogueSet.GetValidDialogues))]
+internal static class FrontierFirstMeetingDialoguePatch
+{
+    [HarmonyPrefix]
+    private static bool Prefix(
+        AncientDialogueSet __instance,
+        ModelId characterId,
+        int totalVisits,
+        ref IEnumerable<AncientDialogue> __result)
+    {
+        if (characterId.Entry != FrontierAncientDialoguesPatch.ShumitCharacterKey) { return true; }
+        if (totalVisits != 0) { return true; }
+        if (!FrontierAncientDialoguesPatch.ShumitFirstMeetings.TryGetValue(__instance, out AncientDialogue? dialogue)
+            || dialogue == null)
+        {
+            return true;
+        }
+
+        __result = new[] { dialogue };
+        return false;
     }
 }

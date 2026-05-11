@@ -1,55 +1,161 @@
 {
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.firstMeeting.0-0.ancient": "[sine]......?\n낯선 손길이군... 이곳은 처음인가...?[/sine]",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.firstMeeting.0-0.next": "고개를 끄덕임",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.firstMeeting.0-1.char": "예. 모루에서 자던 사이에... 여기로 떨어졌어요.\n돌아갈 [gold]길[/gold]을 찾고 있어요.",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.firstMeeting.0-1.next": "응답",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.firstMeeting.0-2.ancient": "[sine]돌아갈 길... 그 손에 [gold]망치[/gold] 한 자루뿐인데도?[/sine]",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.firstMeeting.0-2.next": "응답",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.firstMeeting.0-3.char": "망치 한 자루면 충분해요.\n[gold]단조[/gold]는, 결국 손에 든 것으로 시작하니까요.",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.firstMeeting.0-3.next": "응답",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.firstMeeting.0-4.ancient": "[sine]그래... 그럼 두드려보거라.\n네 [gold]모루[/gold] 위에 무엇이 새겨질지, 지켜보마.[/sine]",
+
   "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "[sine]오랜만에 보는... 다른 세계의 손길이군...[/sine]",
   "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "응답",
-  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "...집으로 돌아가는 길을 보여주세요.\n[gold]망치 한 자루[/gold]만 있으면 충분해요.",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "...돌아가는 길을 알려주세요.\n[gold]망치 한 자루[/gold]면 충분해요.",
+
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.1-0.ancient": "[sine]또 돌아왔구나, 망치의 아이여...\n네 [gold]모루[/gold]는 식지 않았느냐.[/sine]",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.1-0.next": "응답",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.1-1.char": "식을 시간이 없었어요.\n다음 [gold]단조[/gold]가 기다리고 있거든요.",
+
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.2-0.ancient": "[sine]내 잠을 깨우는 망치 소리...\n오랜만에 듣는구나...[/sine]",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.2-0.next": "사과",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.2-1.char": "시끄러웠다면 미안해요.\n조용히 두드리는 법은, 아직 못 익혔거든요.",
+
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.3-0.ancient": "[sine]그 두 손에 [gold]본래의 길[/gold]이 새겨지고 있구나...[/sine]",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.3-0.next": "고개를 끄덕임",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.3-1.char": "새겨도 좋고, 깎여도 좋아요.\n어차피 다 [gold]단조[/gold]니까요.",
 
   "DARV.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "오, 망치를 든 손님!\n쓸 만한 [gold]물건[/gold]이 잔뜩 쌓여 있다네!",
   "DARV.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "둘러보기",
-  "DARV.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "쓸 만한 게 있을지 한번 볼까요?\n안좋은 물건은 다듬으면 그만이니까요.",
+  "DARV.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "쓸 만한 게 있는지 좀 볼게요.\n안 좋은 건 [gold]단조[/gold]로 다듬으면 되니까요.",
+
+  "DARV.talk.FRONTIER-SHUMIT_CHARACTER.1-0.ancient": "오오, 또 오셨군 대장장이!\n오늘은 더 좋은 [gold]물건[/gold]이 들어왔다네!",
+  "DARV.talk.FRONTIER-SHUMIT_CHARACTER.1-0.next": "감사",
+  "DARV.talk.FRONTIER-SHUMIT_CHARACTER.1-1.char": "매번 챙겨주시네요.\n이번에도 잘 부탁드릴게요.",
+
+  "DARV.talk.FRONTIER-SHUMIT_CHARACTER.2-0.ancient": "내 가게의 단골이 되셨군!\n오늘은 특별한 [gold]거래[/gold]를 해보지!",
+  "DARV.talk.FRONTIER-SHUMIT_CHARACTER.2-0.next": "흥미",
+  "DARV.talk.FRONTIER-SHUMIT_CHARACTER.2-1.char": "특별한 거래는 좋아하는 편이에요.\n다만, 망치질에 안 맞는 건 빼고요.",
+
+  "DARV.talk.FRONTIER-SHUMIT_CHARACTER.3-0.ancient": "친구여! 오늘은 [gold]내 비밀[/gold]을 좀 보여줄까!",
+  "DARV.talk.FRONTIER-SHUMIT_CHARACTER.3-0.next": "둘러보기",
+  "DARV.talk.FRONTIER-SHUMIT_CHARACTER.3-1.char": "친구가 됐나요?\n그럼 더 자세히 봐야겠네요.",
 
   "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "[thinky_dots]그 망치... 내 [gold]불씨[/gold]를 알아보는구나...[/thinky_dots]",
   "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "고개를 끄덕임",
-  "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "...불을 다루는 자에겐 예의를 갖춰야지.\n내 [gold]열기[/gold]를 부탁드리오.",
+  "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "...불을 다루는 분께는 예의를 갖춰야죠.\n[gold]열기[/gold]를 좀 부탁드릴게요.",
+
+  "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.1-0.ancient": "[thinky_dots]네 [gold]열기[/gold]는 흩어지지 않았구나...\n잘 다스리고 있군.[/thinky_dots]",
+  "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.1-0.next": "응답",
+  "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.1-1.char": "다스린다기보단, 같이 가는 거예요.\n불은, 가두면 죽으니까요.",
+
+  "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.2-0.ancient": "[thinky_dots]비늘이 마르고 있다...\n네 망치질로 식혀줄 수 있겠는가...[/thinky_dots]",
+  "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.2-0.next": "고개를 끄덕임",
+  "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.2-1.char": "필요하면 천천히 두드릴게요.\n식힐 땐, 너무 세게 치면 안 되거든요.",
+
+  "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.3-0.ancient": "[thinky_dots]대장장이여, 네 [gold]불씨[/gold]는 이미 내 비늘만큼 깊다.[/thinky_dots]",
+  "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.3-0.next": "조심스러운 응답",
+  "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.3-1.char": "...과찬이에요.\n전 아직 모루 위에 있는 걸요.",
 
   "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "너무 단단하다! 너무 뜨겁다!\n그 망치... 무섭다, 너무 무섭다!!",
   "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "달램",
-  "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "안 휘두를 테니 진정해.\n그냥 길만 좀 물어보려고 왔어.",
+  "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "안 휘두를 테니 진정해요.\n길만 좀 물어보러 온 거예요.",
+
+  "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.1-0.ancient": "또! 또 그 망치다!\n무섭다, 너무 무섭다!",
+  "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.1-0.next": "달램",
+  "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.1-1.char": "다시 봐도 같은 망치예요.\n안 휘두를 거니까, 진정해요.",
+
+  "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.2-0.ancient": "...너... 우리, 친구가 될 수 있을까??",
+  "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.2-0.next": "약속",
+  "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.2-1.char": "친구든 손님이든, 다치게 하진 않을게요.\n그건 약속해요.",
+
+  "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.3-0.ancient": "망치 든 친구!\n다음에 또 오면, 더 좋다!",
+  "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.3-0.next": "고개를 끄덕임",
+  "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.3-1.char": "그렇게 말해주면 저도 좋아요.\n돌아가다, 길 잃지 말아요.",
 
   "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "이세계의 [sine]대장장이[/sine]가 다 내 앞에 서다니.\n돌아갈 길은 그 망치 끝에 있지 않다.",
   "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "되묻기",
-  "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "...그럼 어디 있다는 거지?\n[gold]답이 될 만한 것[/gold]은 다 갖춰 가겠어.",
+  "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "...그럼 어디 있죠?\n[gold]답이 될 만한 것[/gold]은 다 챙겨 갈게요.",
+
+  "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.1-0.ancient": "[sine]망치는 답이 되지 못한다.\n알면서도, 두드리는가.[/sine]",
+  "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.1-0.next": "되묻기",
+  "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.1-1.char": "답이 안 돼도, 손에 익은 게 망치예요.\n포기할 이유는 못 되네요.",
+
+  "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.2-0.ancient": "[sine]네 [gold]모루[/gold]는 흔들리지 않는구나.\n어떻게 그러는가.[/sine]",
+  "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.2-0.next": "응답",
+  "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.2-1.char": "흔들리면 두드릴 수가 없으니까요.\n흔들리는 모루로는, 아무것도 못 만들어요.",
+
+  "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.3-0.ancient": "[sine]그렇다면, 네 망치는 어디까지 가겠는가.[/sine]",
+  "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.3-0.next": "마무리",
+  "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.3-1.char": "갈 수 있는 데까지요.\n그게 [gold]단조[/gold]의 답이에요.",
 
   "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "[jitter][b]뜨거운[/b][/jitter] 손님이군! 가마는 늘 비어 있단다.\n네 [gold]열기[/gold]를 좀 빌려주겠니?",
   "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "흥정",
-  "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "내 열기는 망치질 분량이야.\n빈손으로 돌아가게 하진 않겠지?",
+  "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "제 열기는 망치질에 쓸 분량이에요.\n빈손으로 보내진 않으시겠죠?",
+
+  "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.1-0.ancient": "[jitter]뜨거운[/jitter] 손님이 또 왔구나!\n가마는 너를 [b]기다리고[/b] 있었단다!",
+  "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.1-0.next": "거리두기",
+  "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.1-1.char": "기다려준 건 고마운데, 너무 뜨겁네요.\n가까이 가긴, 좀 어려워요.",
+
+  "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.2-0.ancient": "더, 더! 네 [gold]열기[/gold]를 다오!\n다 가져가도 좋다!",
+  "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.2-0.next": "거절",
+  "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.2-1.char": "다 드리면 제가 식어버려요.\n적당히 나누는 게, 거래 아닐까요?",
+
+  "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.3-0.ancient": "...좋아, 너만큼 [b]차분한[/b] 손님은 처음이군.\n원하는 걸 말해보거라.",
+  "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.3-0.next": "흥정",
+  "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.3-1.char": "차분하다기보단, 제 망치질이 식는 게 싫은 거예요.\n그래서 거래는 천천히 해요.",
 
   "TANX.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "그 망치, 꽤 멋지군 대장장이!\n허나 진짜 무기는 [gold]짐승[/gold]에서 나오는 법이지!",
-  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "코웃음",
-  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "그건 그쪽 방식이고.\n내 작품은 내 [gold]모루[/gold] 위에서 태어나.",
+  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "어깨를 으쓱",
+  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "그건 그쪽 방식이고요.\n제 작품은 제 [gold]모루[/gold] 위에서 태어나요.",
+
+  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.1-0.ancient": "또 왔군 대장장이!\n오늘은 내 [gold]짐승[/gold]과 겨뤄볼 텐가!",
+  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.1-0.next": "사양",
+  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.1-1.char": "짐승과는 안 겨룰게요.\n다친 사이라, 좋을 게 없잖아요.",
+
+  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.2-0.ancient": "흥, 대장장이!\n그 [gold]망치[/gold]만큼은 인정해주마!",
+  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.2-0.next": "고개를 끄덕임",
+  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.2-1.char": "고마워요.\n그쪽 짐승들도, 잘 길러진 것 같아 좋네요.",
+
+  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.3-0.ancient": "다음에 만나면, 네 망치를 [b]진심으로[/b] 시험해보고 싶군!",
+  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.3-0.next": "어깨를 으쓱",
+  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.3-1.char": "시험은 좋지만, 다치게 하진 마세요.\n저나, 그쪽이나요.",
 
   "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "아, 망치를 든 분이 오셨군요.\n오늘 [gold]주사위[/gold]는 당신 편이길.",
   "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "팔짱",
-  "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "운에 맡길 거였으면 망치를 들지 않았어.\n그래도, 한 번쯤은 굴려보지.",
+  "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "운에 맡길 거였으면 망치는 안 들었죠.\n그래도, 한 번쯤은 굴려볼게요.",
+
+  "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.1-0.ancient": "다시 오셨군요, 대장장이.\n오늘의 [gold]운[/gold]은 어디로 흐를까요?",
+  "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.1-0.next": "응답",
+  "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.1-1.char": "그건 흘러봐야 알겠죠.\n저는 두드리던 거나, 마저 두드릴게요.",
+
+  "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.2-0.ancient": "당신의 [gold]주사위[/gold]는 늘 균일하군요.\n행운에 기대지 않으니까요.",
+  "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.2-0.next": "수긍",
+  "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.2-1.char": "행운보단 손에 익은 게 편해서요.\n다만, 굴려야 할 땐 굴리죠.",
+
+  "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.3-0.ancient": "당신 같은 손님은 흔치 않아요.\n우리, 또 만날 [gold]확률[/gold]이 높겠죠?",
+  "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.3-0.next": "인사",
+  "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.3-1.char": "확률이 높든 낮든, 다시 오게 되면 들를게요.\n좋은 만남이었어요.",
 
   "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "그래, 결국 여기까지 망치 한 자루로 올라왔군.\n낯선 세계의 [gold]개척자[/gold]여.",
   "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "마주서기",
-  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "...길게 끌 생각 없어.\n돌아갈 [gold]문[/gold]만 열어주면 깔끔하게 끝내지.",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "...길게 끌 생각 없어요.\n돌아갈 [gold]문[/gold]만 열어주시면, 깔끔하게 마무리할게요.",
   "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-1.next": "응답",
   "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-2.ancient": "문은 이미 네 발밑에 있다.\n다만, [b]값을 치를[/b] 자격이 있는가가 문제지.",
   "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-2.next": "망치를 들어올림",
-  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-3.char": "값은 늘 [gold]모루 위[/gold]에서 치러왔어.\n오늘도 다르지 않아.",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-3.char": "값은 늘 [gold]모루 위[/gold]에서 치러왔어요.\n오늘도 다르지 않아요.",
   "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-3.next": "마지막 한 마디",
   "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-4.ancient": "좋다, 대장장이.\n그럼 [jitter]망치질[/jitter] 한 번으로 끝을 보자.",
 
   "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.1-0.ancient": "또 너냐, 망치를 든 자.\n돌아갈 수 있었으면서 왜 다시 왔지?",
   "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.1-0.next": "어깨를 으쓱",
-  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.1-1.char": "[gold]단조[/gold]는 한 번으로 끝나지 않거든.\n맞는 모양이 나올 때까진 두드려야지.",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.1-1.char": "[gold]단조[/gold]는 한 번으로 안 끝나거든요.\n맞는 모양 나올 때까진, 두드려야죠.",
 
   "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.2-0.ancient": "이쯤이면 내 얼굴도 익숙해졌겠군.\n오늘은 무엇을 두드리러 왔지?",
   "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.2-0.next": "응답",
-  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.2-1.char": "오늘은 [gold]너[/gold]를 두드릴 차례야.\n준비됐나?",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.2-1.char": "오늘은 [gold]당신[/gold]을 두드릴 차례예요.\n준비됐죠?",
 
   "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.3-0.ancient": "[b]대장장이의 노래[/b]가 또 이 자리를 울리는군.\n자, 마지막 망치질이다.",
   "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.3-0.next": "마무리",
-  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.3-1.char": "마지막? 그건 내가 정하지.\n자, [gold]시작[/gold]하자."
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.3-1.char": "마지막? 그건 제가 정해요.\n자, [gold]시작[/gold]하죠."
 }
