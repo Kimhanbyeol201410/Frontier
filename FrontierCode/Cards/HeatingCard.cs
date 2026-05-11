@@ -74,7 +74,7 @@ public sealed class HeatingCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
+        DynamicVars.Damage.UpgradeValueBy(4m);
         DynamicVars["DrawWhenHeatZero"].UpgradeValueBy(1m);
     }
 }

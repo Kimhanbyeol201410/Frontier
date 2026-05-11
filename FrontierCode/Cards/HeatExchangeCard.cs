@@ -24,7 +24,7 @@ public sealed class HeatExchangeCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(8m, ValueProp.Move),
+        new DamageVar(10m, ValueProp.Move),
         new DynamicVar(HeatLossKey, 10m),
     };
 
@@ -59,6 +59,6 @@ public sealed class HeatExchangeCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars.Damage.UpgradeValueBy(2m);
     }
 }

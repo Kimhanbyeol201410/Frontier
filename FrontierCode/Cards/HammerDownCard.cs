@@ -11,10 +11,9 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// PDF 원문(슈미트.pdf) 기준 카드 정보
 // 내려찍기 (1코 / 공격)
-// - 피해 7, 취약 1
-// 업그레이드: 취약 2
+// - 피해 8, 취약 1
+// 업그레이드: 피해 10, 취약 2
 [Pool(typeof(ShumitCardPool))]
 public sealed class HammerDownCard : ShumitCard
 {
@@ -22,7 +21,7 @@ public sealed class HammerDownCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(7m, ValueProp.Move),
+        new DamageVar(8m, ValueProp.Move),
         new DynamicVar(VulnKey, 1m),
     };
 
@@ -40,6 +39,7 @@ public sealed class HammerDownCard : ShumitCard
 
     protected override void OnUpgrade()
     {
+        base.DynamicVars.Damage.UpgradeValueBy(2m);
         base.DynamicVars[VulnKey].UpgradeValueBy(1m);
     }
 }

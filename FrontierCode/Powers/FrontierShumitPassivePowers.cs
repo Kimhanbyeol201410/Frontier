@@ -164,7 +164,7 @@ public sealed class ShumitFuelMaxNextTurnEnergyPower : CustomPowerModel
 		int energy = (int)Amount;
 		if (energy > 0)
 		{
-			await PlayerCmd.GainEnergy(energy, Owner);
+			await PlayerCmd.GainEnergy(energy, player);
 		}
 
 		await PowerCmd.Remove(this);
@@ -372,7 +372,13 @@ public sealed class ShumitHeartOfFlameEnergyPower : CustomPowerModel
 			return;
 		}
 
-		await PlayerCmd.GainEnergy(1, Owner);
+		Player? player = Owner.Player;
+		if (player == null)
+		{
+			return;
+		}
+
+		await PlayerCmd.GainEnergy(1, player);
 	}
 }
 
@@ -499,7 +505,7 @@ public sealed class ShumitMasterPridePower : CustomPowerModel
 	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.Static(StaticHoverTip.Block) };
 }
 
-/// <summary>목숨을 걸어 — 열기·신체 화상 감소 무효, 카드 사용마다 힘·민첩·열기(세션에 저장된 양).</summary>
+/// <summary>목숨을 걸어 — 열기·신체 화상 감소 무효, 카드 타입별 보너스(스킬=힘, 공격=민첩).</summary>
 public sealed class ShumitBetYourLifePower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
@@ -530,27 +536,26 @@ public sealed class ShumitBetYourLifePower : CustomPowerModel
 			return;
 		}
 
-		int str = FrontierSession.GetBetYourLifeStrPerPlay(player);
-		int dex = FrontierSession.GetBetYourLifeDexPerPlay(player);
-		int heat = FrontierSession.GetBetYourLifeHeatPerPlay(player);
-		if (str <= 0 && dex <= 0 && heat <= 0)
+		switch (cardPlay.Card.Type)
 		{
-			return;
-		}
-
-		if (str > 0)
-		{
-			await PowerCmd.Apply<StrengthPower>(Owner, str, Owner, cardPlay.Card, silent: false);
-		}
-
-		if (dex > 0)
-		{
-			await PowerCmd.Apply<DexterityPower>(Owner, dex, Owner, cardPlay.Card, silent: false);
-		}
-
-		if (heat > 0)
-		{
-			await FrontierHeatUtil.ApplyHeat(context, Owner, heat, cardPlay.Card);
+			case CardType.Skill:
+			{
+				int str = FrontierSession.GetBetYourLifeStrPerPlay(player);
+				if (str > 0)
+				{
+					await PowerCmd.Apply<StrengthPower>(Owner, str, Owner, cardPlay.Card, silent: false);
+				}
+				break;
+			}
+			case CardType.Attack:
+			{
+				int dex = FrontierSession.GetBetYourLifeDexPerPlay(player);
+				if (dex > 0)
+				{
+					await PowerCmd.Apply<DexterityPower>(Owner, dex, Owner, cardPlay.Card, silent: false);
+				}
+				break;
+			}
 		}
 	}
 }

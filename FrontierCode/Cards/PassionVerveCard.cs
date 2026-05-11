@@ -11,7 +11,7 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 열정! 패기! (1코 / 고급 공격): 피해 11, 취약 2 → 강화 시 피해 14, 취약 3.
+// 열정! 패기! (1코 / 고급 공격): 피해 11, 취약 2 → 강화 시 피해 15, 취약 3.
 [Pool(typeof(ShumitCardPool))]
 public sealed class PassionVerveCard : ShumitCard
 {
@@ -44,7 +44,7 @@ public sealed class PassionVerveCard : ShumitCard
 
 	protected override void OnUpgrade()
 	{
-		DynamicVars.Damage.UpgradeValueBy(3m);
+		DynamicVars.Damage.UpgradeValueBy(4m);
 		DynamicVars[VulnerableKey].UpgradeValueBy(1m);
 	}
 }

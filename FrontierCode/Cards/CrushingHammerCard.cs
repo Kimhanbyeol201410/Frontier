@@ -25,7 +25,7 @@ public sealed class CrushingHammerCard : ShumitCard
     };
 
     public CrushingHammerCard()
-        : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
+        : base(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
     {
     }
 

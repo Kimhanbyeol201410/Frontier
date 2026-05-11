@@ -19,7 +19,7 @@ public sealed class SparkBurstCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(7m, ValueProp.Move),
+        new DamageVar(8m, ValueProp.Move),
         new DynamicVar("Heat", 10m),
         new DynamicVar(ReforgeLeftKey, 10m),
     };
@@ -37,7 +37,7 @@ public sealed class SparkBurstCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(3m);
+        DynamicVars.Damage.UpgradeValueBy(4m);
         DynamicVars[ReforgeLeftKey].UpgradeValueBy(-1m);
     }
 }

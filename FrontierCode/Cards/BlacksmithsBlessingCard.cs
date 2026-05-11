@@ -20,7 +20,7 @@ public sealed class BlacksmithsBlessingCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new[]
     {
-        new DynamicVar(HeatPerStatKey, 20m),
+        new DynamicVar(HeatPerStatKey, 40m),
     };
 
     public BlacksmithsBlessingCard()
@@ -48,6 +48,6 @@ public sealed class BlacksmithsBlessingCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars[HeatPerStatKey].UpgradeValueBy(-10m);
+        DynamicVars[HeatPerStatKey].UpgradeValueBy(-15m);
     }
 }

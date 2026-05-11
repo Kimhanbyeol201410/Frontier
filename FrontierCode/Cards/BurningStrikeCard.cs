@@ -37,7 +37,7 @@ public sealed class BurningStrikeCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars.Damage.UpgradeValueBy(6m);
         DynamicVars[HeatKey].UpgradeValueBy(5m);
     }
 }

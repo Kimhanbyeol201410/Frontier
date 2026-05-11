@@ -25,7 +25,7 @@ public sealed class UntilExhaustionCard : ShumitCard
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new EnergyXVar(),
-        new DamageVar(4m, ValueProp.Move),
+        new DamageVar(8m, ValueProp.Move),
         new DynamicVar("HeatPer", 10m),
     };
 
@@ -81,6 +81,6 @@ public sealed class UntilExhaustionCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
+        DynamicVars.Damage.UpgradeValueBy(4m);
     }
 }

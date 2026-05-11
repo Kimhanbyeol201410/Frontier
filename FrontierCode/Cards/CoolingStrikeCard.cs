@@ -37,7 +37,7 @@ public sealed class CoolingStrikeCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
+        DynamicVars.Damage.UpgradeValueBy(4m);
         DynamicVars[HeatLossKey].UpgradeValueBy(5m);
     }
 }
