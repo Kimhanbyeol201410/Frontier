@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
@@ -9,19 +8,19 @@ using Frontier.Powers;
 
 namespace Frontier.Cards;
 
-// 화염의 심장 (3코, 강화 시 2코): 화상 카드가 더미에 추가될 때마다 에너지 1.
+// 신의 형상 (3코 희귀 파워, 강화 시 2코): 내 턴 시작마다 손패의 강화 가능한 모든 카드 1회 강화.
 [Pool(typeof(ShumitCardPool))]
-public sealed class HeartOfFlameCard : ShumitCard
+public sealed class DivineFormCard : ShumitCard
 {
-	public HeartOfFlameCard()
-		: base(3, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+	public DivineFormCard()
+		: base(3, CardType.Power, CardRarity.Rare, TargetType.Self)
 	{
 	}
 
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-		await PowerCmd.Apply<ShumitHeartOfFlameEnergyPower>(Owner.Creature, 1m, Owner.Creature, this);
+		await PowerCmd.Apply<ShumitDivineFormPower>(Owner.Creature, 1m, Owner.Creature, this);
 	}
 
 	protected override void OnUpgrade()

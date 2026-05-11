@@ -18,7 +18,7 @@ namespace Frontier.Cards;
 [Pool(typeof(ShumitCardPool))]
 public sealed class FaultBreakCard : ShumitCard
 {
-    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(26m, ValueProp.Move) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[] { new DamageVar(22m, ValueProp.Move) };
 
     public FaultBreakCard()
         : base(3, CardType.Attack, CardRarity.Rare, TargetType.AllEnemies)
@@ -45,6 +45,6 @@ public sealed class FaultBreakCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(8m);
+        DynamicVars.Damage.UpgradeValueBy(6m);
     }
 }

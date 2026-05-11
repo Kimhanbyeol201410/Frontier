@@ -14,6 +14,12 @@ internal static class FrontierSession
 		internal int BurnsExhaustedThisPlayerTurn;
 		internal bool BurnCardExhaustedThisPlayerTurn;
 
+		/// <summary>대장간의 도면: 강화 5회 전에 플레이했을 때, 5회 도달 시 선택 UI를 띄우기 위한 대기.</summary>
+		internal bool QueuedForgeMainBlueprint;
+
+		/// <summary>대장간 시설의 도면 동일.</summary>
+		internal bool QueuedForgeFacilityBlueprint;
+
 		/// <summary>목숨을 걸어: 카드 1회 사용당 부여할 힘·민첩·열기(기본 1/1/10, 강화 2/2/20).</summary>
 		internal int BetYourLifeStrPerPlay;
 
@@ -59,6 +65,68 @@ internal static class FrontierSession
 
 		Bucket b = GetOrCreate(owner.NetId);
 		b.UpgradesThisCombat++;
+	}
+
+	internal static void QueueForgeMainBlueprint(Player? owner)
+	{
+		if (owner == null)
+		{
+			return;
+		}
+
+		GetOrCreate(owner.NetId).QueuedForgeMainBlueprint = true;
+	}
+
+	internal static void QueueForgeFacilityBlueprint(Player? owner)
+	{
+		if (owner == null)
+		{
+			return;
+		}
+
+		GetOrCreate(owner.NetId).QueuedForgeFacilityBlueprint = true;
+	}
+
+	internal static bool TryConsumeQueuedForgeMainBlueprint(Player? owner)
+	{
+		if (owner == null || !Buckets.TryGetValue(owner.NetId, out Bucket? b))
+		{
+			return false;
+		}
+
+		if (!b.QueuedForgeMainBlueprint)
+		{
+			return false;
+		}
+
+		b.QueuedForgeMainBlueprint = false;
+		return true;
+	}
+
+	internal static bool TryConsumeQueuedForgeFacilityBlueprint(Player? owner)
+	{
+		if (owner == null || !Buckets.TryGetValue(owner.NetId, out Bucket? b))
+		{
+			return false;
+		}
+
+		if (!b.QueuedForgeFacilityBlueprint)
+		{
+			return false;
+		}
+
+		b.QueuedForgeFacilityBlueprint = false;
+		return true;
+	}
+
+	internal static bool HasQueuedForgeBlueprint(Player? owner)
+	{
+		if (owner == null || !Buckets.TryGetValue(owner.NetId, out Bucket? b))
+		{
+			return false;
+		}
+
+		return b.QueuedForgeMainBlueprint || b.QueuedForgeFacilityBlueprint;
 	}
 
 	internal static void RegisterBurnExhausted(Player? owner)

@@ -15,10 +15,10 @@ public sealed class SteamReleaseCard : ShumitCard
 {
     private const string VentDamageKey = "VentDamage";
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(VentDamageKey, 5m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(VentDamageKey, 4m) };
 
     public SteamReleaseCard()
-        : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+        : base(3, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
@@ -34,6 +34,6 @@ public sealed class SteamReleaseCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars[VentDamageKey].UpgradeValueBy(5m);
+        DynamicVars[VentDamageKey].UpgradeValueBy(3m);
     }
 }

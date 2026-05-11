@@ -19,6 +19,8 @@ public sealed class GreatForgeCard : TokenCardBase
 {
     private const string UpgradesPerTurnKey = "UpgradesPerTurn";
 
+    public override int MaxUpgradeLevel => 0;
+
     protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(UpgradesPerTurnKey, 2m) };
@@ -48,10 +50,5 @@ public sealed class GreatForgeCard : TokenCardBase
                 break;
             }
         }
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars[UpgradesPerTurnKey].UpgradeValueBy(2m);
     }
 }

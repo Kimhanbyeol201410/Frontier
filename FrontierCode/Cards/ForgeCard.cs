@@ -28,9 +28,4 @@ public sealed class ForgeCard : ShumitCard
         : base(0, CardType.Skill, CardRarity.Event, TargetType.None, showInCardLibrary: false)
     {
     }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars[UpgradesPerTurnKey].UpgradeValueBy(1m);
-    }
 }

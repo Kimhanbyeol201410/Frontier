@@ -17,6 +17,8 @@ namespace Frontier.Cards;
 [Pool(typeof(ShumitCardPool))]
 public sealed class SmelterCard : TokenCardBase
 {
+    public override int MaxUpgradeLevel => 0;
+
     protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
 
     public SmelterCard()

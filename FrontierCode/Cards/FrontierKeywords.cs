@@ -24,4 +24,8 @@ public static class FrontierKeywords
     [CustomEnum(null)]
     [KeywordProperties(AutoKeywordPosition.After)]
     public static CardKeyword Enchant;
+
+    [CustomEnum(null)]
+    [KeywordProperties(AutoKeywordPosition.After)]
+    public static CardKeyword ThermalDegradation;
 }

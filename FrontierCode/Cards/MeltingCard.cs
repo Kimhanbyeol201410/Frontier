@@ -5,7 +5,6 @@ using BaseLib.Utils;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using Frontier.Characters;
@@ -17,7 +16,7 @@ namespace Frontier.Cards;
 public sealed class MeltingCard : ShumitCard
 {
     protected override bool IsPlayable =>
-        base.IsPlayable && (HasFurnaceOrForge() || HeatAtLeast(100));
+        base.IsPlayable && HasFurnaceOrForge();
 
     public MeltingCard()
         : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)
@@ -46,10 +45,5 @@ public sealed class MeltingCard : ShumitCard
     private bool HasFurnaceOrForge()
     {
         return PileType.Hand.GetPile(Owner).Cards.Any(static (CardModel c) => c is BlastFurnaceCard || c is ForgeCard);
-    }
-
-    private bool HeatAtLeast(int min)
-    {
-        return (Owner.Creature.GetPower<HeatPower>()?.Amount ?? 0) >= min;
     }
 }

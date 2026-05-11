@@ -18,6 +18,8 @@ namespace Frontier.Cards;
 [Pool(typeof(ShumitCardPool))]
 public sealed class GrindingRoomCard : TokenCardBase
 {
+    public override int MaxUpgradeLevel => 0;
+
     protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new EnergyVar("GrindingEnergyPenalty", 1) };

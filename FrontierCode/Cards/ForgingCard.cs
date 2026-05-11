@@ -29,7 +29,7 @@ public sealed class ForgingCard : ShumitCard
     };
 
     public ForgingCard()
-        : base(2, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+        : base(2, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy)
     {
     }
 

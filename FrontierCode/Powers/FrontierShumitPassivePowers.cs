@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
+using BaseLib.Utils.Attributes;
 using Frontier.Cards;
 using Frontier.Utilities;
 using MegaCrit.Sts2.Core.Commands;
@@ -14,6 +16,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace Frontier.Powers;
@@ -84,6 +87,87 @@ public sealed class ShumitExhaustSystemPower : CustomPowerModel
 
 		await FrontierHeatUtil.ReduceHeat(choiceContext, Owner, 10m, null);
 		await CardPileCmd.Draw(choiceContext, 1, player);
+	}
+}
+
+/// <summary>머리 식히기: 다음 내 턴 시작 시 카드 1장 드로우 후 열기 <see cref="CustomPowerModel.Amount"/>만큼 감소하고 파워 제거.</summary>
+[CustomID("FRONTIER-SHUMIT_COOL_HEAD_NEXT_TURN_POWER")]
+public sealed class ShumitCoolHeadNextTurnPower : CustomPowerModel
+{
+	public override PowerType Type => PowerType.Buff;
+
+	public override PowerStackType StackType => PowerStackType.Single;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
+
+	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+	{
+		if (player != Owner.Player || !Owner.IsPlayer || Amount <= 0m)
+		{
+			return;
+		}
+
+		await CardPileCmd.Draw(choiceContext, 1, player);
+		await FrontierHeatUtil.ReduceHeat(choiceContext, Owner, Amount, null);
+		await PowerCmd.Remove(this);
+	}
+}
+
+/// <summary>환기: 이번 턴에 카드를 사용할 때마다 열기 <see cref="CustomPowerModel.Amount"/>만큼 감소. 턴 종료 시 제거. 카드마다 별도 인스턴스(여러 장 중첩 가능).</summary>
+[CustomID("FRONTIER-SHUMIT_VENTILATION_THIS_TURN_POWER")]
+public sealed class ShumitVentilationThisTurnPower : CustomPowerModel
+{
+	public override PowerType Type => PowerType.Buff;
+
+	public override PowerStackType StackType => PowerStackType.Counter;
+
+	public override bool IsInstanced => true;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
+
+	public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
+	{
+		if (Amount <= 0m || cardPlay.Card?.Owner?.Creature != Owner)
+		{
+			return;
+		}
+
+		await FrontierHeatUtil.ReduceHeat(context, Owner, Amount, cardPlay.Card);
+	}
+
+	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+	{
+		if (side == CombatSide.Player && Owner.IsPlayer)
+		{
+			await PowerCmd.Remove(this);
+		}
+	}
+}
+
+/// <summary>연료 최대로: 다음 내 턴 시작 시 에너지 <see cref="CustomPowerModel.Amount"/>를 얻고 파워 제거.</summary>
+[CustomID("FRONTIER-SHUMIT_FUEL_MAX_NEXT_TURN_ENERGY_POWER")]
+public sealed class ShumitFuelMaxNextTurnEnergyPower : CustomPowerModel
+{
+	public override PowerType Type => PowerType.Buff;
+
+	public override PowerStackType StackType => PowerStackType.Single;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.ForEnergy(this) };
+
+	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+	{
+		if (player != Owner.Player || !Owner.IsPlayer || Amount <= 0m)
+		{
+			return;
+		}
+
+		int energy = (int)Amount;
+		if (energy > 0)
+		{
+			await PlayerCmd.GainEnergy(energy, Owner);
+		}
+
+		await PowerCmd.Remove(this);
 	}
 }
 
@@ -165,6 +249,47 @@ public sealed class ShumitStripStrengthAtTurnEndPower : CustomPowerModel
 	}
 }
 
+/// <summary>턴 종료 시 이번 카드로 부여한 민첩을 제거 (리버스 엔지니어링 등 임시 민첩).</summary>
+[CustomID("FRONTIER-SHUMIT_STRIP_DEXTERITY_AT_TURN_END_POWER")]
+public sealed class ShumitStripDexterityAtTurnEndPower : CustomPowerModel
+{
+	public override PowerType Type => PowerType.Buff;
+
+	public override PowerStackType StackType => PowerStackType.Single;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.FromPower<DexterityPower>() };
+
+	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+	{
+		if (side != CombatSide.Player || !Owner.IsPlayer || Amount <= 0)
+		{
+			return;
+		}
+
+		await PowerCmd.Apply<DexterityPower>(Owner, -Amount, Owner, null, silent: true);
+		await PowerCmd.Remove(this);
+	}
+}
+
+/// <summary>이번 턴 [열기] 증가·감소 방향이 뒤바뀜 (리버스 엔지니어링). 모드 패치가 <c>PowerCmd.Apply&lt;HeatPower&gt;</c> 적용량 부호를 반전합니다.</summary>
+[CustomID("FRONTIER-SHUMIT_REVERSE_ENGINEERING_INVERT_HEAT_POWER")]
+public sealed class ShumitReverseEngineeringInvertHeatPower : CustomPowerModel
+{
+	public override PowerType Type => PowerType.Buff;
+
+	public override PowerStackType StackType => PowerStackType.Single;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
+
+	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+	{
+		if (side == CombatSide.Player && Owner.IsPlayer)
+		{
+			await PowerCmd.Remove(this);
+		}
+	}
+}
+
 /// <summary>턴 동안 턴 시작 시 획득 에너지에서 감소 (연마실).</summary>
 public sealed class ShumitTurnEnergyPenaltyPower : CustomPowerModel
 {
@@ -222,8 +347,9 @@ public sealed class ShumitFlameArmorPower : CustomPowerModel
 	}
 }
 
-/// <summary>전투 중 화상/신체 화상 피해 면역(기획 의도). 실제 면역 훅은 후속 구현.</summary>
-public sealed class ShumitHeartOfFlameImmunityPower : CustomPowerModel
+/// <summary>화염의 심장: 플레이어 소유 [화상](Burn) 카드가 전투 더미에 새로 들어올 때마다 에너지 1 획득.</summary>
+[CustomID("FRONTIER-SHUMIT_HEART_OF_FLAME_ENERGY_POWER")]
+public sealed class ShumitHeartOfFlameEnergyPower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
 
@@ -231,10 +357,49 @@ public sealed class ShumitHeartOfFlameImmunityPower : CustomPowerModel
 
 	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
 	{
-		HoverTipFactory.FromKeyword(FrontierKeywords.Heat),
-		HoverTipFactory.FromKeyword(FrontierKeywords.BodyBurn),
 		HoverTipFactory.FromCard<Burn>(),
 	};
+
+	public override async Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? source)
+	{
+		if (!Owner.IsPlayer || Amount <= 0 || oldPileType != PileType.None || card is not Burn)
+		{
+			return;
+		}
+
+		if (card.Owner?.Creature != Owner)
+		{
+			return;
+		}
+
+		await PlayerCmd.GainEnergy(1, Owner);
+	}
+}
+
+/// <summary>신의 형상: 내 턴 시작 시 손패의 강화 가능한 모든 카드를 1회 강화.</summary>
+[CustomID("FRONTIER-SHUMIT_DIVINE_FORM_POWER")]
+public sealed class ShumitDivineFormPower : CustomPowerModel
+{
+	public override PowerType Type => PowerType.Buff;
+
+	public override PowerStackType StackType => PowerStackType.Single;
+
+	public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+	{
+		if (player != Owner.Player || !Owner.IsPlayer || Amount <= 0)
+		{
+			return Task.CompletedTask;
+		}
+
+		List<CardModel> toUpgrade = PileType.Hand.GetPile(player).Cards.Where(static c => c is { IsUpgradable: true }).ToList();
+		if (toUpgrade.Count == 0)
+		{
+			return Task.CompletedTask;
+		}
+
+		CardCmd.Upgrade(toUpgrade, CardPreviewStyle.HorizontalLayout);
+		return Task.CompletedTask;
+	}
 }
 
 /// <summary>다음으로 사용하는 공격에 열기 부가 (제련 설계).</summary>

@@ -29,7 +29,7 @@ public sealed class OilCoolingCard : ShumitCard
     };
 
     public OilCoolingCard()
-        : base(1, CardType.Skill, CardRarity.Common, TargetType.Self)
+        : base(1, CardType.Skill, CardRarity.Basic, TargetType.Self)
     {
     }
 

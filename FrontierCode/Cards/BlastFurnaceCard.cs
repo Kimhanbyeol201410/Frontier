@@ -21,6 +21,8 @@ public sealed class BlastFurnaceCard : TokenCardBase
     private const string HeatPerTurnKey = "HeatPerTurn";
     private const string ExhaustCountKey = "ExhaustCount";
 
+    public override int MaxUpgradeLevel => 0;
+
     protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
@@ -66,10 +68,5 @@ public sealed class BlastFurnaceCard : TokenCardBase
 
             await CardCmd.Exhaust(choiceContext, victim);
         }
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars[ExhaustCountKey].UpgradeValueBy(1m);
     }
 }
