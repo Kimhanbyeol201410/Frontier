@@ -11,9 +11,10 @@ using Frontier.Powers;
 
 namespace Frontier.Cards;
 
-// 슈미트.md — 접쇠 (1코 / 스킬)
-// 열기 70 이상일 때만 사용 가능.
-// 이번 턴 플레이하는 강화된 카드 1장(업그레이드 시 2장)의 효과가 한 번 더 이어집니다.
+// 접쇠 (1코 / 스킬)
+//   - 사용 조건 없음. 다음 번 사용하는 강화 카드 1장을 «Replays» 번 재사용.
+//   - 열기가 «HeatReq» 이상이면 +1 번 더 재사용.
+//   - 강화 시 Replays 1→2, HeatReq 70→0 으로 조건이 사실상 사라져 항상 3번 재사용.
 [Pool(typeof(ShumitCardPool))]
 public sealed class FoldedSteelCard : ShumitCard
 {
@@ -26,9 +27,6 @@ public sealed class FoldedSteelCard : ShumitCard
         new DynamicVar(ReplaysKey, 1m),
     };
 
-    protected override bool IsPlayable =>
-        base.IsPlayable && HeatAtLeast(DynamicVars[HeatReqKey].IntValue);
-
     public FoldedSteelCard()
         : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)
     {
@@ -36,13 +34,20 @@ public sealed class FoldedSteelCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        decimal n = DynamicVars[ReplaysKey].BaseValue;
-        await PowerCmd.Apply<FoldedSteelReplayPower>(Owner.Creature, n, Owner.Creature, this);
+        decimal replays = DynamicVars[ReplaysKey].BaseValue;
+        int heatReq = DynamicVars[HeatReqKey].IntValue;
+        if (HeatAtLeast(heatReq))
+        {
+            replays += 1m;
+        }
+
+        await PowerCmd.Apply<FoldedSteelReplayPower>(Owner.Creature, replays, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
         DynamicVars[ReplaysKey].UpgradeValueBy(1m);
+        DynamicVars[HeatReqKey].UpgradeValueBy(-70m);
     }
 
     private bool HeatAtLeast(int min)

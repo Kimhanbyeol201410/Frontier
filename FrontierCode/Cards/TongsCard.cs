@@ -12,13 +12,18 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 집게질
+// 집게질 — 선택한 카드 1장을 «Times»회 강화. 강화 시 1회 → 2회.
 [Pool(typeof(ShumitCardPool))]
 public sealed class TongsCard : ShumitCard
 {
     private const string HeatToCardKey = "HeatCharge";
+    private const string TimesKey = "Times";
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(HeatToCardKey, 5m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new DynamicVar(TimesKey, 1m),
+        new DynamicVar(HeatToCardKey, 5m),
+    };
 
     public TongsCard()
         : base(0, CardType.Skill, CardRarity.Common, TargetType.None)
@@ -31,7 +36,11 @@ public sealed class TongsCard : ShumitCard
         CardModel? target = await CardSelectCmd.FromHandForUpgrade(choiceContext, Owner, this);
         if (target != null && !ReferenceEquals(target, this))
         {
-            CardCmd.Upgrade(target, CardPreviewStyle.HorizontalLayout);
+            int times = DynamicVars[TimesKey].IntValue;
+            for (int i = 0; i < times && target.IsUpgradable; i++)
+            {
+                CardCmd.Upgrade(target, CardPreviewStyle.HorizontalLayout);
+            }
         }
 
         await FrontierHeatUtil.ApplyHeat(choiceContext, Owner.Creature, DynamicVars[HeatToCardKey].BaseValue, this);
@@ -39,6 +48,7 @@ public sealed class TongsCard : ShumitCard
 
     protected override void OnUpgrade()
     {
+        DynamicVars[TimesKey].UpgradeValueBy(1m);
         DynamicVars[HeatToCardKey].UpgradeValueBy(5m);
     }
 }

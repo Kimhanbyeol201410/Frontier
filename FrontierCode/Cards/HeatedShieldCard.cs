@@ -22,7 +22,7 @@ public sealed class HeatedShieldCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new BlockVar(6m, ValueProp.Move),
+        new BlockVar(8m, ValueProp.Move),
         new DynamicVar(HeatKey, 10m),
     };
 
@@ -39,6 +39,6 @@ public sealed class HeatedShieldCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(2m);
+        DynamicVars.Block.UpgradeValueBy(4m);
     }
 }

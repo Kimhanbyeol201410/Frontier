@@ -18,7 +18,7 @@ public sealed class ExhaustSystemCard : ShumitCard
     protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(ThresholdKey, 100m) };
 
     public ExhaustSystemCard()
-        : base(3, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+        : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
@@ -34,7 +34,6 @@ public sealed class ExhaustSystemCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
         DynamicVars[ThresholdKey].UpgradeValueBy(-30m);
     }
 }

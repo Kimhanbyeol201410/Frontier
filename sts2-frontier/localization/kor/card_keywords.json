@@ -9,6 +9,8 @@
   "FRONTIER-MASTERPIECE.description": "이 카드의 최대 강화 한도가 늘어납니다. 걸작 단계(강화 수치)에 도달하면 다른 카드로 변환됩니다. (모루의 잔향은 강화 +5에서 모루의 기억으로 변환)",
   "FRONTIER-ENCHANT.title": "인챈트",
   "FRONTIER-ENCHANT.description": "전투 종료 후 카드에 부여되는 특수 강화 효과입니다.",
-  "FRONTIER-THERMAL_DEGRADATION.title": "열화",
-  "FRONTIER-THERMAL_DEGRADATION.description": "손패에서 강화가 1 이상인 카드를 선택하면 강화를 1단계 제거합니다."
+  "FRONTIER-THERMALDEGRADATION.title": "열화",
+  "FRONTIER-THERMALDEGRADATION.description": "손패에서 강화가 1 이상인 카드를 선택하면 강화를 1단계 제거합니다.",
+  "FRONTIER-INVERT.title": "반전",
+  "FRONTIER-INVERT.description": "소멸한 카드의 표시 [gold]에너지[/gold] 비용만큼 에너지를 얻고, [gold]피해[/gold] 수치만큼 이번 턴 [gold]힘[/gold]을, [gold]방어[/gold] 수치만큼 이번 턴 [gold]민첩[/gold]을 얻습니다. 이번 턴 [gold]열기[/gold] 증감이 반대로 적용됩니다."
 }

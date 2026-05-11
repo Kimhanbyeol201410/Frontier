@@ -25,7 +25,7 @@ public sealed class ManufactureCard : ShumitCard
         base.IsPlayable && PileType.Hand.GetPile(Owner).Cards.Any(static (CardModel c) => c is ForgeCard);
 
     public ManufactureCard()
-        : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)
+        : base(0, CardType.Skill, CardRarity.Uncommon, TargetType.None)
     {
     }
 

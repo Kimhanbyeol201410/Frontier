@@ -17,6 +17,8 @@ namespace Frontier.Cards;
 [Pool(typeof(ShumitCardPool))]
 public sealed class ReverseEngineeringCard : ShumitCard
 {
+	protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { FrontierKeywords.Invert };
+
 	public ReverseEngineeringCard()
 		: base(2, CardType.Skill, CardRarity.Rare, TargetType.None)
 	{

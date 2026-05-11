@@ -11,7 +11,7 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 철방패 토큰: 민첩 1(→2).
+// 철방패 토큰: 민첩 2(→4).
 [Pool(typeof(ShumitCardPool))]
 public sealed class IronShieldCard : TokenCardBase
 {
@@ -19,7 +19,7 @@ public sealed class IronShieldCard : TokenCardBase
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DynamicVar("Dex", 1m),
+        new DynamicVar("Dex", 2m),
     };
 
     public IronShieldCard()
@@ -38,6 +38,6 @@ public sealed class IronShieldCard : TokenCardBase
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Dex"].UpgradeValueBy(1m);
+        DynamicVars["Dex"].UpgradeValueBy(2m);
     }
 }

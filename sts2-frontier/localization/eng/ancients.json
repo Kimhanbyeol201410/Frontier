@@ -1,0 +1,55 @@
+{
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "[sine]A touch from another world... how long it has been...[/sine]",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "Reply",
+  "NEOW.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "...Show me the way back home.\nOne [gold]hammer[/gold] is all I need.",
+
+  "DARV.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "Oh, a guest with a hammer!\nPiles of useful [gold]parts[/gold] just for you!",
+  "DARV.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "Look around",
+  "DARV.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "Let me see what you've got.\nRubbish I can always [gold]forge[/gold] into something better.",
+
+  "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "[thinky_dots]Your hammer... it stirs the [gold]ember[/gold] beneath my scales...[/thinky_dots]",
+  "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "Nod",
+  "PAEL.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "...Those who tend fire deserve respect.\nLend me some of your [gold]heat[/gold].",
+
+  "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "Too hard! Too hot!\nThat hammer... scary! Very scary!!",
+  "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "Soothe",
+  "OROBAS.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "I won't swing it, calm down.\nI only came to ask the way.",
+
+  "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "An otherworldly [sine]smith[/sine], standing before me.\nThe road home does not lie at the end of that hammer.",
+  "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "Ask back",
+  "VAKUU.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "...Then where does it lie?\nWhatever might be an [gold]answer[/gold], I'll take it all.",
+
+  "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "What a [jitter][b]hot[/b][/jitter] guest! The kiln is always open.\nMind lending some of your [gold]heat[/gold]?",
+  "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "Haggle",
+  "TEZCATARA.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "My heat is for hammering, you know.\nYou wouldn't send me back empty-handed, would you?",
+
+  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "Quite the hammer, smith!\nBut true weapons grow from [gold]beasts[/gold]!",
+  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "Scoff",
+  "TANX.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "That's your way, not mine.\nMy work is born on my [gold]anvil[/gold].",
+
+  "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "Ah, a visitor with a hammer.\nMay today's [gold]dice[/gold] favor you.",
+  "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "Cross arms",
+  "NONUPEIPE.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "I wouldn't have brought a hammer if I trusted luck.\nStill, I'll roll once.",
+
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-0.ancient": "So, you climbed all the way up here with a single hammer.\nPioneer of an unfamiliar [gold]world[/gold].",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-0.next": "Stand firm",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-1.char": "...I don't plan to drag this out.\nJust open the [gold]door[/gold] back home, and we'll end this clean.",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-1.next": "Reply",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-2.ancient": "The door is already beneath your feet.\nThe only question is whether you are worthy to [b]pay the price[/b].",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-2.next": "Raise the hammer",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-3.char": "I've always paid my prices on the [gold]anvil[/gold].\nToday is no different.",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-3.next": "Final words",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.0-4.ancient": "Very well, smith.\nLet a single [jitter]hammer strike[/jitter] settle it.",
+
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.1-0.ancient": "You again, hammer-bearer.\nYou could have gone home. Why return?",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.1-0.next": "Shrug",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.1-1.char": "[gold]Forging[/gold] is never finished in one strike.\nYou keep hammering until the shape is right.",
+
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.2-0.ancient": "By now my face must be familiar.\nWhat do you come to hammer today?",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.2-0.next": "Reply",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.2-1.char": "Today it's [gold]you[/gold] on the anvil.\nReady?",
+
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.3-0.ancient": "The [b]smith's song[/b] rings here again.\nCome, one last strike.",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.3-0.next": "Finish",
+  "THE_ARCHITECT.talk.FRONTIER-SHUMIT_CHARACTER.3-1.char": "Last? I'll be the one to decide that.\nNow, [gold]begin[/gold]."
+}

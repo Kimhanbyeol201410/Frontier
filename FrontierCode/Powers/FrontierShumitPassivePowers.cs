@@ -24,24 +24,28 @@ namespace Frontier.Powers;
 /// <summary>턴 종료 시 열기 감소 (냉각 시스템).</summary>
 public sealed class ShumitCoolingSystemPower : CustomPowerModel
 {
+	/// <summary>턴 시작 시 부여하는 방어도. 강화·다른 카드와 무관하게 고정.</summary>
+	private const int BlockPerTurn = 5;
+
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
 
 	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
 
-	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
 	{
-		if (side != CombatSide.Player || !Owner.IsPlayer)
+		if (player != Owner.Player || !Owner.IsPlayer)
 		{
 			return;
 		}
 
 		await FrontierHeatUtil.ReduceHeat(choiceContext, Owner, Amount, null);
+		await CreatureCmd.GainBlock(Owner, BlockPerTurn, ValueProp.Move, null);
 	}
 }
 
-/// <summary>턴 종료 시 열기 증가 (뜨거워진 대장간).</summary>
+/// <summary>뜨거워진 대장간: 매 턴 종료 시 현재 열기 ÷ <see cref="CustomPowerModel.Amount"/>(분모) 만큼 체력을 회복.</summary>
 public sealed class ShumitHeatedForgePower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
@@ -57,7 +61,13 @@ public sealed class ShumitHeatedForgePower : CustomPowerModel
 			return;
 		}
 
-		await FrontierHeatUtil.ApplyHeat(choiceContext, Owner, Amount, null);
+		int heat = Owner.GetPower<HeatPower>()?.Amount ?? 0;
+		int divisor = System.Math.Max(1, Amount);
+		int healAmount = heat / divisor;
+		if (healAmount > 0)
+		{
+			await CreatureCmd.Heal(Owner, healAmount);
+		}
 	}
 }
 
@@ -113,10 +123,13 @@ public sealed class ShumitCoolHeadNextTurnPower : CustomPowerModel
 	}
 }
 
-/// <summary>환기: 이번 턴에 카드를 사용할 때마다 열기 <see cref="CustomPowerModel.Amount"/>만큼 감소. 턴 종료 시 제거. 카드마다 별도 인스턴스(여러 장 중첩 가능).</summary>
+/// <summary>환기: 이번 턴에 카드를 사용할 때마다 열기 <see cref="CustomPowerModel.Amount"/>만큼 감소 + 방어도 <see cref="BlockPerCard"/> 획득. 턴 종료 시 제거. 카드마다 별도 인스턴스(여러 장 중첩 가능).</summary>
 [CustomID("FRONTIER-SHUMIT_VENTILATION_THIS_TURN_POWER")]
 public sealed class ShumitVentilationThisTurnPower : CustomPowerModel
 {
+	/// <summary>환기 발동 시 카드 사용마다 부여하는 방어도. 강화·다른 카드와 무관하게 고정.</summary>
+	private const int BlockPerCard = 3;
+
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
@@ -133,6 +146,7 @@ public sealed class ShumitVentilationThisTurnPower : CustomPowerModel
 		}
 
 		await FrontierHeatUtil.ReduceHeat(context, Owner, Amount, cardPlay.Card);
+		await CreatureCmd.GainBlock(Owner, BlockPerCard, ValueProp.Move, cardPlay);
 	}
 
 	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
@@ -462,7 +476,7 @@ public sealed class ShumitUpgradedAttackBonusHeatPower : CustomPowerModel
 	}
 }
 
-/// <summary>접쇠: 이번 턴 강화된 카드가 효과를 한 번 더 발동하는 횟수(슈미트: 재사용).</summary>
+/// <summary>접쇠: 이번 턴 「다음 강화된 카드 1장」이 효과를 «Amount»번 추가 발동(슈미트: 재사용).</summary>
 public sealed class FoldedSteelReplayPower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
@@ -478,12 +492,12 @@ public sealed class FoldedSteelReplayPower : CustomPowerModel
 			return playCount;
 		}
 
-		return playCount + 1;
+		return playCount + Amount;
 	}
 
 	public override async Task AfterModifyingCardPlayCount(CardModel card)
 	{
-		await PowerCmd.Decrement(this);
+		await PowerCmd.Remove(this);
 	}
 
 	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)

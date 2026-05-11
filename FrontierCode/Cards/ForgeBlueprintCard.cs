@@ -7,7 +7,7 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 대장간의 도면 — 언제든 플레이, 누적 강화 5회 시(또는 이미 5회 이상이면 즉시) 대장간/용광로 선택.
+// 대장간의 도면 — 사용 즉시 대장간/용광로 중 하나를 선택해 손패에 추가.
 [Pool(typeof(ShumitCardPool))]
 public sealed class ForgeBlueprintCard : ShumitCard
 {
@@ -18,13 +18,6 @@ public sealed class ForgeBlueprintCard : ShumitCard
 
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
-		if (FrontierSession.GetUpgradesThisCombat(Owner) >= 5)
-		{
-			await FrontierForgeBlueprintRewards.OfferMainPairAsync(Owner, choiceContext);
-		}
-		else
-		{
-			FrontierSession.QueueForgeMainBlueprint(Owner);
-		}
+		await FrontierForgeBlueprintRewards.OfferMainPairAsync(Owner, choiceContext);
 	}
 }

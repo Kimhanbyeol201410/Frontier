@@ -42,6 +42,7 @@ public sealed class ShumitCardPool : CustomCardPoolModel
 		foreach (CardModel c in base.FilterThroughEpochs(unlockState, cards))
 		{
 			if (c.Id.Entry == FrontierRules.AnvilMemoryCardEntry
+			    || c.Id.Entry == FrontierRules.FrenziedHeatCardEntry
 			    || FrontierRules.HiddenFromShumitCardPoolEntries.Contains(c.Id.Entry))
 			{
 				continue;
@@ -84,6 +85,7 @@ public sealed class ShumitCardPool : CustomCardPoolModel
 			ModelDb.Card<FlameSmashCard>(),
 			ModelDb.Card<FlameStrikeCard>(),
 			ModelDb.Card<FoldedSteelCard>(),
+			ModelDb.Card<FrenziedHeatCard>(),
 			ModelDb.Card<ForgeBlueprintCard>(),
 			ModelDb.Card<ForgeCard>(),
 			ModelDb.Card<ForgeFacilityBlueprintCard>(),

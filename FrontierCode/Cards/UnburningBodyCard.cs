@@ -24,7 +24,7 @@ public sealed class UnburningBodyCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new BlockVar(11m, ValueProp.Move),
+        new BlockVar(16m, ValueProp.Move),
     };
 
     public UnburningBodyCard()
@@ -43,6 +43,6 @@ public sealed class UnburningBodyCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(3m);
+        DynamicVars.Block.UpgradeValueBy(6m);
     }
 }

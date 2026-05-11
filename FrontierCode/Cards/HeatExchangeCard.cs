@@ -16,15 +16,18 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 열 교환: 피해 + 손패 1장을 뽑을 더미 맨 위로 이동·강화, 열기 감소.
+// 열 교환: 피해 + 방어도 + 손패 1장을 뽑을 더미 맨 위로 이동·강화, 열기 감소.
 [Pool(typeof(ShumitCardPool))]
 public sealed class HeatExchangeCard : ShumitCard
 {
     private const string HeatLossKey = "HeatLoss";
 
+    public override bool GainsBlock => true;
+
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new DamageVar(10m, ValueProp.Move),
+        new BlockVar(10m, ValueProp.Move),
         new DynamicVar(HeatLossKey, 10m),
     };
 
@@ -40,6 +43,8 @@ public sealed class HeatExchangeCard : ShumitCard
             .FromCard(this)
             .Targeting(cardPlay.Target)
             .Execute(choiceContext);
+
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
 
         IEnumerable<CardModel> pick = await CardSelectCmd.FromHand(
             choiceContext,

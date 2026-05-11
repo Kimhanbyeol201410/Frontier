@@ -28,4 +28,8 @@ public static class FrontierKeywords
     [CustomEnum(null)]
     [KeywordProperties(AutoKeywordPosition.After)]
     public static CardKeyword ThermalDegradation;
+
+    [CustomEnum(null)]
+    [KeywordProperties(AutoKeywordPosition.After)]
+    public static CardKeyword Invert;
 }

@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
@@ -73,6 +74,9 @@ internal static class FrontierRules
     /// <summary><see cref="AnvilMemoryCard"/> 엔트리. 걸작(모루의 잔향)으로만 획득 — 보상·상점 <see cref="MegaCrit.Sts2.Core.Models.CardPoolModel.GetUnlockedCards"/> 및 전투 무작위 생성에서 제외.</summary>
     public const string AnvilMemoryCardEntry = "FRONTIER-ANVIL_MEMORY_CARD";
 
+    /// <summary><see cref="FrenziedHeatCard"/> 엔트리. 걸작(멈출 수 없는 열기 +5)으로만 획득 — 보상·상점 및 전투 무작위 생성에서 제외.</summary>
+    public const string FrenziedHeatCardEntry = "FRONTIER-FRENZIED_HEAT_CARD";
+
     /// <summary>
     /// <see cref="ShumitCharacter.StartingDeck"/> 카드(보상·상점 전용 풀에서 제외)와
     /// 전투 종료 인챈트(기민함/메아리/숙련/예리함 제련), 미구현 «불사르지 않는 몸» 등
@@ -108,7 +112,8 @@ internal static class FrontierRules
 
     private static readonly Dictionary<string, int> MasterpieceByCardId = new()
     {
-        ["FRONTIER-ANVIL_ECHO_CARD"] = 5 // 모루의 잔향 — 걸작 5.
+        ["FRONTIER-ANVIL_ECHO_CARD"] = 5, // 모루의 잔향 — 걸작 5.
+        ["FRONTIER-UNSTOPPABLE_HEAT_CARD"] = 5, // 멈출 수 없는 열기 — 걸작 5.
     };
 
     /// <summary>두 번째 인자는 강화된 카드 — 비전투(휴식처 등)에서는 <see cref="CardModel.CardScope"/>가 런 스코프를 씁니다.</summary>
@@ -124,10 +129,33 @@ internal static class FrontierRules
 
             return scope.CreateCard<AnvilMemoryCard>(owner);
         },
+        ["FRONTIER-UNSTOPPABLE_HEAT_CARD"] = static (Player owner, CardModel source) =>
+        {
+            ICardScope? scope = source.CardScope;
+            if (scope == null)
+            {
+                throw new InvalidOperationException("Unstoppable Heat masterpiece: CardScope is null.");
+            }
+
+            return scope.CreateCard<FrenziedHeatCard>(owner);
+        },
     };
 
     public static bool IsShumit(CardModel card)
     {
+        if (card == null)
+        {
+            return false;
+        }
+
+        // Owner가 아직 세팅되지 않은 deserialize 단계(CardModel.FromSerializable)에서도 동작하도록
+        // ShumitCard 인스턴스 자체를 우선 검사한다. 그렇지 않으면 MaxUpgradeLevel 패치가 미적용되어
+        // 저장본의 강화 레벨 복원 시 «걸작·재련» 카드가 상한 초과로 throw할 수 있다.
+        if (card is ShumitCard)
+        {
+            return true;
+        }
+
         return card.Owner?.Character?.Id?.Entry == ShumitCharacter.CharacterId;
     }
 
@@ -244,8 +272,13 @@ public static class FrontierMasterpieceTransformPatch
             try
             {
                 CardModel transformed = transformFactory(owner, card);
-                CardCmd.Transform(card, transformed, CardPreviewStyle.HorizontalLayout).GetAwaiter().GetResult();
-                GD.Print($"[Frontier] Masterpiece transformed: {card.Id.Entry} -> {transformed.Id.Entry}");
+                // CardCmd.Upgrade는 동기 메서드라 이 Postfix도 동기 컨텍스트에서 실행된다.
+                // CardCmd.Transform은 내부에 await Hook.* 호출이 다수 있는 async — 여기서 .GetAwaiter().GetResult()로
+                // 기다리면 메인(게임) 스레드에서 await 컨티뉴를 받지 못해 데드락이 발생한다.
+                // 코어 표준 fire-and-forget 패턴인 TaskHelper.RunSafely로 백그라운드 실행하고 예외는 로그로 남긴다.
+                Task transformTask = CardCmd.Transform(card, transformed, CardPreviewStyle.HorizontalLayout);
+                TaskHelper.RunSafely(transformTask);
+                GD.Print($"[Frontier] Masterpiece transform scheduled: {card.Id.Entry} -> {transformed.Id.Entry}");
             }
             catch (Exception e)
             {
