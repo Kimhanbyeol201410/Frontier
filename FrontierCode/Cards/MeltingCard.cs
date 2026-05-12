@@ -6,17 +6,21 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 융해
 [Pool(typeof(ShumitCardPool))]
 public sealed class MeltingCard : ShumitCard
 {
-    protected override bool IsPlayable =>
-        base.IsPlayable && HasFurnaceOrForge();
+    private const string DrawCountKey = "DrawCount";
+
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new DynamicVar(DrawCountKey, 2m),
+    };
 
     public MeltingCard()
         : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)
@@ -38,12 +42,11 @@ public sealed class MeltingCard : ShumitCard
             await CardCmd.Exhaust(choiceContext, victim);
         }
 
-        int draw = CurrentUpgradeLevel > 0 ? 3 : 2;
-        await CardPileCmd.Draw(choiceContext, draw, Owner);
+        await CardPileCmd.Draw(choiceContext, DynamicVars[DrawCountKey].IntValue, Owner);
     }
 
-    private bool HasFurnaceOrForge()
+    protected override void OnUpgrade()
     {
-        return PileType.Hand.GetPile(Owner).Cards.Any(static (CardModel c) => c is BlastFurnaceCard || c is ForgeCard);
+        DynamicVars[DrawCountKey].UpgradeValueBy(1m);
     }
 }

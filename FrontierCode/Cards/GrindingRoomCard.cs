@@ -2,31 +2,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Utils;
+using Frontier.Characters;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Models;
-using Frontier.Characters;
-using Frontier.Powers;
+using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace Frontier.Cards;
 
-// 연마실 (0코 토큰): 보존, 턴 시작 시 손에 있으면 드로우·힘·민첩·당일 에너지 획득 -1.
 [Pool(typeof(ShumitCardPool))]
-public sealed class GrindingRoomCard : TokenCardBase
+public sealed class GrindingRoomCard : ShumitCard
 {
-    public override int MaxUpgradeLevel => 0;
+    private const string VigorAmountKey = "VigorAmount";
 
-    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[]
+    {
+        FrontierKeywords.PreserveTrigger,
+        CardKeyword.Retain,
+    };
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new EnergyVar("GrindingEnergyPenalty", 1) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new DynamicVar(VigorAmountKey, 6m),
+    };
 
     public GrindingRoomCard()
-        : base(0, CardType.Skill, TargetType.None)
+        : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)
     {
+    }
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await ApplyEffect(choiceContext);
     }
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
@@ -41,9 +51,11 @@ public sealed class GrindingRoomCard : TokenCardBase
             return;
         }
 
-        await CardPileCmd.Draw(choiceContext, 1, Owner);
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, 1m, Owner.Creature, this);
-        await PowerCmd.Apply<DexterityPower>(Owner.Creature, 1m, Owner.Creature, this);
-        await PowerCmd.Apply<ShumitTurnEnergyPenaltyPower>(Owner.Creature, 1m, Owner.Creature, this);
+        await ApplyEffect(choiceContext);
+    }
+
+    private async Task ApplyEffect(PlayerChoiceContext choiceContext)
+    {
+        await PowerCmd.Apply<VigorPower>(Owner.Creature, DynamicVars[VigorAmountKey].BaseValue, Owner.Creature, this);
     }
 }

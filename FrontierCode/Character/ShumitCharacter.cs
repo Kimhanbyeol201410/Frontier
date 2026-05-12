@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Characters;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.CardPools;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Models.Characters;
 using MegaCrit.Sts2.Core.Models.PotionPools;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Models.Relics;
@@ -24,6 +25,18 @@ public sealed class ShumitCharacter : PlaceholderCharacterModel
 	public override Color NameColor => new Color("FFB74D");
 	public override CharacterGender Gender => CharacterGender.Feminine;
 	public override int StartingHp => 70;
+
+	/// <summary>
+	/// 해금 조건: 디펙트로 런 1회 완료 후 해금. 잠금 안내 문구의 {Prerequisite} 변수에 사용된다.
+	/// 실제 잠금 여부는 <see cref="Frontier.Patches.FrontierShumitUnlockPatch"/> 에서
+	/// <c>Defect1Epoch</c> 진행 여부로 결정한다.
+	/// </summary>
+	protected override CharacterModel? UnlocksAfterRunAs => ModelDb.Character<Defect>();
+
+	// CustomCharacterSelectLockedIconPath 는 의도적으로 오버라이드하지 않는다.
+	// PCK 에 ctex 가 없는 PNG 경로를 주면 ResourceLoader.Load 가 실패한다.
+	// 잠금 상태 슈미트 아이콘은 FrontierShumitCharSelectVisualPatches.ApplyShumitIcons 가
+	// Init 끝난 뒤 PNG 를 직접 읽어 교체한다.
 
 	/// <summary>보상/상점 등 캐릭터 카드 풀. Ironclad 풀을 쓰면 슈미트 카드가 보상에 나오지 않으므로 전용 풀을 둔다.</summary>
 	public override CardPoolModel CardPool => ModelDb.CardPool<ShumitCardPool>();

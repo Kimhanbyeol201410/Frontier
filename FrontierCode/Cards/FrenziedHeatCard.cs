@@ -27,7 +27,7 @@ public sealed class FrenziedHeatCard : ShumitCard
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new DamageVar(22m, ValueProp.Move),
-        new DynamicVar(HeatDivisorKey, 5m),
+        new DynamicVar(HeatDivisorKey, 15m),
         new DynamicVar(DamagePerKey, 6m),
     };
 

@@ -32,4 +32,8 @@ public static class FrontierKeywords
     [CustomEnum(null)]
     [KeywordProperties(AutoKeywordPosition.After)]
     public static CardKeyword Invert;
+
+    [CustomEnum(null)]
+    [KeywordProperties(AutoKeywordPosition.Before)]
+    public static CardKeyword PreserveTrigger;
 }

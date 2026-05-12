@@ -31,6 +31,6 @@ public sealed class BellowsCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars[HeatKey].UpgradeValueBy(5m);
+        DynamicVars[HeatKey].UpgradeValueBy(10m);
     }
 }

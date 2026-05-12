@@ -14,11 +14,14 @@ namespace Frontier.Cards;
 [Pool(typeof(ShumitCardPool))]
 public sealed class MaterialGatherCard : ShumitCard
 {
+    private const string DrawCountKey = "DrawCount";
+
     public override bool GainsBlock => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new BlockVar(5m, ValueProp.Move),
+        new DynamicVar(DrawCountKey, 1m),
     };
 
     public MaterialGatherCard()
@@ -29,12 +32,12 @@ public sealed class MaterialGatherCard : ShumitCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        int n = CurrentUpgradeLevel > 0 ? 2 : 1;
-        await CardPileCmd.Draw(choiceContext, n, Owner);
+        await CardPileCmd.Draw(choiceContext, DynamicVars[DrawCountKey].IntValue, Owner);
     }
 
     protected override void OnUpgrade()
     {
         DynamicVars.Block.UpgradeValueBy(3m);
+        DynamicVars[DrawCountKey].UpgradeValueBy(1m);
     }
 }

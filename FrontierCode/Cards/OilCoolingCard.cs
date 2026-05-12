@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Utils;
 using Frontier.Cards;
+using Frontier.Utilities;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -39,10 +40,12 @@ public sealed class OilCoolingCard : ShumitCard
 
         int currentHeat = base.Owner.Creature.GetPower<HeatPower>()?.Amount ?? 0;
         decimal reduceBy = System.Math.Min((decimal)currentHeat, base.DynamicVars[HeatReductionKey].BaseValue);
-        if (reduceBy > 0m && !ShumitBetYourLifePower.IsActive(base.Owner.Creature))
+        if (reduceBy > 0m)
         {
             await PowerCmd.Apply<HeatPower>(base.Owner.Creature, -reduceBy, base.Owner.Creature, this);
         }
+
+        FrontierHandForgeUpgrade.TryUpgradeOneRandomFromHand(base.Owner);
     }
 
     protected override void OnUpgrade()

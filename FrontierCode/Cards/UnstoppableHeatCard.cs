@@ -19,6 +19,7 @@ public sealed class UnstoppableHeatCard : ShumitCard
 {
     private const string HeatDivisorKey = "HeatDivisor";
     private const string DamagePerKey = "DamagePer";
+    private const string MasterpieceLeftKey = "MasterpieceLeft";
 
     protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { FrontierKeywords.Masterpiece };
 
@@ -27,6 +28,7 @@ public sealed class UnstoppableHeatCard : ShumitCard
         new DamageVar(11m, ValueProp.Move),
         new DynamicVar(HeatDivisorKey, 20m),
         new DynamicVar(DamagePerKey, 1m),
+        new DynamicVar(MasterpieceLeftKey, 5m),
     };
 
     public UnstoppableHeatCard()
@@ -46,5 +48,6 @@ public sealed class UnstoppableHeatCard : ShumitCard
     protected override void OnUpgrade()
     {
         DynamicVars[DamagePerKey].UpgradeValueBy(1m);
+        DynamicVars[MasterpieceLeftKey].UpgradeValueBy(-1m);
     }
 }

@@ -52,25 +52,22 @@ public sealed class UntilExhaustionCard : ShumitCard
 
         for (int i = 0; i < x; i++)
         {
-            IReadOnlyList<Creature> enemies = combatState.HittableEnemies.ToList();
-            if (enemies.Count == 0)
+            if (!combatState.HittableEnemies.Any())
             {
                 break;
             }
 
-            int idx = combatState.RunState.Rng.Shuffle.NextInt(enemies.Count);
             await DamageCmd.Attack(dmg)
                 .FromCard(this)
-                .Targeting(enemies[idx])
+                .TargetingAllOpponents(combatState)
                 .Execute(choiceContext);
 
-            var upgradable = PileType.Hand.GetPile(Owner).Cards
+            List<CardModel> upgradable = PileType.Hand.GetPile(Owner).Cards
                 .Where((CardModel c) => !ReferenceEquals(c, this) && c.IsUpgradable)
                 .ToList();
             if (upgradable.Count > 0)
             {
-                int u = combatState.RunState.Rng.Shuffle.NextInt(upgradable.Count);
-                CardCmd.Upgrade(upgradable[u], CardPreviewStyle.HorizontalLayout);
+                CardCmd.Upgrade(upgradable, CardPreviewStyle.HorizontalLayout);
             }
 
             await FrontierHeatUtil.ApplyHeat(choiceContext, Owner.Creature, heatEach, this);

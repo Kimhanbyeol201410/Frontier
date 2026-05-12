@@ -48,21 +48,11 @@ internal static class FrontierUpgradeCountPatch
 	[HarmonyPostfix]
 	private static void CountShumitUpgrades(IEnumerable<CardModel> cards)
 	{
-		HashSet<Player> owners = new();
 		foreach (CardModel c in cards)
 		{
 			if (c?.Owner?.Character?.Id?.Entry == ShumitCharacter.CharacterId)
 			{
 				FrontierSession.RegisterUpgrade(c.Owner);
-				owners.Add(c.Owner);
-			}
-		}
-
-		foreach (Player o in owners)
-		{
-			if (FrontierSession.GetUpgradesThisCombat(o) >= 5 && FrontierSession.HasQueuedForgeBlueprint(o))
-			{
-				FrontierForgeBlueprintRewards.OfferAfterThresholdIfQueuedDeferred(o);
 			}
 		}
 	}

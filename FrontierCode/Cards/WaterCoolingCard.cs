@@ -33,6 +33,7 @@ public sealed class WaterCoolingCard : ShumitCard
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
         await FrontierHeatUtil.ReduceHeat(choiceContext, Owner.Creature, DynamicVars[HeatReductionKey].BaseValue, this);
+        FrontierHandForgeUpgrade.TryUpgradeOneRandomFromHand(Owner);
     }
 
     protected override void OnUpgrade()

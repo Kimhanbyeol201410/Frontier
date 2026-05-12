@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +15,6 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 열 교환: 피해 + 방어도 + 손패 1장을 뽑을 더미 맨 위로 이동·강화, 열기 감소.
 [Pool(typeof(ShumitCardPool))]
 public sealed class HeatExchangeCard : ShumitCard
 {
@@ -26,24 +24,17 @@ public sealed class HeatExchangeCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(10m, ValueProp.Move),
         new BlockVar(10m, ValueProp.Move),
         new DynamicVar(HeatLossKey, 10m),
     };
 
     public HeatExchangeCard()
-        : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
+        : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ArgumentNullException.ThrowIfNull(cardPlay.Target, nameof(cardPlay.Target));
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
-            .Targeting(cardPlay.Target)
-            .Execute(choiceContext);
-
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
 
         IEnumerable<CardModel> pick = await CardSelectCmd.FromHand(
@@ -60,10 +51,5 @@ public sealed class HeatExchangeCard : ShumitCard
         }
 
         await FrontierHeatUtil.ReduceHeat(choiceContext, Owner.Creature, DynamicVars[HeatLossKey].BaseValue, this);
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(2m);
     }
 }

@@ -23,7 +23,7 @@ public sealed class IronShieldCard : TokenCardBase
     };
 
     public IronShieldCard()
-        : base(1, CardType.Skill, TargetType.None)
+        : base(1, CardType.Power, TargetType.Self)
     {
     }
 

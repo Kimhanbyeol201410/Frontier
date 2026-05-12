@@ -55,17 +55,16 @@ public static class ModStart
     {
         var icon = new RelicIconData(FrontierAssetPaths.VanillaRelicFallbackPng, FrontierAssetPaths.VanillaRelicFallbackPng, FrontierAssetPaths.VanillaRelicFallbackPng);
         RelicImageOverridePatch.AddOverride<BrokenForgeRelic>(icon);
-        RelicImageOverridePatch.AddOverride<GreatForgeRelic>(icon);
         RelicImageOverridePatch.AddOverride<HeatproofApronRelic>(icon);
-        RelicImageOverridePatch.AddOverride<SmelterShardRelic>(icon);
-        RelicImageOverridePatch.AddOverride<HeartOfFlameRelic>(icon);
-        RelicImageOverridePatch.AddOverride<BlastFurnaceShardRelic>(icon);
-        RelicImageOverridePatch.AddOverride<GrindingRoomShardRelic>(icon);
         RelicImageOverridePatch.AddOverride<HephaestusBloodRelic>(icon);
         RelicImageOverridePatch.AddOverride<AncientAnvilRelic>(icon);
         RelicImageOverridePatch.AddOverride<FusionerHammerRelic>(icon);
         RelicImageOverridePatch.AddOverride<FusionerTongsRelic>(icon);
         RelicImageOverridePatch.AddOverride<FusionerAnvilRelic>(icon);
+        RelicImageOverridePatch.AddOverride<EndlessLaborRelic>(icon);
+        RelicImageOverridePatch.AddOverride<UnburnableBodyRelic>(icon);
+        RelicImageOverridePatch.AddOverride<MasterpieceMuseumRelic>(icon);
+        RelicImageOverridePatch.AddOverride<EternallyBurningFurnaceRelic>(icon);
     }
 }
 
@@ -166,12 +165,28 @@ internal static class FrontierRules
             return 0;
         }
 
-        if (ReforgeByCardId.TryGetValue(card.Id.Entry, out int bonus))
+        int baseBonus = ReforgeByCardId.TryGetValue(card.Id.Entry, out int b) ? b : 0;
+
+        if (baseBonus == ReforgeUnlimited)
         {
-            return bonus;
+            return baseBonus;
         }
 
-        return 0;
+        if (!IsShumit(card))
+        {
+            return baseBonus;
+        }
+
+        // 슈미트 카드는 BrokenForgeRelic이 시작 렐릭이라 사실상 항상 보유 상태이다.
+        // deserialize(card.Owner == null) 시점에는 RelicList 접근이 불가능하므로 안전하게 최소 보장만 적용한다.
+        Player? owner = card.Owner;
+        bool hasBrokenForge = owner == null || owner.GetRelic<BrokenForgeRelic>() != null;
+        if (hasBrokenForge)
+        {
+            return Math.Max(baseBonus, 2);
+        }
+
+        return baseBonus;
     }
 
     public static int GetMasterpieceValue(CardModel card)
@@ -317,7 +332,8 @@ public sealed class HeatPower : CustomPowerModel
             }
         }
 
-        if (Amount >= 200)
+        int bodyBurnThreshold = Owner.Player?.GetRelic<UnburnableBodyRelic>() != null ? 300 : 200;
+        if (Amount >= bodyBurnThreshold)
         {
             decimal gainedBodyBurn = Amount / 100m;
             await PowerCmd.Apply<BodyBurnPower>(new[] { Owner }, gainedBodyBurn, Owner, null, false);

@@ -22,7 +22,7 @@ internal static class FrontierHeatUtil
 
 	internal static async System.Threading.Tasks.Task ReduceHeat(PlayerChoiceContext choiceContext, Creature creature, decimal amount, CardModel? source)
 	{
-		if (amount == 0m || creature == null || ShumitBetYourLifePower.IsActive(creature))
+		if (amount == 0m || creature == null)
 		{
 			return;
 		}

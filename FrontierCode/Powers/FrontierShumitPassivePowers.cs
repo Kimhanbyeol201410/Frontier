@@ -304,34 +304,6 @@ public sealed class ShumitReverseEngineeringInvertHeatPower : CustomPowerModel
 	}
 }
 
-/// <summary>턴 동안 턴 시작 시 획득 에너지에서 감소 (연마실).</summary>
-public sealed class ShumitTurnEnergyPenaltyPower : CustomPowerModel
-{
-	public override PowerType Type => PowerType.Debuff;
-
-	public override PowerStackType StackType => PowerStackType.Counter;
-
-	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.ForEnergy(this) };
-
-	public override decimal ModifyEnergyGain(Player player, decimal amount)
-	{
-		if (player != Owner.Player)
-		{
-			return amount;
-		}
-
-		return System.Math.Max(0m, amount - Amount);
-	}
-
-	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
-	{
-		if (side == CombatSide.Player && Owner.IsPlayer)
-		{
-			await PowerCmd.Remove(this);
-		}
-	}
-}
-
 /// <summary>플레이어 소유 [화염](Burn) 카드가 전투 더미에 새로 들어올 때마다(생성 직후 첫 입더미) 방어도 획득.</summary>
 public sealed class ShumitFlameArmorPower : CustomPowerModel
 {
@@ -376,7 +348,7 @@ public sealed class ShumitHeartOfFlameEnergyPower : CustomPowerModel
 
 	public override async Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? source)
 	{
-		if (!Owner.IsPlayer || Amount <= 0 || oldPileType != PileType.None || card is not Burn)
+		if (!Owner.IsPlayer || Amount <= 0 || card is not Burn)
 		{
 			return;
 		}
@@ -392,7 +364,7 @@ public sealed class ShumitHeartOfFlameEnergyPower : CustomPowerModel
 			return;
 		}
 
-		await PlayerCmd.GainEnergy(1, player);
+		await PlayerCmd.GainEnergy(Amount, player);
 	}
 }
 
