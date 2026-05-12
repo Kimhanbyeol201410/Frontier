@@ -14,5 +14,7 @@
   "FRONTIER-INVERT.title": "반전",
   "FRONTIER-INVERT.description": "소멸한 카드의 표시 [gold]에너지[/gold] 비용만큼 에너지를 얻고, [gold]피해[/gold] 수치만큼 이번 턴 [gold]힘[/gold]을, [gold]방어[/gold] 수치만큼 이번 턴 [gold]민첩[/gold]을 얻습니다. 이번 턴 [gold]열기[/gold] 증감이 반대로 적용됩니다.",
   "FRONTIER-PRESERVETRIGGER.title": "보존 발동",
-  "FRONTIER-PRESERVETRIGGER.description": "턴 종료 시 버린 카드 더미로 가지 않으며 매 턴 시작 시 패에 이 카드가 있으면 효과가 발동합니다."
+  "FRONTIER-PRESERVETRIGGER.description": "턴 종료 시 버린 카드 더미로 가지 않으며 매 턴 시작 시 패에 이 카드가 있으면 효과가 발동합니다.",
+  "FRONTIER-UNUPGRADABLE.title": "강화 불가",
+  "FRONTIER-UNUPGRADABLE.description": "이 카드는 강화할 수 없습니다."
 }

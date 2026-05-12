@@ -20,7 +20,7 @@ public sealed class WaterCoolingCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new BlockVar(12m, ValueProp.Move),
+        new BlockVar(7m, ValueProp.Move),
         new DynamicVar(HeatReductionKey, 15m),
     };
 

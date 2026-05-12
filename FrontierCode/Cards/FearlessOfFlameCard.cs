@@ -40,7 +40,6 @@ public sealed class FearlessOfFlameCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
         DynamicVars[HeatPerTurnKey].UpgradeValueBy(10m);
         DynamicVars[StrGainKey].UpgradeValueBy(1m);
     }

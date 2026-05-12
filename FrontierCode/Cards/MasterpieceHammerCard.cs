@@ -38,6 +38,6 @@ public sealed class MasterpieceHammerCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(8m);
+        DynamicVars.Damage.UpgradeValueBy(4m);
     }
 }

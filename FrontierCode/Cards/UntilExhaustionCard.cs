@@ -16,7 +16,7 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 지쳐 쓰러질 때까지: X 피해/강화/열기 반복 후 턴 종료.
+// 지쳐 쓰러질 때까지: X 피해/강화/열기 반복.
 [Pool(typeof(ShumitCardPool))]
 public sealed class UntilExhaustionCard : ShumitCard
 {
@@ -72,8 +72,6 @@ public sealed class UntilExhaustionCard : ShumitCard
 
             await FrontierHeatUtil.ApplyHeat(choiceContext, Owner.Creature, heatEach, this);
         }
-
-        PlayerCmd.EndTurn(Owner, false);
     }
 
     protected override void OnUpgrade()

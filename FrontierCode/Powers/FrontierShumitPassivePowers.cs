@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -21,17 +22,33 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace Frontier.Powers;
 
-/// <summary>턴 종료 시 열기 감소 (냉각 시스템).</summary>
+/// <summary>턴 종료 시 열기 감소 + 턴 시작 시 방어도 (냉각 시스템).</summary>
 public sealed class ShumitCoolingSystemPower : CustomPowerModel
 {
-	/// <summary>턴 시작 시 부여하는 방어도. 강화·다른 카드와 무관하게 고정.</summary>
-	private const int BlockPerTurn = 5;
+	/// <summary>턴 시작 시 부여하는 방어도. 카드 강화 레벨에 따라 카드에서 <see cref="SetBlockPerTurn"/> 으로 갱신된다.</summary>
+	private const string BlockPerTurnKey = "BlockPerTurn";
 
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
 
+	protected override IEnumerable<DynamicVar> CanonicalVars => new[]
+	{
+		new DynamicVar(BlockPerTurnKey, 5m),
+	};
+
 	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
+
+	/// <summary>카드 인스턴스의 «BlockPerTurn» 강화 값을 power 에 동기화. 중복 사용 시 더 큰 값을 유지한다.</summary>
+	public void SetBlockPerTurn(decimal value)
+	{
+		AssertMutable();
+		DynamicVar var = DynamicVars[BlockPerTurnKey];
+		if (value > var.BaseValue)
+		{
+			var.BaseValue = value;
+		}
+	}
 
 	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
 	{
@@ -41,7 +58,7 @@ public sealed class ShumitCoolingSystemPower : CustomPowerModel
 		}
 
 		await FrontierHeatUtil.ReduceHeat(choiceContext, Owner, Amount, null);
-		await CreatureCmd.GainBlock(Owner, BlockPerTurn, ValueProp.Move, null);
+		await CreatureCmd.GainBlock(Owner, DynamicVars[BlockPerTurnKey].BaseValue, ValueProp.Move, null);
 	}
 }
 
@@ -415,14 +432,39 @@ public sealed class ShumitNextAttackHeatPower : CustomPowerModel
 	}
 }
 
-/// <summary>이번 턴 강화된 공격 사용 시 열기 보정 (금속 액화).</summary>
+/// <summary>금속 액화: 이번 턴 강화된 공격 카드 비용 0, 사용 시마다 열기·뽑을 더미에 화상 1장.</summary>
 public sealed class ShumitUpgradedAttackBonusHeatPower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
 
-	public override PowerStackType StackType => PowerStackType.Counter;
+	/// <summary>동일 턴 중 카드 여러 장 사용 시 중복 버프 방지.</summary>
+	public override PowerStackType StackType => PowerStackType.Single;
 
 	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
+
+	public override bool TryModifyEnergyCostInCombat(CardModel card, decimal originalCost, out decimal modifiedCost)
+	{
+		modifiedCost = originalCost;
+		if (card?.Owner?.Creature != Owner || !Owner.IsPlayer)
+		{
+			return false;
+		}
+
+		if (card.Type != CardType.Attack || card.CurrentUpgradeLevel <= 0)
+		{
+			return false;
+		}
+
+		switch (card.Pile?.Type)
+		{
+			case PileType.Hand:
+			case PileType.Play:
+				modifiedCost = 0m;
+				return true;
+			default:
+				return false;
+		}
+	}
 
 	public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
 	{
@@ -437,6 +479,15 @@ public sealed class ShumitUpgradedAttackBonusHeatPower : CustomPowerModel
 		}
 
 		await FrontierHeatUtil.ApplyHeat(context, Owner, Amount, cardPlay.Card);
+
+		Player? player = Owner.Player;
+		if (player == null || FrontierCombatStateHelper.TryGetFor(player) is not CombatState combatState)
+		{
+			return;
+		}
+
+		CardModel burn = combatState.CreateCard<Burn>(player);
+		await CardPileCmd.Add(burn, PileType.Draw, CardPilePosition.Random, cardPlay.Card);
 	}
 
 	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)

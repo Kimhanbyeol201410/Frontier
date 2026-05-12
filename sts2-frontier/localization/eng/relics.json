@@ -1,6 +1,8 @@
 {
   "FRONTIER-BROKEN_FORGE_RELIC.title": "Eye of Judgment",
   "FRONTIER-BROKEN_FORGE_RELIC.description": "All cards held by Shumit have at least [gold]Reforge[/gold] 2.",
+  "FRONTIER-DIVINE_EYE_RELIC.title": "Eye of God",
+  "FRONTIER-DIVINE_EYE_RELIC.description": "All cards held by Shumit have at least [gold]Reforge[/gold] 4.\nAll cards' [gold]Masterpiece[/gold] requirement is reduced by 5.",
   "FRONTIER-HEATPROOF_APRON_RELIC.title": "Heatproof Leather Apron",
   "FRONTIER-HEATPROOF_APRON_RELIC.description": "Whenever you gain [gold]Heat[/gold], gain 2 Block.",
   "FRONTIER-HEPHAESTUS_BLOOD_RELIC.title": "Blood of Hephaestus",

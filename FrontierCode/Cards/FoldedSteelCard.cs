@@ -13,18 +13,20 @@ namespace Frontier.Cards;
 
 // 접쇠 (1코 / 스킬)
 //   - 사용 조건 없음. 다음 번 사용하는 강화 카드 1장을 «Replays» 번 재사용.
-//   - 열기가 «HeatReq» 이상이면 +1 번 더 재사용.
-//   - 강화 시 Replays 1→2, HeatReq 70→0 으로 조건이 사실상 사라져 항상 3번 재사용.
+//   - 열기가 «HeatReq»(70, 고정) 이상이면 «HeatBonus» 번 더 재사용.
+//   - 강화 시: «HeatBonus» 1→2 (열기 70 이상일 때 추가 재사용 1번 → 2번). HeatReq·Replays 는 그대로.
 [Pool(typeof(ShumitCardPool))]
 public sealed class FoldedSteelCard : ShumitCard
 {
     private const string HeatReqKey = "HeatReq";
     private const string ReplaysKey = "Replays";
+    private const string HeatBonusKey = "HeatBonus";
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new DynamicVar(HeatReqKey, 70m),
         new DynamicVar(ReplaysKey, 1m),
+        new DynamicVar(HeatBonusKey, 1m),
     };
 
     public FoldedSteelCard()
@@ -38,7 +40,7 @@ public sealed class FoldedSteelCard : ShumitCard
         int heatReq = DynamicVars[HeatReqKey].IntValue;
         if (HeatAtLeast(heatReq))
         {
-            replays += 1m;
+            replays += DynamicVars[HeatBonusKey].BaseValue;
         }
 
         await PowerCmd.Apply<FoldedSteelReplayPower>(Owner.Creature, replays, Owner.Creature, this);
@@ -46,8 +48,7 @@ public sealed class FoldedSteelCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars[ReplaysKey].UpgradeValueBy(1m);
-        DynamicVars[HeatReqKey].UpgradeValueBy(-70m);
+        DynamicVars[HeatBonusKey].UpgradeValueBy(1m);
     }
 
     private bool HeatAtLeast(int min)

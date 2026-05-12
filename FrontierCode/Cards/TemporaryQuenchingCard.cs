@@ -24,7 +24,7 @@ public sealed class TemporaryQuenchingCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new BlockVar(10m, ValueProp.Move),
+        new BlockVar(11m, ValueProp.Move),
         new DynamicVar(HeatReductionKey, 10m),
     };
 
@@ -42,7 +42,6 @@ public sealed class TemporaryQuenchingCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(5m);
-        DynamicVars[HeatReductionKey].UpgradeValueBy(3m);
+        DynamicVars.Block.UpgradeValueBy(2m);
     }
 }

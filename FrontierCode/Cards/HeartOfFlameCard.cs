@@ -17,11 +17,11 @@ public sealed class HeartOfFlameCard : ShumitCard
 
 	protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
 	{
-		new DynamicVar(EnergyGainKey, 1m),
+		new EnergyVar(EnergyGainKey, 1),
 	};
 
 	public HeartOfFlameCard()
-		: base(3, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+		: base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 	{
 	}
 

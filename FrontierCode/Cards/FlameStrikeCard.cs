@@ -20,7 +20,7 @@ public sealed class FlameStrikeCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(9m, ValueProp.Move),
+        new DamageVar(7m, ValueProp.Move),
         new DynamicVar(HeatKey, 10m),
     };
 
