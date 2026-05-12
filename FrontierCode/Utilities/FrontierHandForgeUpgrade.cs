@@ -15,7 +15,7 @@ internal static class FrontierHandForgeUpgrade
 	internal static bool TryUpgradeOneRandomFromHand(Player player, CardPreviewStyle style = CardPreviewStyle.HorizontalLayout)
 	{
 		List<CardModel> candidates = PileType.Hand.GetPile(player).Cards
-			.Where(static c => c is not ForgeCard and not GreatForgeCard && c.IsUpgradable)
+			.Where(static c => c is not ForgeCard && c.IsUpgradable)
 			.ToList();
 		if (candidates.Count == 0)
 		{

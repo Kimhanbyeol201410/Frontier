@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.ValueProps;
 using Frontier.Characters;
 
 namespace Frontier.Cards;
@@ -18,8 +19,11 @@ public sealed class HeatCycleCard : ShumitCard
     private const string HeatMoveKey = "HeatMove";
     private const string DrawCountKey = "DrawCount";
 
+    public override bool GainsBlock => true;
+
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
+        new BlockVar(10m, ValueProp.Move),
         new DynamicVar(DrawCountKey, 1m),
         new DynamicVar(HeatMoveKey, 10m),
     };
@@ -31,6 +35,7 @@ public sealed class HeatCycleCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
         int n = DynamicVars[DrawCountKey].IntValue;
         await CardPileCmd.Draw(choiceContext, n, Owner);
         int heat = Owner.Creature.GetPower<HeatPower>()?.Amount ?? 0;

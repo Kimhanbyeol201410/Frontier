@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Utils;
 using Frontier.Cards;
+using Frontier.Utilities;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -24,7 +25,7 @@ public sealed class OilCoolingCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new BlockVar(7m, ValueProp.Move),
+        new BlockVar(8m, ValueProp.Move),
         new DynamicVar(HeatReductionKey, 5m),
     };
 
@@ -39,15 +40,17 @@ public sealed class OilCoolingCard : ShumitCard
 
         int currentHeat = base.Owner.Creature.GetPower<HeatPower>()?.Amount ?? 0;
         decimal reduceBy = System.Math.Min((decimal)currentHeat, base.DynamicVars[HeatReductionKey].BaseValue);
-        if (reduceBy > 0m && !ShumitBetYourLifePower.IsActive(base.Owner.Creature))
+        if (reduceBy > 0m)
         {
             await PowerCmd.Apply<HeatPower>(base.Owner.Creature, -reduceBy, base.Owner.Creature, this);
         }
+
+        FrontierHandForgeUpgrade.TryUpgradeOneRandomFromHand(base.Owner);
     }
 
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Block.UpgradeValueBy(3m);
+        base.DynamicVars.Block.UpgradeValueBy(2m);
         base.DynamicVars[HeatReductionKey].UpgradeValueBy(5m);
     }
 }

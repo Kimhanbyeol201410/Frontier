@@ -19,8 +19,8 @@ public sealed class BurningStrikeCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(8m, ValueProp.Move),
-        new DynamicVar(HeatKey, 5m),
+        new DamageVar(15m, ValueProp.Move),
+        new DynamicVar(HeatKey, 10m),
     };
 
     public BurningStrikeCard()
@@ -37,7 +37,7 @@ public sealed class BurningStrikeCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4m);
-        DynamicVars[HeatKey].UpgradeValueBy(5m);
+        DynamicVars.Damage.UpgradeValueBy(7m);
+        DynamicVars[HeatKey].UpgradeValueBy(10m);
     }
 }

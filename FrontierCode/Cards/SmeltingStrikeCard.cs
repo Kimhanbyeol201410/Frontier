@@ -25,7 +25,7 @@ public sealed class SmeltingStrikeCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(4m, ValueProp.Move),
+        new DamageVar(5m, ValueProp.Move),
         new DynamicVar(HeatGainKey, 10m),
         new DynamicVar(UpgradesKey, 1m),
     };

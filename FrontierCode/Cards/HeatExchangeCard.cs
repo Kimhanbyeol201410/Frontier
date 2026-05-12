@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,35 +15,33 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 열 교환: 피해 + 손패 1장을 뽑을 더미 맨 위로 이동·강화, 열기 감소.
 [Pool(typeof(ShumitCardPool))]
 public sealed class HeatExchangeCard : ShumitCard
 {
     private const string HeatLossKey = "HeatLoss";
 
+    public override bool GainsBlock => true;
+
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(8m, ValueProp.Move),
+        new BlockVar(10m, ValueProp.Move),
         new DynamicVar(HeatLossKey, 10m),
     };
 
     public HeatExchangeCard()
-        : base(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
+        : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        ArgumentNullException.ThrowIfNull(cardPlay.Target, nameof(cardPlay.Target));
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
-            .Targeting(cardPlay.Target)
-            .Execute(choiceContext);
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
 
+        // 0~1 자유 선택 — 강화·이동 없이 종료(스킵) 허용. 방어도/열기 감소는 카드 선택과 무관하게 항상 적용.
         IEnumerable<CardModel> pick = await CardSelectCmd.FromHand(
             choiceContext,
             Owner,
-            new CardSelectorPrefs(SelectionScreenPrompt, 1),
+            new CardSelectorPrefs(SelectionScreenPrompt, 0, 1),
             (CardModel c) => !ReferenceEquals(c, this),
             this);
         CardModel? moveCard = pick.FirstOrDefault();
@@ -55,10 +52,5 @@ public sealed class HeatExchangeCard : ShumitCard
         }
 
         await FrontierHeatUtil.ReduceHeat(choiceContext, Owner.Creature, DynamicVars[HeatLossKey].BaseValue, this);
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(4m);
     }
 }

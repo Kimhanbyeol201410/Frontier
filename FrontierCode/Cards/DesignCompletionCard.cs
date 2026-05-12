@@ -43,7 +43,8 @@ public sealed class DesignCompletionCard : ShumitCard
         }
 
         int pickCount = System.Math.Min(DynamicVars[PickCountKey].IntValue, drawCards.Count);
-        CardSelectorPrefs prefs = new(CardSelectorPrefs.UpgradeSelectionPrompt, pickCount);
+        // 0 ~ pickCount 자유 선택 — 강화 없이 종료(스킵) 허용.
+        CardSelectorPrefs prefs = new(CardSelectorPrefs.UpgradeSelectionPrompt, 0, pickCount);
         IEnumerable<CardModel> picked = await CardSelectCmd.FromSimpleGrid(choiceContext, drawCards.ToList(), Owner, prefs);
         foreach (CardModel c in picked)
         {

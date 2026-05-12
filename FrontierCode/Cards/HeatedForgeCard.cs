@@ -10,12 +10,14 @@ using Frontier.Powers;
 
 namespace Frontier.Cards;
 
+// 뜨거워진 대장간: 매 턴 종료 시 현재 열기를 «HeatDivisor»로 나눈 만큼 체력 회복.
+//   - 강화: 분모 50→25 (회복 효율 2배).
 [Pool(typeof(ShumitCardPool))]
 public sealed class HeatedForgeCard : ShumitCard
 {
-    private const string HeatKey = "HeatGain";
+    private const string HeatDivisorKey = "HeatDivisor";
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(HeatKey, 10m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(HeatDivisorKey, 50m) };
 
     public HeatedForgeCard()
         : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
@@ -27,13 +29,13 @@ public sealed class HeatedForgeCard : ShumitCard
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<ShumitHeatedForgePower>(
             Owner.Creature,
-            DynamicVars[HeatKey].BaseValue,
+            DynamicVars[HeatDivisorKey].BaseValue,
             Owner.Creature,
             this);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars[HeatKey].UpgradeValueBy(10m);
+        DynamicVars[HeatDivisorKey].UpgradeValueBy(-25m);
     }
 }

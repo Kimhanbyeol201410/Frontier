@@ -24,7 +24,7 @@ public sealed class ImpurityRemovalCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new BlockVar(5m, ValueProp.Move),
+        new BlockVar(8m, ValueProp.Move),
         new DynamicVar(BurnExhaustTimesKey, 1m),
     };
 
@@ -65,7 +65,7 @@ public sealed class ImpurityRemovalCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(2m);
+        DynamicVars.Block.UpgradeValueBy(4m);
         DynamicVars[BurnExhaustTimesKey].UpgradeValueBy(1m);
     }
 }

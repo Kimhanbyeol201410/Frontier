@@ -20,7 +20,7 @@ public sealed class FlamePulseCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(7m, ValueProp.Move),
+        new DamageVar(9m, ValueProp.Move),
         new DynamicVar(HeatKey, 10m),
     };
 
@@ -37,6 +37,6 @@ public sealed class FlamePulseCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(2m);
+        DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }

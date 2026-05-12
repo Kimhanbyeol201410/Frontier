@@ -42,6 +42,9 @@ public sealed class ShumitCardPool : CustomCardPoolModel
 		foreach (CardModel c in base.FilterThroughEpochs(unlockState, cards))
 		{
 			if (c.Id.Entry == FrontierRules.AnvilMemoryCardEntry
+			    || c.Id.Entry == FrontierRules.FrenziedHeatCardEntry
+			    || c.Id.Entry == FrontierRules.AncientForgingCardEntry
+			    || c.Id.Entry == FrontierRules.CountlessMemoriesCardEntry
 			    || FrontierRules.HiddenFromShumitCardPoolEntries.Contains(c.Id.Entry))
 			{
 				continue;
@@ -56,6 +59,7 @@ public sealed class ShumitCardPool : CustomCardPoolModel
 		return new CardModel[]
 		{
 			ModelDb.Card<AbsoluteZeroCard>(),
+			ModelDb.Card<AncientForgingCard>(),
 			ModelDb.Card<AnvilEchoCard>(),
 			ModelDb.Card<ApproachingDreadCard>(),
 			ModelDb.Card<BellowsCard>(),
@@ -69,6 +73,7 @@ public sealed class ShumitCardPool : CustomCardPoolModel
 			ModelDb.Card<CoolHeadCard>(),
 			ModelDb.Card<CoolingStrikeCard>(),
 			ModelDb.Card<CoolingSystemCard>(),
+			ModelDb.Card<CountlessMemoriesCard>(),
 			ModelDb.Card<CreviceCard>(),
 			ModelDb.Card<CrushingHammerCard>(),
 			ModelDb.Card<DefendShumitCard>(),
@@ -84,13 +89,11 @@ public sealed class ShumitCardPool : CustomCardPoolModel
 			ModelDb.Card<FlameSmashCard>(),
 			ModelDb.Card<FlameStrikeCard>(),
 			ModelDb.Card<FoldedSteelCard>(),
-			ModelDb.Card<ForgeBlueprintCard>(),
+			ModelDb.Card<FrenziedHeatCard>(),
 			ModelDb.Card<ForgeCard>(),
-			ModelDb.Card<ForgeFacilityBlueprintCard>(),
 			ModelDb.Card<ForgingCard>(),
 			ModelDb.Card<FullFuelCard>(),
 			ModelDb.Card<FurnaceMaintenanceCard>(),
-			ModelDb.Card<GreatForgeCard>(),
 			ModelDb.Card<GrindingRoomCard>(),
 			ModelDb.Card<HammerDownCard>(),
 			ModelDb.Card<HeartOfFlameCard>(),

@@ -53,6 +53,6 @@ public sealed class NotThisOneCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(5m);
+        DynamicVars.Damage.UpgradeValueBy(6m);
     }
 }

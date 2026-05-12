@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
@@ -54,17 +55,16 @@ public static class ModStart
     {
         var icon = new RelicIconData(FrontierAssetPaths.VanillaRelicFallbackPng, FrontierAssetPaths.VanillaRelicFallbackPng, FrontierAssetPaths.VanillaRelicFallbackPng);
         RelicImageOverridePatch.AddOverride<BrokenForgeRelic>(icon);
-        RelicImageOverridePatch.AddOverride<GreatForgeRelic>(icon);
         RelicImageOverridePatch.AddOverride<HeatproofApronRelic>(icon);
-        RelicImageOverridePatch.AddOverride<SmelterShardRelic>(icon);
-        RelicImageOverridePatch.AddOverride<HeartOfFlameRelic>(icon);
-        RelicImageOverridePatch.AddOverride<BlastFurnaceShardRelic>(icon);
-        RelicImageOverridePatch.AddOverride<GrindingRoomShardRelic>(icon);
         RelicImageOverridePatch.AddOverride<HephaestusBloodRelic>(icon);
         RelicImageOverridePatch.AddOverride<AncientAnvilRelic>(icon);
         RelicImageOverridePatch.AddOverride<FusionerHammerRelic>(icon);
         RelicImageOverridePatch.AddOverride<FusionerTongsRelic>(icon);
         RelicImageOverridePatch.AddOverride<FusionerAnvilRelic>(icon);
+        RelicImageOverridePatch.AddOverride<EndlessLaborRelic>(icon);
+        RelicImageOverridePatch.AddOverride<UnburnableBodyRelic>(icon);
+        RelicImageOverridePatch.AddOverride<MasterpieceMuseumRelic>(icon);
+        RelicImageOverridePatch.AddOverride<EternallyBurningFurnaceRelic>(icon);
     }
 }
 
@@ -72,6 +72,25 @@ internal static class FrontierRules
 {
     /// <summary><see cref="AnvilMemoryCard"/> 엔트리. 걸작(모루의 잔향)으로만 획득 — 보상·상점 <see cref="MegaCrit.Sts2.Core.Models.CardPoolModel.GetUnlockedCards"/> 및 전투 무작위 생성에서 제외.</summary>
     public const string AnvilMemoryCardEntry = "FRONTIER-ANVIL_MEMORY_CARD";
+
+    /// <summary><see cref="FrenziedHeatCard"/> 엔트리. 걸작(멈출 수 없는 열기 +5)으로만 획득 — 보상·상점 및 전투 무작위 생성에서 제외.</summary>
+    public const string FrenziedHeatCardEntry = "FRONTIER-FRENZIED_HEAT_CARD";
+
+    /// <summary><see cref="AncientForgingCard"/> 엔트리. <see cref="ArchaicTooth"/>(고대의 이빨) 변환으로만 획득 — 보상·상점 및 전투 무작위 생성에서 제외.</summary>
+    public const string AncientForgingCardEntry = "FRONTIER-ANCIENT_FORGING_CARD";
+
+    /// <summary><see cref="CountlessMemoriesCard"/> 엔트리. <see cref="DustyTome"/>(먼지 쌓인 책) 변환으로만 획득 — 보상·상점 및 전투 무작위 생성에서 제외.</summary>
+    public const string CountlessMemoriesCardEntry = "FRONTIER-COUNTLESS_MEMORIES_CARD";
+
+    /// <summary>
+    /// <see cref="ArchaicTooth"/>/<see cref="DustyTome"/> 변환으로만 얻는 슈미트 Ancient 카드들 —
+    /// 슈미트 «재련» 시스템에서 제외, 항상 강화 1회만 가능. <see cref="GetReforgeBonus"/> 가 이 집합을 우선 검사한다.
+    /// </summary>
+    public static readonly HashSet<string> NoReforgeAncientCardEntries = new(StringComparer.Ordinal)
+    {
+        AncientForgingCardEntry,
+        CountlessMemoriesCardEntry,
+    };
 
     /// <summary>
     /// <see cref="ShumitCharacter.StartingDeck"/> 카드(보상·상점 전용 풀에서 제외)와
@@ -108,7 +127,8 @@ internal static class FrontierRules
 
     private static readonly Dictionary<string, int> MasterpieceByCardId = new()
     {
-        ["FRONTIER-ANVIL_ECHO_CARD"] = 5 // 모루의 잔향 — 걸작 5.
+        ["FRONTIER-ANVIL_ECHO_CARD"] = 5, // 모루의 잔향 — 걸작 5.
+        ["FRONTIER-UNSTOPPABLE_HEAT_CARD"] = 5, // 멈출 수 없는 열기 — 걸작 5.
     };
 
     /// <summary>두 번째 인자는 강화된 카드 — 비전투(휴식처 등)에서는 <see cref="CardModel.CardScope"/>가 런 스코프를 씁니다.</summary>
@@ -124,10 +144,41 @@ internal static class FrontierRules
 
             return scope.CreateCard<AnvilMemoryCard>(owner);
         },
+        ["FRONTIER-UNSTOPPABLE_HEAT_CARD"] = static (Player owner, CardModel source) =>
+        {
+            ICardScope? scope = source.CardScope;
+            if (scope == null)
+            {
+                throw new InvalidOperationException("Unstoppable Heat masterpiece: CardScope is null.");
+            }
+
+            return scope.CreateCard<FrenziedHeatCard>(owner);
+        },
     };
 
     public static bool IsShumit(CardModel card)
     {
+        if (card == null)
+        {
+            return false;
+        }
+
+        // Owner가 아직 세팅되지 않은 deserialize 단계(CardModel.FromSerializable)에서도 동작하도록
+        // ShumitCard 인스턴스 자체를 우선 검사한다. 그렇지 않으면 MaxUpgradeLevel 패치가 미적용되어
+        // 저장본의 강화 레벨 복원 시 «걸작·재련» 카드가 상한 초과로 throw할 수 있다.
+        if (card is ShumitCard)
+        {
+            return true;
+        }
+
+        // 카드 라이브러리(백과사전)·도감 등에서 canonical(원본 ModelDb) 카드를 표시할 때
+        // CardModel.Owner getter 는 AssertMutable() 에서 CanonicalModelException 을 던진다.
+        // 슈미트 외 캐릭터의 canonical 카드는 슈미트 카드가 아니므로 안전하게 false 처리.
+        if (card.IsCanonical)
+        {
+            return false;
+        }
+
         return card.Owner?.Character?.Id?.Entry == ShumitCharacter.CharacterId;
     }
 
@@ -138,12 +189,35 @@ internal static class FrontierRules
             return 0;
         }
 
-        if (ReforgeByCardId.TryGetValue(card.Id.Entry, out int bonus))
+        // Ancient 변환 전용 카드(고대의 단조, 무수히 많은 기억)는 «재련» 적용 외 — 강화 1회 고정.
+        if (NoReforgeAncientCardEntries.Contains(card.Id.Entry))
         {
-            return bonus;
+            return 0;
         }
 
-        return 0;
+        int baseBonus = ReforgeByCardId.TryGetValue(card.Id.Entry, out int b) ? b : 0;
+
+        if (baseBonus == ReforgeUnlimited)
+        {
+            return baseBonus;
+        }
+
+        if (!IsShumit(card))
+        {
+            return baseBonus;
+        }
+
+        // 슈미트 카드는 BrokenForgeRelic이 시작 렐릭이라 사실상 항상 보유 상태이다.
+        // deserialize(card.Owner == null) 또는 canonical 카드(card.IsCanonical)의 경우
+        // Owner / RelicList 접근이 불가능하므로 안전하게 최소 보장만 적용한다.
+        Player? owner = card.IsCanonical ? null : card.Owner;
+        bool hasBrokenForge = owner == null || owner.GetRelic<BrokenForgeRelic>() != null;
+        if (hasBrokenForge)
+        {
+            return Math.Max(baseBonus, 2);
+        }
+
+        return baseBonus;
     }
 
     public static int GetMasterpieceValue(CardModel card)
@@ -235,6 +309,11 @@ public static class FrontierMasterpieceTransformPatch
                 continue;
             }
 
+            if (card.IsCanonical)
+            {
+                continue;
+            }
+
             Player? owner = card.Owner;
             if (owner == null)
             {
@@ -244,8 +323,13 @@ public static class FrontierMasterpieceTransformPatch
             try
             {
                 CardModel transformed = transformFactory(owner, card);
-                CardCmd.Transform(card, transformed, CardPreviewStyle.HorizontalLayout).GetAwaiter().GetResult();
-                GD.Print($"[Frontier] Masterpiece transformed: {card.Id.Entry} -> {transformed.Id.Entry}");
+                // CardCmd.Upgrade는 동기 메서드라 이 Postfix도 동기 컨텍스트에서 실행된다.
+                // CardCmd.Transform은 내부에 await Hook.* 호출이 다수 있는 async — 여기서 .GetAwaiter().GetResult()로
+                // 기다리면 메인(게임) 스레드에서 await 컨티뉴를 받지 못해 데드락이 발생한다.
+                // 코어 표준 fire-and-forget 패턴인 TaskHelper.RunSafely로 백그라운드 실행하고 예외는 로그로 남긴다.
+                Task transformTask = CardCmd.Transform(card, transformed, CardPreviewStyle.HorizontalLayout);
+                TaskHelper.RunSafely(transformTask);
+                GD.Print($"[Frontier] Masterpiece transform scheduled: {card.Id.Entry} -> {transformed.Id.Entry}");
             }
             catch (Exception e)
             {
@@ -284,7 +368,8 @@ public sealed class HeatPower : CustomPowerModel
             }
         }
 
-        if (Amount >= 200)
+        int bodyBurnThreshold = Owner.Player?.GetRelic<UnburnableBodyRelic>() != null ? 300 : 200;
+        if (Amount >= bodyBurnThreshold)
         {
             decimal gainedBodyBurn = Amount / 100m;
             await PowerCmd.Apply<BodyBurnPower>(new[] { Owner }, gainedBodyBurn, Owner, null, false);

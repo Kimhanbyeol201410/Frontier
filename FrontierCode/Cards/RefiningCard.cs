@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Creatures;
-using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -15,7 +13,6 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-/// <summary>정련: 피해. 이번 공격으로 적을 처치하면 이 카드가 영구 강화됩니다.</summary>
 [Pool(typeof(ShumitCardPool))]
 public sealed class RefiningCard : ShumitCard
 {
@@ -36,37 +33,15 @@ public sealed class RefiningCard : ShumitCard
             .FromCard(this)
             .Targeting(cardPlay.Target)
             .Execute(choiceContext);
-    }
 
-    public override Task AfterDamageGiven(PlayerChoiceContext choiceContext, Creature? dealer, DamageResult result, ValueProp props, Creature target, CardModel? cardSource)
-    {
-        if (!ReferenceEquals(cardSource, this))
+        if (IsUpgradable)
         {
-            return Task.CompletedTask;
+            CardCmd.Upgrade(this, CardPreviewStyle.HorizontalLayout);
         }
-
-        Player owner = Owner;
-        if (dealer != owner.Creature && dealer?.PetOwner != owner)
-        {
-            return Task.CompletedTask;
-        }
-
-        if (!result.WasTargetKilled || target.IsPlayer)
-        {
-            return Task.CompletedTask;
-        }
-
-        if (!IsUpgradable)
-        {
-            return Task.CompletedTask;
-        }
-
-        CardCmd.Upgrade(this, CardPreviewStyle.HorizontalLayout);
-        return Task.CompletedTask;
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars.Damage.UpgradeValueBy(3m);
     }
 }

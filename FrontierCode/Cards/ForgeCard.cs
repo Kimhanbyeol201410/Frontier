@@ -1,31 +1,71 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using BaseLib.Utils;
+using Frontier.Characters;
+using Frontier.Utilities;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 
 namespace Frontier.Cards;
-using Frontier.Characters;
 
-// 대장간 (0코 토큰): 보존. 턴 시작 시 열기·무작위 강화는 BrokenForgeRelic 이 처리. OnPlay 불필요.
 [Pool(typeof(ShumitCardPool))]
 public sealed class ForgeCard : ShumitCard
 {
     private const string UpgradesPerTurnKey = "UpgradesPerTurn";
+    private const string HeatPerTurnKey = "HeatPerTurn";
 
-    public const string TurnStartHeatKey = "TurnStartHeat";
-
-    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
-    public override int MaxUpgradeLevel => 0;
+    protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[]
+    {
+        FrontierKeywords.PreserveTrigger,
+        CardKeyword.Retain,
+    };
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DynamicVar(TurnStartHeatKey, 10m),
-        new DynamicVar(UpgradesPerTurnKey, 1m),
+        new DynamicVar(UpgradesPerTurnKey, 2m),
+        new DynamicVar(HeatPerTurnKey, 10m),
     };
 
     public ForgeCard()
-        : base(0, CardType.Skill, CardRarity.Event, TargetType.None, showInCardLibrary: false)
+        : base(1, CardType.Skill, CardRarity.Rare, TargetType.None)
     {
+    }
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await ApplyEffect(choiceContext);
+    }
+
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    {
+        if (player != Owner)
+        {
+            return;
+        }
+
+        if (!PileType.Hand.GetPile(Owner).Cards.Contains(this))
+        {
+            return;
+        }
+
+        await ApplyEffect(choiceContext);
+    }
+
+    private async Task ApplyEffect(PlayerChoiceContext choiceContext)
+    {
+        int times = DynamicVars[UpgradesPerTurnKey].IntValue;
+        for (int i = 0; i < times; i++)
+        {
+            if (!FrontierHandForgeUpgrade.TryUpgradeOneRandomFromHand(Owner))
+            {
+                break;
+            }
+        }
+
+        await FrontierHeatUtil.ApplyHeat(choiceContext, Owner.Creature, DynamicVars[HeatPerTurnKey].BaseValue, this);
     }
 }

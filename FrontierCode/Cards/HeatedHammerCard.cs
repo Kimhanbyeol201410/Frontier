@@ -19,7 +19,7 @@ public sealed class HeatedHammerCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(5m, ValueProp.Move),
+        new DamageVar(7m, ValueProp.Move),
         new DynamicVar(StepKey, 1m),
     };
 
@@ -40,7 +40,7 @@ public sealed class HeatedHammerCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Damage.UpgradeValueBy(1m);
+        DynamicVars.Damage.UpgradeValueBy(4m);
         DynamicVars[StepKey].UpgradeValueBy(1m);
     }
 }

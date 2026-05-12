@@ -24,24 +24,28 @@ namespace Frontier.Powers;
 /// <summary>턴 종료 시 열기 감소 (냉각 시스템).</summary>
 public sealed class ShumitCoolingSystemPower : CustomPowerModel
 {
+	/// <summary>턴 시작 시 부여하는 방어도. 강화·다른 카드와 무관하게 고정.</summary>
+	private const int BlockPerTurn = 5;
+
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
 
 	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
 
-	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
 	{
-		if (side != CombatSide.Player || !Owner.IsPlayer)
+		if (player != Owner.Player || !Owner.IsPlayer)
 		{
 			return;
 		}
 
 		await FrontierHeatUtil.ReduceHeat(choiceContext, Owner, Amount, null);
+		await CreatureCmd.GainBlock(Owner, BlockPerTurn, ValueProp.Move, null);
 	}
 }
 
-/// <summary>턴 종료 시 열기 증가 (뜨거워진 대장간).</summary>
+/// <summary>뜨거워진 대장간: 매 턴 종료 시 현재 열기 ÷ <see cref="CustomPowerModel.Amount"/>(분모) 만큼 체력을 회복.</summary>
 public sealed class ShumitHeatedForgePower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
@@ -57,7 +61,13 @@ public sealed class ShumitHeatedForgePower : CustomPowerModel
 			return;
 		}
 
-		await FrontierHeatUtil.ApplyHeat(choiceContext, Owner, Amount, null);
+		int heat = Owner.GetPower<HeatPower>()?.Amount ?? 0;
+		int divisor = System.Math.Max(1, Amount);
+		int healAmount = heat / divisor;
+		if (healAmount > 0)
+		{
+			await CreatureCmd.Heal(Owner, healAmount);
+		}
 	}
 }
 
@@ -113,10 +123,13 @@ public sealed class ShumitCoolHeadNextTurnPower : CustomPowerModel
 	}
 }
 
-/// <summary>환기: 이번 턴에 카드를 사용할 때마다 열기 <see cref="CustomPowerModel.Amount"/>만큼 감소. 턴 종료 시 제거. 카드마다 별도 인스턴스(여러 장 중첩 가능).</summary>
+/// <summary>환기: 이번 턴에 카드를 사용할 때마다 열기 <see cref="CustomPowerModel.Amount"/>만큼 감소 + 방어도 <see cref="BlockPerCard"/> 획득. 턴 종료 시 제거. 카드마다 별도 인스턴스(여러 장 중첩 가능).</summary>
 [CustomID("FRONTIER-SHUMIT_VENTILATION_THIS_TURN_POWER")]
 public sealed class ShumitVentilationThisTurnPower : CustomPowerModel
 {
+	/// <summary>환기 발동 시 카드 사용마다 부여하는 방어도. 강화·다른 카드와 무관하게 고정.</summary>
+	private const int BlockPerCard = 3;
+
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
@@ -133,6 +146,7 @@ public sealed class ShumitVentilationThisTurnPower : CustomPowerModel
 		}
 
 		await FrontierHeatUtil.ReduceHeat(context, Owner, Amount, cardPlay.Card);
+		await CreatureCmd.GainBlock(Owner, BlockPerCard, ValueProp.Move, cardPlay);
 	}
 
 	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
@@ -164,7 +178,7 @@ public sealed class ShumitFuelMaxNextTurnEnergyPower : CustomPowerModel
 		int energy = (int)Amount;
 		if (energy > 0)
 		{
-			await PlayerCmd.GainEnergy(energy, Owner);
+			await PlayerCmd.GainEnergy(energy, player);
 		}
 
 		await PowerCmd.Remove(this);
@@ -290,34 +304,6 @@ public sealed class ShumitReverseEngineeringInvertHeatPower : CustomPowerModel
 	}
 }
 
-/// <summary>턴 동안 턴 시작 시 획득 에너지에서 감소 (연마실).</summary>
-public sealed class ShumitTurnEnergyPenaltyPower : CustomPowerModel
-{
-	public override PowerType Type => PowerType.Debuff;
-
-	public override PowerStackType StackType => PowerStackType.Counter;
-
-	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.ForEnergy(this) };
-
-	public override decimal ModifyEnergyGain(Player player, decimal amount)
-	{
-		if (player != Owner.Player)
-		{
-			return amount;
-		}
-
-		return System.Math.Max(0m, amount - Amount);
-	}
-
-	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
-	{
-		if (side == CombatSide.Player && Owner.IsPlayer)
-		{
-			await PowerCmd.Remove(this);
-		}
-	}
-}
-
 /// <summary>플레이어 소유 [화염](Burn) 카드가 전투 더미에 새로 들어올 때마다(생성 직후 첫 입더미) 방어도 획득.</summary>
 public sealed class ShumitFlameArmorPower : CustomPowerModel
 {
@@ -362,7 +348,7 @@ public sealed class ShumitHeartOfFlameEnergyPower : CustomPowerModel
 
 	public override async Task AfterCardChangedPiles(CardModel card, PileType oldPileType, AbstractModel? source)
 	{
-		if (!Owner.IsPlayer || Amount <= 0 || oldPileType != PileType.None || card is not Burn)
+		if (!Owner.IsPlayer || Amount <= 0 || card is not Burn)
 		{
 			return;
 		}
@@ -372,7 +358,13 @@ public sealed class ShumitHeartOfFlameEnergyPower : CustomPowerModel
 			return;
 		}
 
-		await PlayerCmd.GainEnergy(1, Owner);
+		Player? player = Owner.Player;
+		if (player == null)
+		{
+			return;
+		}
+
+		await PlayerCmd.GainEnergy(Amount, player);
 	}
 }
 
@@ -456,7 +448,7 @@ public sealed class ShumitUpgradedAttackBonusHeatPower : CustomPowerModel
 	}
 }
 
-/// <summary>접쇠: 이번 턴 강화된 카드가 효과를 한 번 더 발동하는 횟수(슈미트: 재사용).</summary>
+/// <summary>접쇠: 이번 턴 「다음 강화된 카드 1장」이 효과를 «Amount»번 추가 발동(슈미트: 재사용).</summary>
 public sealed class FoldedSteelReplayPower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
@@ -472,12 +464,12 @@ public sealed class FoldedSteelReplayPower : CustomPowerModel
 			return playCount;
 		}
 
-		return playCount + 1;
+		return playCount + Amount;
 	}
 
 	public override async Task AfterModifyingCardPlayCount(CardModel card)
 	{
-		await PowerCmd.Decrement(this);
+		await PowerCmd.Remove(this);
 	}
 
 	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
@@ -499,7 +491,7 @@ public sealed class ShumitMasterPridePower : CustomPowerModel
 	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.Static(StaticHoverTip.Block) };
 }
 
-/// <summary>목숨을 걸어 — 열기·신체 화상 감소 무효, 카드 사용마다 힘·민첩·열기(세션에 저장된 양).</summary>
+/// <summary>목숨을 걸어 — 열기·신체 화상 감소 무효, 카드 타입별 보너스(스킬=힘, 공격=민첩).</summary>
 public sealed class ShumitBetYourLifePower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
@@ -530,27 +522,26 @@ public sealed class ShumitBetYourLifePower : CustomPowerModel
 			return;
 		}
 
-		int str = FrontierSession.GetBetYourLifeStrPerPlay(player);
-		int dex = FrontierSession.GetBetYourLifeDexPerPlay(player);
-		int heat = FrontierSession.GetBetYourLifeHeatPerPlay(player);
-		if (str <= 0 && dex <= 0 && heat <= 0)
+		switch (cardPlay.Card.Type)
 		{
-			return;
-		}
-
-		if (str > 0)
-		{
-			await PowerCmd.Apply<StrengthPower>(Owner, str, Owner, cardPlay.Card, silent: false);
-		}
-
-		if (dex > 0)
-		{
-			await PowerCmd.Apply<DexterityPower>(Owner, dex, Owner, cardPlay.Card, silent: false);
-		}
-
-		if (heat > 0)
-		{
-			await FrontierHeatUtil.ApplyHeat(context, Owner, heat, cardPlay.Card);
+			case CardType.Skill:
+			{
+				int str = FrontierSession.GetBetYourLifeStrPerPlay(player);
+				if (str > 0)
+				{
+					await PowerCmd.Apply<StrengthPower>(Owner, str, Owner, cardPlay.Card, silent: false);
+				}
+				break;
+			}
+			case CardType.Attack:
+			{
+				int dex = FrontierSession.GetBetYourLifeDexPerPlay(player);
+				if (dex > 0)
+				{
+					await PowerCmd.Apply<DexterityPower>(Owner, dex, Owner, cardPlay.Card, silent: false);
+				}
+				break;
+			}
 		}
 	}
 }
@@ -560,6 +551,46 @@ internal static class ShumitPowerKeywordHoverTips
 	internal static IEnumerable<IHoverTip> Heat()
 	{
 		yield return HoverTipFactory.FromKeyword(FrontierKeywords.Heat);
+	}
+}
+
+/// <summary>
+/// 무수히 많은 기억 — X 턴 동안 매 턴 시작 시 에너지 <see cref="EnergyPerTurn"/> 획득 + 카드 <see cref="DrawPerTurn"/> 장 추가 드로우.
+/// <para>스택 타입은 <see cref="PowerStackType.Counter"/>. 매 턴 시작에 효과를 적용한 뒤 1 씩 감소시키며,
+/// 1 이하에 도달하면 마지막 발동 후 자체 제거된다.</para>
+/// </summary>
+public sealed class CountlessMemoriesPower : CustomPowerModel
+{
+	public const int EnergyPerTurn = 2;
+	public const int DrawPerTurn = 4;
+
+	public override PowerType Type => PowerType.Buff;
+
+	public override PowerStackType StackType => PowerStackType.Counter;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+	{
+		HoverTipFactory.ForEnergy(this),
+	};
+
+	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+	{
+		if (player != Owner.Player || !Owner.IsPlayer || Amount <= 0)
+		{
+			return;
+		}
+
+		await PlayerCmd.GainEnergy(EnergyPerTurn, player);
+		await CardPileCmd.Draw(choiceContext, DrawPerTurn, player);
+
+		if (Amount > 1)
+		{
+			await PowerCmd.Apply<CountlessMemoriesPower>(Owner, -1, Owner, null, silent: true);
+		}
+		else
+		{
+			await PowerCmd.Remove(this);
+		}
 	}
 }
 

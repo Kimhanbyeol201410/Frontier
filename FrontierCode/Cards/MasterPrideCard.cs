@@ -19,7 +19,7 @@ public sealed class MasterPrideCard : ShumitCard
     protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(BlockPerUpgradeKey, 5m) };
 
     public MasterPrideCard()
-        : base(3, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+        : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 
@@ -35,6 +35,6 @@ public sealed class MasterPrideCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        EnergyCost.UpgradeBy(-1);
+        DynamicVars[BlockPerUpgradeKey].UpgradeValueBy(2m);
     }
 }

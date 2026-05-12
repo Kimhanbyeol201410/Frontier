@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Utils;
-using Frontier.Utilities;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Powers;
@@ -12,18 +11,18 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 달궈진 방패
 [Pool(typeof(ShumitCardPool))]
 public sealed class HeatedShieldCard : ShumitCard
 {
-    private const string HeatKey = "HeatGain";
+    private const string BlockPerHeatChunkKey = "BlockPerHeatChunk";
+    private const int HeatChunk = 10;
 
     public override bool GainsBlock => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new BlockVar(6m, ValueProp.Move),
-        new DynamicVar(HeatKey, 10m),
+        new BlockVar(8m, ValueProp.Move),
+        new DynamicVar(BlockPerHeatChunkKey, 1m),
     };
 
     public HeatedShieldCard()
@@ -33,12 +32,14 @@ public sealed class HeatedShieldCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        await PowerCmd.Apply<HeatPower>(Owner.Creature, DynamicVars[HeatKey].BaseValue, Owner.Creature, this);
+        int heat = Owner.Creature.GetPower<HeatPower>()?.Amount ?? 0;
+        decimal bonus = (heat / HeatChunk) * DynamicVars[BlockPerHeatChunkKey].BaseValue;
+        decimal total = DynamicVars.Block.BaseValue + bonus;
+        await CreatureCmd.GainBlock(Owner.Creature, total, ValueProp.Move, cardPlay);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(2m);
+        DynamicVars[BlockPerHeatChunkKey].UpgradeValueBy(1m);
     }
 }

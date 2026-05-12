@@ -23,7 +23,7 @@ public sealed class ApproachingDreadCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(6m, ValueProp.Move),
+        new DamageVar(8m, ValueProp.Move),
         new DynamicVar(HeatChunkKey, 20m),
         new DynamicVar(StrMultKey, 1m),
     };
@@ -49,6 +49,7 @@ public sealed class ApproachingDreadCard : ShumitCard
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Damage.UpgradeValueBy(2m);
         DynamicVars[StrMultKey].UpgradeValueBy(1m);
     }
 }

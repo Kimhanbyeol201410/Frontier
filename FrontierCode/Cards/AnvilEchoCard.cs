@@ -17,6 +17,7 @@ namespace Frontier.Cards;
 public sealed class AnvilEchoCard : ShumitCard
 {
     private const string HitsKey = "Hits";
+    private const string MasterpieceLeftKey = "MasterpieceLeft";
 
     protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { FrontierKeywords.Masterpiece };
 
@@ -24,6 +25,7 @@ public sealed class AnvilEchoCard : ShumitCard
     {
         new DamageVar(2m, ValueProp.Move),
         new DynamicVar(HitsKey, 5m),
+        new DynamicVar(MasterpieceLeftKey, 5m),
     };
 
     public AnvilEchoCard()
@@ -44,5 +46,6 @@ public sealed class AnvilEchoCard : ShumitCard
     protected override void OnUpgrade()
     {
         DynamicVars[HitsKey].UpgradeValueBy(1m);
+        DynamicVars[MasterpieceLeftKey].UpgradeValueBy(-1m);
     }
 }

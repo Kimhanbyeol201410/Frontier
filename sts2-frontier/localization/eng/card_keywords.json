@@ -9,6 +9,10 @@
   "FRONTIER-MASTERPIECE.description": "Raises this card's maximum upgrade cap. When upgrade level reaches the masterpiece threshold, the card transforms into another card (Anvil Echo becomes Anvil Memory at +5).",
   "FRONTIER-ENCHANT.title": "Enchant",
   "FRONTIER-ENCHANT.description": "A special enhancement applied to cards after combat.",
-  "FRONTIER-THERMAL_DEGRADATION.title": "Thermal Degradation",
-  "FRONTIER-THERMAL_DEGRADATION.description": "Choose a card in your hand with at least 1 upgrade and remove 1 upgrade level."
+  "FRONTIER-THERMALDEGRADATION.title": "Thermal Degradation",
+  "FRONTIER-THERMALDEGRADATION.description": "Choose a card in your hand with at least 1 upgrade and remove 1 upgrade level.",
+  "FRONTIER-INVERT.title": "Invert",
+  "FRONTIER-INVERT.description": "Gain [gold]Energy[/gold] equal to the exhausted card's displayed cost. Gain [gold]Strength[/gold] this turn equal to its listed damage, and [gold]Dexterity[/gold] this turn equal to its listed [gold]Block[/gold]. This turn, [gold]Heat[/gold] gain/loss is reversed.",
+  "FRONTIER-PRESERVETRIGGER.title": "Preserve Trigger",
+  "FRONTIER-PRESERVETRIGGER.description": "This card is not discarded at the end of turn. At the start of each turn, if it is in your hand, its effect triggers."
 }

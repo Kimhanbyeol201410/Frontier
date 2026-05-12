@@ -11,7 +11,7 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 철검 토큰: 힘 1(→2).
+// 철검 토큰: 힘 2(→4).
 [Pool(typeof(ShumitCardPool))]
 public sealed class IronSwordCard : TokenCardBase
 {
@@ -19,11 +19,11 @@ public sealed class IronSwordCard : TokenCardBase
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DynamicVar("Str", 1m),
+        new DynamicVar("Str", 2m),
     };
 
     public IronSwordCard()
-        : base(1, CardType.Skill, TargetType.None)
+        : base(1, CardType.Power, TargetType.Self)
     {
     }
 
@@ -38,6 +38,6 @@ public sealed class IronSwordCard : TokenCardBase
 
     protected override void OnUpgrade()
     {
-        DynamicVars["Str"].UpgradeValueBy(1m);
+        DynamicVars["Str"].UpgradeValueBy(2m);
     }
 }

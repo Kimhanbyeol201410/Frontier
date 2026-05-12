@@ -20,7 +20,7 @@ public sealed class BetYourLifeCard : ShumitCard
 {
     private const string StrBonusKey = "StrBonus";
     private const string DexBonusKey = "DexBonus";
-    private const string HeatBonusKey = "HeatBonus";
+    private const string BodyBurnGainKey = "BodyBurnGain";
 
     private static readonly PileType[] UpgradePiles =
     {
@@ -34,7 +34,7 @@ public sealed class BetYourLifeCard : ShumitCard
     {
         new DynamicVar(StrBonusKey, 1m),
         new DynamicVar(DexBonusKey, 1m),
-        new DynamicVar(HeatBonusKey, 10m),
+        new DynamicVar(BodyBurnGainKey, 2m),
     };
 
     public BetYourLifeCard()
@@ -47,8 +47,7 @@ public sealed class BetYourLifeCard : ShumitCard
         FrontierSession.SetBetYourLifePerPlayBonuses(
             Owner,
             DynamicVars[StrBonusKey].IntValue,
-            DynamicVars[DexBonusKey].IntValue,
-            DynamicVars[HeatBonusKey].IntValue);
+            DynamicVars[DexBonusKey].IntValue);
 
         foreach (PileType pileType in UpgradePiles)
         {
@@ -69,12 +68,17 @@ public sealed class BetYourLifeCard : ShumitCard
 
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<ShumitBetYourLifePower>(Owner.Creature, 1m, Owner.Creature, this);
+
+        decimal bodyBurnGain = DynamicVars[BodyBurnGainKey].BaseValue;
+        if (bodyBurnGain > 0m)
+        {
+            await PowerCmd.Apply<BodyBurnPower>(Owner.Creature, bodyBurnGain, Owner.Creature, this);
+        }
     }
 
     protected override void OnUpgrade()
     {
         DynamicVars[StrBonusKey].UpgradeValueBy(1m);
         DynamicVars[DexBonusKey].UpgradeValueBy(1m);
-        DynamicVars[HeatBonusKey].UpgradeValueBy(10m);
     }
 }
