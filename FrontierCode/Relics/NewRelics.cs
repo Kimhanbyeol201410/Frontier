@@ -21,7 +21,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace Frontier.Relics;
 
-[Pool(typeof(EventRelicPool))]
+[Pool(typeof(ShumitRelicPool))]
 public sealed class HeatproofApronRelic : CustomRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Common;
@@ -43,7 +43,7 @@ public sealed class HeatproofApronRelic : CustomRelicModel
     }
 }
 
-[Pool(typeof(EventRelicPool))]
+[Pool(typeof(ShumitRelicPool))]
 public sealed class HephaestusBloodRelic : CustomRelicModel
 {
     private const int HeatPerStrength = 20;
@@ -150,7 +150,7 @@ internal static class FrontierShumitRelicGate
 }
 
 /// <summary>끝없는 노력 — 휴식처 모루 행동 시 강화 카드 2장 추가 선택 가능.</summary>
-[Pool(typeof(EventRelicPool))]
+[Pool(typeof(ShumitRelicPool))]
 public sealed class EndlessLaborRelic : CustomRelicModel
 {
     private const int ExtraSmithCount = 2;
@@ -178,7 +178,7 @@ public sealed class EndlessLaborRelic : CustomRelicModel
 }
 
 /// <summary>타지않는 육체 — [신체 화상] 임계값을 200 → 300으로 변경. 실제 임계값 변경은 <c>HeatPower.AfterTurnEnd</c>에서 처리.</summary>
-[Pool(typeof(EventRelicPool))]
+[Pool(typeof(ShumitRelicPool))]
 public sealed class UnburnableBodyRelic : CustomRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Uncommon;
@@ -187,7 +187,7 @@ public sealed class UnburnableBodyRelic : CustomRelicModel
 }
 
 /// <summary>걸작 박물관 — 전투 시작 시 보유한 걸작 카드 1장당 힘 2, 민첩 2, 에너지 2를 얻고 시작.</summary>
-[Pool(typeof(EventRelicPool))]
+[Pool(typeof(ShumitRelicPool))]
 public sealed class MasterpieceMuseumRelic : CustomRelicModel
 {
     private const int BonusPerMasterpiece = 2;
@@ -226,7 +226,7 @@ public sealed class MasterpieceMuseumRelic : CustomRelicModel
 }
 
 /// <summary>무한히 불타는 화로 — 전투 시작 시 [열기] 70 즉시 획득, 매 [화상] 드로우 시 화상 카드를 소진시키고 카드 1장 드로우 + [열기] 20 획득.</summary>
-[Pool(typeof(EventRelicPool))]
+[Pool(typeof(ShumitRelicPool))]
 public sealed class EternallyBurningFurnaceRelic : CustomRelicModel
 {
     private const int InitialHeat = 70;
