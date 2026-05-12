@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BaseLib.Utils;
 using Frontier.Characters;
 using Frontier.Utilities;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -57,8 +58,16 @@ public sealed class SmelterCard : ShumitCard
 
     private async Task ApplyEffect(PlayerChoiceContext choiceContext)
     {
-        CardModel? selected = await CardSelectCmd.FromHandForUpgrade(choiceContext, Owner, this);
-        if (selected != null && !ReferenceEquals(selected, this))
+        // 0~1 자유 선택 — 강화 없이 종료(스킵) 허용. FromHand 로 호출해 MinSelect=0 적용.
+        CardSelectorPrefs prefs = new(CardSelectorPrefs.UpgradeSelectionPrompt, 0, 1);
+        IEnumerable<CardModel> picked = await CardSelectCmd.FromHand(
+            choiceContext,
+            Owner,
+            prefs,
+            (CardModel c) => c.IsUpgradable && !ReferenceEquals(c, this),
+            this);
+        CardModel? selected = picked.FirstOrDefault();
+        if (selected != null)
         {
             CardCmd.Upgrade(selected, CardPreviewStyle.HorizontalLayout);
         }

@@ -43,6 +43,8 @@ public sealed class ShumitCardPool : CustomCardPoolModel
 		{
 			if (c.Id.Entry == FrontierRules.AnvilMemoryCardEntry
 			    || c.Id.Entry == FrontierRules.FrenziedHeatCardEntry
+			    || c.Id.Entry == FrontierRules.AncientForgingCardEntry
+			    || c.Id.Entry == FrontierRules.CountlessMemoriesCardEntry
 			    || FrontierRules.HiddenFromShumitCardPoolEntries.Contains(c.Id.Entry))
 			{
 				continue;
@@ -57,6 +59,7 @@ public sealed class ShumitCardPool : CustomCardPoolModel
 		return new CardModel[]
 		{
 			ModelDb.Card<AbsoluteZeroCard>(),
+			ModelDb.Card<AncientForgingCard>(),
 			ModelDb.Card<AnvilEchoCard>(),
 			ModelDb.Card<ApproachingDreadCard>(),
 			ModelDb.Card<BellowsCard>(),
@@ -70,6 +73,7 @@ public sealed class ShumitCardPool : CustomCardPoolModel
 			ModelDb.Card<CoolHeadCard>(),
 			ModelDb.Card<CoolingStrikeCard>(),
 			ModelDb.Card<CoolingSystemCard>(),
+			ModelDb.Card<CountlessMemoriesCard>(),
 			ModelDb.Card<CreviceCard>(),
 			ModelDb.Card<CrushingHammerCard>(),
 			ModelDb.Card<DefendShumitCard>(),

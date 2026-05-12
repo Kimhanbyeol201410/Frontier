@@ -554,3 +554,43 @@ internal static class ShumitPowerKeywordHoverTips
 	}
 }
 
+/// <summary>
+/// 무수히 많은 기억 — X 턴 동안 매 턴 시작 시 에너지 <see cref="EnergyPerTurn"/> 획득 + 카드 <see cref="DrawPerTurn"/> 장 추가 드로우.
+/// <para>스택 타입은 <see cref="PowerStackType.Counter"/>. 매 턴 시작에 효과를 적용한 뒤 1 씩 감소시키며,
+/// 1 이하에 도달하면 마지막 발동 후 자체 제거된다.</para>
+/// </summary>
+public sealed class CountlessMemoriesPower : CustomPowerModel
+{
+	public const int EnergyPerTurn = 2;
+	public const int DrawPerTurn = 4;
+
+	public override PowerType Type => PowerType.Buff;
+
+	public override PowerStackType StackType => PowerStackType.Counter;
+
+	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
+	{
+		HoverTipFactory.ForEnergy(this),
+	};
+
+	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+	{
+		if (player != Owner.Player || !Owner.IsPlayer || Amount <= 0)
+		{
+			return;
+		}
+
+		await PlayerCmd.GainEnergy(EnergyPerTurn, player);
+		await CardPileCmd.Draw(choiceContext, DrawPerTurn, player);
+
+		if (Amount > 1)
+		{
+			await PowerCmd.Apply<CountlessMemoriesPower>(Owner, -1, Owner, null, silent: true);
+		}
+		else
+		{
+			await PowerCmd.Remove(this);
+		}
+	}
+}
+

@@ -73,5 +73,8 @@
   "FRONTIER-SHUMIT_STRIP_DEXTERITY_AT_TURN_END_POWER.smartDescription": "At end of turn, lose [blue]{Amount}[/blue] [gold]Dexterity[/gold] gained this way.",
   "FRONTIER-SHUMIT_REVERSE_ENGINEERING_INVERT_HEAT_POWER.title": "Reverse Engineering (Heat flip)",
   "FRONTIER-SHUMIT_REVERSE_ENGINEERING_INVERT_HEAT_POWER.description": "This turn, when you would gain [gold]Heat[/gold], lose that much instead; when you would lose [gold]Heat[/gold], gain that much instead.",
-  "FRONTIER-SHUMIT_REVERSE_ENGINEERING_INVERT_HEAT_POWER.smartDescription": "This turn, when you would gain [gold]Heat[/gold], lose that much instead; when you would lose [gold]Heat[/gold], gain that much instead."
+  "FRONTIER-SHUMIT_REVERSE_ENGINEERING_INVERT_HEAT_POWER.smartDescription": "This turn, when you would gain [gold]Heat[/gold], lose that much instead; when you would lose [gold]Heat[/gold], gain that much instead.",
+  "FRONTIER-COUNTLESS_MEMORIES_POWER.title": "Countless Memories",
+  "FRONTIER-COUNTLESS_MEMORIES_POWER.description": "At the start of your turn, gain 2 [gold]Energy[/gold] and draw 4 additional cards.\nThen lose 1 of [blue]{Amount}[/blue].",
+  "FRONTIER-COUNTLESS_MEMORIES_POWER.smartDescription": "At the start of your turn, gain 2 [gold]Energy[/gold] and draw 4 additional cards.\nTurns remaining: [blue]{Amount}[/blue]."
 }

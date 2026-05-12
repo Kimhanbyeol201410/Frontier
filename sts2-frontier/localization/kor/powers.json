@@ -73,5 +73,8 @@
   "FRONTIER-SHUMIT_STRIP_DEXTERITY_AT_TURN_END_POWER.smartDescription": "턴 종료 시 이번에 얻은 [gold]민첩[/gold] [blue]{Amount}[/blue]을 잃습니다.",
   "FRONTIER-SHUMIT_REVERSE_ENGINEERING_INVERT_HEAT_POWER.title": "리버스 엔지니어링 (열기 반전)",
   "FRONTIER-SHUMIT_REVERSE_ENGINEERING_INVERT_HEAT_POWER.description": "이번 턴 [gold]열기[/gold]가 늘어날 때는 줄어들고, 줄어들 때는 늘어납니다.",
-  "FRONTIER-SHUMIT_REVERSE_ENGINEERING_INVERT_HEAT_POWER.smartDescription": "이번 턴 [gold]열기[/gold]가 늘어날 때는 줄어들고, 줄어들 때는 늘어납니다."
+  "FRONTIER-SHUMIT_REVERSE_ENGINEERING_INVERT_HEAT_POWER.smartDescription": "이번 턴 [gold]열기[/gold]가 늘어날 때는 줄어들고, 줄어들 때는 늘어납니다.",
+  "FRONTIER-COUNTLESS_MEMORIES_POWER.title": "무수히 많은 기억",
+  "FRONTIER-COUNTLESS_MEMORIES_POWER.description": "내 턴 시작 시 [gold]에너지[/gold]를 2 얻고 카드를 4장 추가로 뽑습니다.\n그 후 [blue]{Amount}[/blue]을(를) 1 잃습니다.",
+  "FRONTIER-COUNTLESS_MEMORIES_POWER.smartDescription": "내 턴 시작 시 [gold]에너지[/gold]를 2 얻고 카드를 4장 추가로 뽑습니다.\n남은 횟수: [blue]{Amount}[/blue]."
 }

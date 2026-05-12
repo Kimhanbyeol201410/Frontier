@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Utils;
-using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -10,25 +10,27 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.ValueProps;
-
-namespace Frontier.Cards;
 using Frontier.Characters;
 
+namespace Frontier.Cards;
+
+/// <summary>
+/// 고대의 단조 — <c>ArchaicTooth</c>(고대의 이빨) 유물이
+/// 시작 카드 <c>ForgingCard</c>(단조) 를 변환해 얻게 되는 슈미트 전용 Ancient 카드.
+/// 0 코스트, 단일 공격 + 손패의 모든 카드 강화.
+/// </summary>
 [Pool(typeof(ShumitCardPool))]
-public sealed class ForgingCard : ShumitCard
+public sealed class AncientForgingCard : ShumitCard
 {
-    private const string PickCountKey = "PickCount";
+    public AncientForgingCard()
+        : base(0, CardType.Attack, CardRarity.Ancient, TargetType.AnyEnemy)
+    {
+    }
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(8m, ValueProp.Move),
-        new DynamicVar(PickCountKey, 1m),
+        new DamageVar(12m, ValueProp.Move),
     };
-
-    public ForgingCard()
-        : base(1, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy)
-    {
-    }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -39,22 +41,13 @@ public sealed class ForgingCard : ShumitCard
             .Targeting(cardPlay.Target)
             .Execute(choiceContext);
 
-        int pickCount = base.DynamicVars[PickCountKey].IntValue;
-        if (pickCount <= 0)
+        IReadOnlyList<CardModel> hand = PileType.Hand.GetPile(Owner).Cards;
+        foreach (CardModel c in hand.ToList())
         {
-            return;
-        }
-
-        // 0 ~ pickCount 자유 선택 — 강화 없이 종료(스킵) 허용.
-        CardSelectorPrefs prefs = new(CardSelectorPrefs.UpgradeSelectionPrompt, 0, pickCount);
-        IEnumerable<CardModel> picked = await CardSelectCmd.FromHand(
-            choiceContext,
-            Owner,
-            prefs,
-            (CardModel c) => c.IsUpgradable && !ReferenceEquals(c, this),
-            this);
-        foreach (CardModel c in picked.ToList())
-        {
+            if (ReferenceEquals(c, this))
+            {
+                continue;
+            }
             if (c.IsUpgradable)
             {
                 CardCmd.Upgrade(c, CardPreviewStyle.HorizontalLayout);
@@ -64,7 +57,6 @@ public sealed class ForgingCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Damage.UpgradeValueBy(2m);
-        base.DynamicVars[PickCountKey].UpgradeValueBy(1m);
+        base.DynamicVars.Damage.UpgradeValueBy(4m);
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Combat;
@@ -20,9 +19,6 @@ public sealed class ManufactureCard : ShumitCard
     private const string CreateCountKey = "CreateCount";
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(CreateCountKey, 1m) };
-
-    protected override bool IsPlayable =>
-        base.IsPlayable && PileType.Hand.GetPile(Owner).Cards.Any(static (CardModel c) => c is ForgeCard);
 
     public ManufactureCard()
         : base(0, CardType.Skill, CardRarity.Uncommon, TargetType.None)

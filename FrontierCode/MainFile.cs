@@ -76,6 +76,22 @@ internal static class FrontierRules
     /// <summary><see cref="FrenziedHeatCard"/> 엔트리. 걸작(멈출 수 없는 열기 +5)으로만 획득 — 보상·상점 및 전투 무작위 생성에서 제외.</summary>
     public const string FrenziedHeatCardEntry = "FRONTIER-FRENZIED_HEAT_CARD";
 
+    /// <summary><see cref="AncientForgingCard"/> 엔트리. <see cref="ArchaicTooth"/>(고대의 이빨) 변환으로만 획득 — 보상·상점 및 전투 무작위 생성에서 제외.</summary>
+    public const string AncientForgingCardEntry = "FRONTIER-ANCIENT_FORGING_CARD";
+
+    /// <summary><see cref="CountlessMemoriesCard"/> 엔트리. <see cref="DustyTome"/>(먼지 쌓인 책) 변환으로만 획득 — 보상·상점 및 전투 무작위 생성에서 제외.</summary>
+    public const string CountlessMemoriesCardEntry = "FRONTIER-COUNTLESS_MEMORIES_CARD";
+
+    /// <summary>
+    /// <see cref="ArchaicTooth"/>/<see cref="DustyTome"/> 변환으로만 얻는 슈미트 Ancient 카드들 —
+    /// 슈미트 «재련» 시스템에서 제외, 항상 강화 1회만 가능. <see cref="GetReforgeBonus"/> 가 이 집합을 우선 검사한다.
+    /// </summary>
+    public static readonly HashSet<string> NoReforgeAncientCardEntries = new(StringComparer.Ordinal)
+    {
+        AncientForgingCardEntry,
+        CountlessMemoriesCardEntry,
+    };
+
     /// <summary>
     /// <see cref="ShumitCharacter.StartingDeck"/> 카드(보상·상점 전용 풀에서 제외)와
     /// 전투 종료 인챈트(기민함/메아리/숙련/예리함 제련), 미구현 «불사르지 않는 몸» 등
@@ -155,12 +171,26 @@ internal static class FrontierRules
             return true;
         }
 
+        // 카드 라이브러리(백과사전)·도감 등에서 canonical(원본 ModelDb) 카드를 표시할 때
+        // CardModel.Owner getter 는 AssertMutable() 에서 CanonicalModelException 을 던진다.
+        // 슈미트 외 캐릭터의 canonical 카드는 슈미트 카드가 아니므로 안전하게 false 처리.
+        if (card.IsCanonical)
+        {
+            return false;
+        }
+
         return card.Owner?.Character?.Id?.Entry == ShumitCharacter.CharacterId;
     }
 
     public static int GetReforgeBonus(CardModel card)
     {
         if (card?.Id?.Entry == null)
+        {
+            return 0;
+        }
+
+        // Ancient 변환 전용 카드(고대의 단조, 무수히 많은 기억)는 «재련» 적용 외 — 강화 1회 고정.
+        if (NoReforgeAncientCardEntries.Contains(card.Id.Entry))
         {
             return 0;
         }
@@ -178,8 +208,9 @@ internal static class FrontierRules
         }
 
         // 슈미트 카드는 BrokenForgeRelic이 시작 렐릭이라 사실상 항상 보유 상태이다.
-        // deserialize(card.Owner == null) 시점에는 RelicList 접근이 불가능하므로 안전하게 최소 보장만 적용한다.
-        Player? owner = card.Owner;
+        // deserialize(card.Owner == null) 또는 canonical 카드(card.IsCanonical)의 경우
+        // Owner / RelicList 접근이 불가능하므로 안전하게 최소 보장만 적용한다.
+        Player? owner = card.IsCanonical ? null : card.Owner;
         bool hasBrokenForge = owner == null || owner.GetRelic<BrokenForgeRelic>() != null;
         if (hasBrokenForge)
         {
@@ -275,6 +306,11 @@ public static class FrontierMasterpieceTransformPatch
             if (transformFactory == null)
             {
                 GD.Print($"[Frontier] Masterpiece reached without transform mapping: {card.Id.Entry}");
+                continue;
+            }
+
+            if (card.IsCanonical)
+            {
                 continue;
             }
 

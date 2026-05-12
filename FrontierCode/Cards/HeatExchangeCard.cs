@@ -37,10 +37,11 @@ public sealed class HeatExchangeCard : ShumitCard
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
 
+        // 0~1 자유 선택 — 강화·이동 없이 종료(스킵) 허용. 방어도/열기 감소는 카드 선택과 무관하게 항상 적용.
         IEnumerable<CardModel> pick = await CardSelectCmd.FromHand(
             choiceContext,
             Owner,
-            new CardSelectorPrefs(SelectionScreenPrompt, 1),
+            new CardSelectorPrefs(SelectionScreenPrompt, 0, 1),
             (CardModel c) => !ReferenceEquals(c, this),
             this);
         CardModel? moveCard = pick.FirstOrDefault();

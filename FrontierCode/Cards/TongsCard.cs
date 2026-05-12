@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Utils;
 using Frontier.Utilities;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -32,9 +34,16 @@ public sealed class TongsCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // FromHand + SimpleSelect는 강화 미리보기가 없고, IsUpgradable이 아닌 카드도 골라질 수 있다. Armaments·제련소와 동일하게 FromHandForUpgrade 사용.
-        CardModel? target = await CardSelectCmd.FromHandForUpgrade(choiceContext, Owner, this);
-        if (target != null && !ReferenceEquals(target, this))
+        // 0~1 자유 선택 — 강화 없이 종료(스킵) 허용. 발열은 카드 선택 결과와 무관하게 항상 적용.
+        CardSelectorPrefs prefs = new(CardSelectorPrefs.UpgradeSelectionPrompt, 0, 1);
+        IEnumerable<CardModel> picked = await CardSelectCmd.FromHand(
+            choiceContext,
+            Owner,
+            prefs,
+            (CardModel c) => c.IsUpgradable && !ReferenceEquals(c, this),
+            this);
+        CardModel? target = picked.FirstOrDefault();
+        if (target != null)
         {
             int times = DynamicVars[TimesKey].IntValue;
             for (int i = 0; i < times && target.IsUpgradable; i++)
