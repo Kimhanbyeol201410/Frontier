@@ -27,7 +27,7 @@ public sealed class GrindingRoomCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DynamicVar(VigorAmountKey, 6m),
+        new DynamicVar(VigorAmountKey, 3m),
     };
 
     /// <summary>«강화 불가» — 재련/걸작과 무관하게 강화 불가능. <see cref="FrontierUpgradeCapPatch"/> 가 0 이하 값을 그대로 유지한다.</summary>

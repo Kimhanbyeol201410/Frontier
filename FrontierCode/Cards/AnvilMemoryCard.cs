@@ -17,23 +17,26 @@ using Frontier.Utilities;
 namespace Frontier.Cards;
 
 // 모루의 기억
-//   - OnPlay: 모든 적에게 약화·취약 부여 후, 피해 3을 10회 명중.
+//   - OnPlay: 모든 적에게 약화·취약 부여 후, 피해 3을 15회 명중.
 //   - 디버프 부여는 공격 이전 단계에서 한 번에 처리.
+//   - 재련 5: 강화 시 카운터가 1씩 감소(다른 재련 카드들과 동일 패턴).
 [Pool(typeof(ShumitCardPool))]
 public sealed class AnvilMemoryCard : ShumitCard
 {
     private const string HitsKey = "Hits";
     private const string WeakKey = "Weak";
     private const string VulnKey = "Vulnerable";
+    private const string ReforgeLeftKey = "ReforgeLeft";
 
     protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Retain };
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new DamageVar(3m, ValueProp.Move),
-        new DynamicVar(HitsKey, 10m),
+        new DynamicVar(HitsKey, 15m),
         new DynamicVar(WeakKey, 3m),
         new DynamicVar(VulnKey, 3m),
+        new DynamicVar(ReforgeLeftKey, 5m),
     };
 
     public AnvilMemoryCard()
@@ -68,5 +71,6 @@ public sealed class AnvilMemoryCard : ShumitCard
     protected override void OnUpgrade()
     {
         DynamicVars.Damage.UpgradeValueBy(2m);
+        DynamicVars[ReforgeLeftKey].UpgradeValueBy(-1m);
     }
 }

@@ -16,7 +16,7 @@ public sealed class HeatedShieldCard : ShumitCard
 {
     private const string BlockPerHeatChunkKey = "BlockPerHeatChunk";
     private const string ReforgeLeftKey = "ReforgeLeft";
-    private const int HeatChunk = 10;
+    private const int HeatChunk = 20;
 
     public override bool GainsBlock => true;
 

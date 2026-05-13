@@ -148,8 +148,8 @@ public sealed class ShumitCoolHeadNextTurnPower : CustomPowerModel
 [CustomID("FRONTIER-SHUMIT_VENTILATION_THIS_TURN_POWER")]
 public sealed class ShumitVentilationThisTurnPower : CustomPowerModel
 {
-	/// <summary>환기 발동 시 카드 사용마다 부여하는 방어도. 강화·다른 카드와 무관하게 고정.</summary>
-	private const int BlockPerCard = 3;
+	/// <summary>환기 발동 시 카드 사용마다 부여하는 방어도. <see cref="IsInstanced"/>=true 이므로 각 인스턴스가 자신만의 값을 가지며, 카드(강화 단계) 측에서 적용 직후 덮어 설정한다.</summary>
+	public int BlockPerCard { get; set; } = 3;
 
 	public override PowerType Type => PowerType.Buff;
 
@@ -167,7 +167,10 @@ public sealed class ShumitVentilationThisTurnPower : CustomPowerModel
 		}
 
 		await FrontierHeatUtil.ReduceHeat(context, Owner, Amount, cardPlay.Card);
-		await CreatureCmd.GainBlock(Owner, BlockPerCard, ValueProp.Move, cardPlay);
+		if (BlockPerCard > 0)
+		{
+			await CreatureCmd.GainBlock(Owner, BlockPerCard, ValueProp.Move, cardPlay);
+		}
 	}
 
 	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
@@ -499,9 +502,12 @@ public sealed class ShumitUpgradedAttackBonusHeatPower : CustomPowerModel
 	}
 }
 
-/// <summary>접쇠: 이번 턴 「다음 강화된 카드 1장」이 효과를 «Amount»번 추가 발동(슈미트: 재사용).</summary>
+/// <summary>접쇠: 이번 턴 「다음 강화된 카드 1장」이 효과를 «Amount»번 추가 발동(슈미트: 재사용). 추가 재사용 1회당 <see cref="HeatPerReplay"/> 열기 획득.</summary>
 public sealed class FoldedSteelReplayPower : CustomPowerModel
 {
+	/// <summary>추가 재사용 1회당 부여하는 열기. 자격 조건(소유자/강화 카드/접쇠 자체 제외)을 충족해 ModifyCardPlayCount 가 실제로 카운트를 증가시킨 경우에만 적용된다.</summary>
+	private const int HeatPerReplay = 15;
+
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
@@ -520,6 +526,13 @@ public sealed class FoldedSteelReplayPower : CustomPowerModel
 
 	public override async Task AfterModifyingCardPlayCount(CardModel card)
 	{
+		// 이 hook은 ModifyCardPlayCount 가 실제로 카운트를 변경한 modifier 에 대해서만 호출됨(Hook.cs).
+		// 따라서 Amount 가 그대로 추가 재사용 횟수와 동일하다.
+		int gain = Amount * HeatPerReplay;
+		if (gain > 0)
+		{
+			await PowerCmd.Apply<HeatPower>(Owner, gain, Owner, null);
+		}
 		await PowerCmd.Remove(this);
 	}
 

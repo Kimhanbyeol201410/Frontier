@@ -16,10 +16,12 @@ namespace Frontier.Cards;
 public sealed class VentilationCard : ShumitCard
 {
     private const string HeatPerCardKey = "HeatPerCard";
+    private const string BlockPerCardKey = "BlockPerCard";
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new DynamicVar(HeatPerCardKey, 5m),
+        new DynamicVar(BlockPerCardKey, 3m),
     };
 
     public VentilationCard()
@@ -30,8 +32,12 @@ public sealed class VentilationCard : ShumitCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
-        decimal per = DynamicVars[HeatPerCardKey].BaseValue;
-        await PowerCmd.Apply<ShumitVentilationThisTurnPower>(Owner.Creature, per, Owner.Creature, this);
+        decimal heatPer = DynamicVars[HeatPerCardKey].BaseValue;
+        ShumitVentilationThisTurnPower? power = await PowerCmd.Apply<ShumitVentilationThisTurnPower>(Owner.Creature, heatPer, Owner.Creature, this);
+        if (power != null)
+        {
+            power.BlockPerCard = DynamicVars[BlockPerCardKey].IntValue;
+        }
     }
 
     protected override void OnUpgrade()

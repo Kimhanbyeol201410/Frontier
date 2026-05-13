@@ -20,12 +20,16 @@ public abstract class ShumitCard : CustomCardModel
     {
     }
 
-    /// <summary>Exhaust, Retain 등. <see cref="FrontierKeywords.Heat"/>는 <c>AutoKeywordPosition.None</c>이라 하단 키워드 줄에는 붙지 않고, 카드 호버 시 열기 설명 툴팁만 제공한다.</summary>
+    /// <summary>Exhaust, Retain 등 카드 자체 특성으로서의 키워드. 카드 라벨/effect 동작과 직결되므로 여기에 명시.</summary>
     protected virtual IEnumerable<CardKeyword> ShumitCanonicalKeywords => Enumerable.Empty<CardKeyword>();
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => ShumitCanonicalKeywords.Append(FrontierKeywords.Heat);
+    public override IEnumerable<CardKeyword> CanonicalKeywords => ShumitCanonicalKeywords;
 
-    /// <summary>모든 슈미트 카드는 «열기»를 다루므로 호버 시 «열기»와 «신체 화상» 키워드 설명을 함께 노출한다. «열기» 자체는 <see cref="CanonicalKeywords"/> 가 처리하므로 여기서는 «신체 화상» 만 추가.</summary>
+    /// <summary>
+    /// 카드 설명에 등장하는 모든 키워드/파워/상태 카드의 호버 설명을 <see cref="FrontierAutoHoverTips"/>가
+    /// 자동으로 감지해 노출한다. 슈미트 카드뿐 아니라 «열기/신체 화상/취약/약화/힘/민첩/활력/화상/재련»…
+    /// 등 description 안 <c>[gold]...[/gold]</c> 토큰에 매칭되는 모든 호버가 한 번에 채워진다.
+    /// </summary>
     protected override IEnumerable<IHoverTip> ExtraHoverTips
     {
         get
@@ -35,7 +39,10 @@ public abstract class ShumitCard : CustomCardModel
                 yield return baseTip;
             }
 
-            yield return HoverTipFactory.FromKeyword(FrontierKeywords.BodyBurn);
+            foreach (IHoverTip auto in FrontierAutoHoverTips.CollectFor(this))
+            {
+                yield return auto;
+            }
         }
     }
 
