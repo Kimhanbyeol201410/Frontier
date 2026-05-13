@@ -57,10 +57,12 @@ public sealed class AnvilMemoryCard : ShumitCard
         }
 
         int hits = DynamicVars[HitsKey].IntValue;
-        for (int i = 0; i < hits; i++)
-        {
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).TargetingAllOpponents(combatState).Execute(choiceContext);
-        }
+        // 단일 AttackCommand 로 멀티히트 처리. VigorPower 등이 모든 히트에 적용되게.
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+            .WithHitCount(hits)
+            .FromCard(this)
+            .TargetingAllOpponents(combatState)
+            .Execute(choiceContext);
     }
 
     protected override void OnUpgrade()

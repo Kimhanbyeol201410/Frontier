@@ -31,13 +31,12 @@ public sealed class PassionVerveCard : ShumitCard
 	protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
 	{
 		System.ArgumentNullException.ThrowIfNull(cardPlay.Target, nameof(cardPlay.Target));
-		for (int i = 0; i < Hits; i++)
-		{
-			await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-				.FromCard(this)
-				.Targeting(cardPlay.Target)
-				.Execute(choiceContext);
-		}
+		// 단일 AttackCommand 로 멀티히트 처리. VigorPower 등이 모든 히트에 적용되게.
+		await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+			.WithHitCount(Hits)
+			.FromCard(this)
+			.Targeting(cardPlay.Target)
+			.Execute(choiceContext);
 		await PowerCmd.Apply<VulnerablePower>(
 			cardPlay.Target,
 			DynamicVars[VulnerableKey].BaseValue,

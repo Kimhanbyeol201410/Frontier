@@ -34,10 +34,12 @@ public sealed class FrenziedHeatCard : ShumitCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         CombatState combatState = FrontierCombatStateHelper.RequireFor(Owner);
-        for (int i = 0; i < HitCount; i++)
-        {
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).TargetingAllOpponents(combatState).Execute(choiceContext);
-        }
+        // 단일 AttackCommand 로 멀티히트 처리. VigorPower 등이 모든 히트에 적용되게.
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+            .WithHitCount(HitCount)
+            .FromCard(this)
+            .TargetingAllOpponents(combatState)
+            .Execute(choiceContext);
     }
 
     protected override void OnUpgrade()

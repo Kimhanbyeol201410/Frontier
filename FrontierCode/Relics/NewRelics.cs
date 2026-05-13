@@ -95,7 +95,9 @@ public sealed class FusionerHammerRelic : CustomRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Event;
 
-    public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
+    // 카드 사용 「전」에 [활력] 을 부여한다. AfterCardPlayed 로 두면 카드 자신의 공격(특히 멀티히트)에는
+    // 적용되지 않으므로, BeforeCardPlayed 로 옮겨 사용 카드의 첫 공격부터 활력 보너스가 들어가게 한다.
+    public override async Task BeforeCardPlayed(CardPlay cardPlay)
     {
         if (cardPlay.Card.Owner != base.Owner || cardPlay.Card.CurrentUpgradeLevel <= 0)
         {

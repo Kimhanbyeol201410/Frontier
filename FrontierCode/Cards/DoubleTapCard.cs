@@ -37,13 +37,12 @@ public sealed class DoubleTapCard : ShumitCard
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         System.ArgumentNullException.ThrowIfNull(cardPlay.Target, nameof(cardPlay.Target));
-        for (int i = 0; i < base.DynamicVars[HitsKey].IntValue; i++)
-        {
-            await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue)
-                .FromCard(this)
-                .Targeting(cardPlay.Target)
-                .Execute(choiceContext);
-        }
+        // 단일 AttackCommand 로 멀티히트 처리. VigorPower 등이 모든 히트에 적용되게.
+        await DamageCmd.Attack(base.DynamicVars.Damage.BaseValue)
+            .WithHitCount(base.DynamicVars[HitsKey].IntValue)
+            .FromCard(this)
+            .Targeting(cardPlay.Target)
+            .Execute(choiceContext);
 
         await FrontierHeatUtil.ApplyHeat(choiceContext, base.Owner.Creature, base.DynamicVars[HeatKey].BaseValue, this);
     }

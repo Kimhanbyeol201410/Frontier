@@ -50,10 +50,14 @@ public sealed class AnvilEchoCard : ShumitCard
     {
         CombatState combatState = FrontierCombatStateHelper.RequireFor(Owner);
         int hits = DynamicVars[HitsKey].IntValue;
-        for (int i = 0; i < hits; i++)
-        {
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).TargetingAllOpponents(combatState).Execute(choiceContext);
-        }
+        // 단일 AttackCommand 로 묶어 멀티히트를 처리한다.
+        // 본체 VigorPower 등 「이 공격 한 번」 단위로 동작하는 파워(BeforeAttack→AfterAttack)가
+        // 매 타마다 발동되도록 하기 위함. for 루프로 별개 AttackCommand 를 돌리면 첫 타에만 적용된다.
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+            .WithHitCount(hits)
+            .FromCard(this)
+            .TargetingAllOpponents(combatState)
+            .Execute(choiceContext);
     }
 
     protected override void OnUpgrade()
