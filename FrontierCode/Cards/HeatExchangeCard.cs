@@ -14,7 +14,12 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 열 교환 — 손에서 카드 1장을 뽑을 더미 맨 위로 옮긴 뒤 «UpgradeTimes»회 강화. 강화 시 1회 → 2회 (집게질과 동일 패턴).
+// 열 교환 — 손에서 카드 1장을 «UpgradeTimes»회 강화한 뒤 뽑을 더미 맨 위로 옮긴다. 강화 시 1회 → 2회 (집게질과 동일 패턴).
+//
+//   주의: 강화·이동 순서가 매우 중요하다. FrontierUpgradeSelectUtil 가 NPlayerHand.Mode.UpgradeSelect 로 카드를 받기 때문에
+//   선택 직후 카드는 강화 「미리보기」 상태이고, 이 상태로 CardPileCmd.Add 를 호출하면 unpack/CardPileCmd.cs:285 의
+//   "A card preview cannot be added to a pile." 가드에 걸려 InvalidOperationException 이 발생한다.
+//   CardCmd.Upgrade -> FinalizeUpgradeInternal 가 미리보기 상태를 정리하므로, 강화를 먼저 끝낸 뒤 이동해야 안전하다.
 [Pool(typeof(ShumitCardPool))]
 public sealed class HeatExchangeCard : ShumitCard
 {
@@ -44,13 +49,15 @@ public sealed class HeatExchangeCard : ShumitCard
         CardModel? moveCard = picked.FirstOrDefault();
         if (moveCard != null)
         {
-            await CardPileCmd.Add(moveCard, PileType.Draw, CardPilePosition.Top, this);
-
+            // 1) 미리보기 상태를 정리하기 위해 강화를 먼저 수행 (FinalizeUpgradeInternal 호출됨).
             int times = DynamicVars[UpgradeTimesKey].IntValue;
             for (int i = 0; i < times && moveCard.IsUpgradable; i++)
             {
                 CardCmd.Upgrade(moveCard, CardPreviewStyle.HorizontalLayout);
             }
+
+            // 2) 강화 완료 후 안전하게 뽑을 더미 맨 위로 이동.
+            await CardPileCmd.Add(moveCard, PileType.Draw, CardPilePosition.Top, this);
         }
 
         await FrontierHeatUtil.ReduceHeat(choiceContext, Owner.Creature, DynamicVars[HeatLossKey].BaseValue, this);
