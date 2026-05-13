@@ -12,7 +12,8 @@
 
   <ItemGroup>
     <PackageReference Include="Lib.Harmony" Version="2.3.3" />
-    <PackageReference Include="Alchyr.Sts2.BaseLib" Version="*" />
+    <!-- 게임 mods 폴더에 설치된 BaseLib(예: BaseLib.3.1.2) 와 동일 버전으로 고정해야 한다. *(=latest) 로 두면 새 BaseLib 가 NuGet 에 올라올 때마다 ReflectionTypeLoadException 으로 깨진다. -->
+    <PackageReference Include="Alchyr.Sts2.BaseLib" Version="3.1.2" />
     <Reference Include="sts2">
       <HintPath>D:\SteamLibrary\steamapps\common\Slay the Spire 2\data_sts2_windows_x86_64\sts2.dll</HintPath>
       <Private>False</Private>
