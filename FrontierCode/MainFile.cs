@@ -417,6 +417,13 @@ public sealed class BodyBurnPower : CustomPowerModel
             return;
         }
 
+        // «목숨을 걸어» 카드 자체로는 [신체 화상] 데미지가 트리거되지 않도록 한다.
+        // 이 카드가 [신체 화상] 을 부여하는 카드이므로, 사용 직후 자기 자신으로 데미지를 입는 것은 의도와 다르다.
+        if (cardPlay.Card is BetYourLifeCard)
+        {
+            return;
+        }
+
         await CreatureCmd.Damage(context, Owner, Amount, ValueProp.Unpowered, null, cardPlay.Card);
     }
 

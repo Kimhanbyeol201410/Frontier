@@ -55,7 +55,7 @@
   "FRONTIER-FAULT_BREAK_CARD.title": "Fault Break",
   "FRONTIER-FAULT_BREAK_CARD.description": "Deal {Damage:diff()} damage to ALL enemies.\nIf a target had Block, deal double damage.\nRemove their remaining Block.",
   "FRONTIER-FEARLESS_OF_FLAME_CARD.title": "Hot Effort",
-  "FRONTIER-FEARLESS_OF_FLAME_CARD.description": "At the start of your turn, gain {HeatPerTurn:diff()} [gold]Heat[/gold] and {StrGain:diff()} [gold]Strength[/gold].",
+  "FRONTIER-FEARLESS_OF_FLAME_CARD.description": "Gain {StrGain:diff()} [gold]Strength[/gold].\nAt the start of your turn, gain {HeatPerTurn:diff()} [gold]Heat[/gold].",
   "FRONTIER-FIRE_POWER_PLANT_CARD.title": "Fire Power Plant",
   "FRONTIER-FIRE_POWER_PLANT_CARD.description": "[gold]Exhaust[/gold] 1 card from your hand.\nIf it was [gold]Burn[/gold], gain {EnergyOnBurn:energyIcons()}.",
   "FRONTIER-FLAME_ARMOR_CARD.title": "Flame Armor",
