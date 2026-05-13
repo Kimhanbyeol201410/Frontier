@@ -1,4 +1,4 @@
-﻿using Frontier.Cards;
+using Frontier.Cards;
 using Godot.Bridge;
 using Godot;
 using HarmonyLib;
