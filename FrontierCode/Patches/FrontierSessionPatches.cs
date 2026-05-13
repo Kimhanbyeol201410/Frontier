@@ -83,7 +83,22 @@ internal static class FrontierMasterPrideBlockOnUpgradePatch
 		}
 
 		List<CardModel> upgraded = new List<CardModel>(__state);
-		Callable.From(() => MasterPrideGainBlockDeferred(upgraded)).CallDeferred();
+		// Callable.From 람다는 반드시 void(Action) 여야 한다.
+		// async Task 메서드를 그대로 람다로 감싸면 람다의 반환 타입이 Task 가 되어 Func<Task> 가 되고,
+		// Godot 이 Trampoline|11_0<TResult> 경로로 Task -> Variant 변환을 시도하다 다음 에러로 죽는다:
+		//   System.InvalidOperationException: The type is not supported for conversion to/from Variant: 'System.Threading.Tasks.Task'
+		// fire-and-forget 이지만 예외가 삼켜지지 않게 ContinueWith 로 로그 가드를 건다.
+		Callable.From(() =>
+		{
+			Task task = MasterPrideGainBlockDeferred(upgraded);
+			task.ContinueWith(static t =>
+			{
+				if (t.Exception != null)
+				{
+					GD.PushError($"[Frontier] MasterPrideGainBlockDeferred failed: {t.Exception}");
+				}
+			}, TaskScheduler.Default);
+		}).CallDeferred();
 	}
 
 	private static async Task MasterPrideGainBlockDeferred(List<CardModel> upgraded)
