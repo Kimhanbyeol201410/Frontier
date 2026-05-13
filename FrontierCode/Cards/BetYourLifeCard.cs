@@ -34,7 +34,7 @@ public sealed class BetYourLifeCard : ShumitCard
     {
         new DynamicVar(StrBonusKey, 1m),
         new DynamicVar(DexBonusKey, 1m),
-        new DynamicVar(BodyBurnGainKey, 2m),
+        new DynamicVar(BodyBurnGainKey, 4m),
     };
 
     public BetYourLifeCard()

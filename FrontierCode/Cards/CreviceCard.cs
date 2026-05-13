@@ -11,7 +11,7 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 틈새 (1코 / 일반 공격): 피해 7, 약화 1 → 강화 시 피해 9, 약화 2.
+// 틈새 (1코 / 일반 공격): 피해 5, 약화 1 → 강화 시 피해 7, 약화 2.
 [Pool(typeof(ShumitCardPool))]
 public sealed class CreviceCard : ShumitCard
 {
@@ -19,7 +19,7 @@ public sealed class CreviceCard : ShumitCard
 
 	protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
 	{
-		new DamageVar(7m, ValueProp.Move),
+		new DamageVar(5m, ValueProp.Move),
 		new DynamicVar(WeakKey, 1m),
 	};
 

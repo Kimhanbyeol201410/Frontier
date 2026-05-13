@@ -14,8 +14,13 @@ namespace Frontier.Cards;
 public sealed class CoolingSystemCard : ShumitCard
 {
     private const string HeatLossKey = "HeatLoss";
+    private const string BlockPerTurnKey = "BlockPerTurn";
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(HeatLossKey, 5m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new DynamicVar(HeatLossKey, 5m),
+        new DynamicVar(BlockPerTurnKey, 5m),
+    };
 
     public CoolingSystemCard()
         : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
@@ -30,10 +35,18 @@ public sealed class CoolingSystemCard : ShumitCard
             DynamicVars[HeatLossKey].BaseValue,
             Owner.Creature,
             this);
+
+        // 카드 강화 레벨에 따른 매 턴 방어도 값을 power 에 동기화.
+        ShumitCoolingSystemPower? power = Owner.Creature.GetPower<ShumitCoolingSystemPower>();
+        if (power != null)
+        {
+            power.SetBlockPerTurn(DynamicVars[BlockPerTurnKey].BaseValue);
+        }
     }
 
     protected override void OnUpgrade()
     {
         DynamicVars[HeatLossKey].UpgradeValueBy(5m);
+        DynamicVars[BlockPerTurnKey].UpgradeValueBy(2m);
     }
 }

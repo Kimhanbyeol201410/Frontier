@@ -18,16 +18,20 @@ public sealed class BlastFurnaceCard : ShumitCard
 {
     private const string HeatPerTurnKey = "HeatPerTurn";
 
+    /// <summary>「보존 발동」이 retain 효과를 포함하므로 vanilla 「보존」 키워드는 생략. <see cref="FrontierPreserveTriggerRetainPatch"/> 가 retain 동작을 보강한다.</summary>
     protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[]
     {
         FrontierKeywords.PreserveTrigger,
-        CardKeyword.Retain,
+        FrontierKeywords.Unupgradable,
     };
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new DynamicVar(HeatPerTurnKey, 20m),
     };
+
+    /// <summary>«강화 불가» — 재련/걸작과 무관하게 강화 불가능. <see cref="FrontierUpgradeCapPatch"/> 가 0 이하 값을 그대로 유지한다.</summary>
+    public override int MaxUpgradeLevel => 0;
 
     public BlastFurnaceCard()
         : base(1, CardType.Skill, CardRarity.Rare, TargetType.None)

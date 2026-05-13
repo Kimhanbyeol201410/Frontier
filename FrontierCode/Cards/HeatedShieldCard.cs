@@ -15,7 +15,8 @@ namespace Frontier.Cards;
 public sealed class HeatedShieldCard : ShumitCard
 {
     private const string BlockPerHeatChunkKey = "BlockPerHeatChunk";
-    private const int HeatChunk = 10;
+    private const string ReforgeLeftKey = "ReforgeLeft";
+    private const int HeatChunk = 20;
 
     public override bool GainsBlock => true;
 
@@ -23,6 +24,7 @@ public sealed class HeatedShieldCard : ShumitCard
     {
         new BlockVar(8m, ValueProp.Move),
         new DynamicVar(BlockPerHeatChunkKey, 1m),
+        new DynamicVar(ReforgeLeftKey, 5m),
     };
 
     public HeatedShieldCard()
@@ -41,5 +43,6 @@ public sealed class HeatedShieldCard : ShumitCard
     protected override void OnUpgrade()
     {
         DynamicVars[BlockPerHeatChunkKey].UpgradeValueBy(1m);
+        DynamicVars[ReforgeLeftKey].UpgradeValueBy(-1m);
     }
 }

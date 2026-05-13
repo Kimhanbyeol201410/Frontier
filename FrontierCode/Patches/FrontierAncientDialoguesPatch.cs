@@ -33,15 +33,39 @@ internal static class FrontierAncientDialoguesPatch
     /// </summary>
     internal static readonly ConditionalWeakTable<AncientDialogueSet, AncientDialogue> ShumitFirstMeetings = new();
 
-    /// <summary>각 줄이 2-line(ancient → char) 인 dialogue 4세트 (visitIndex 0~3) 생성. SFX 4종이 그대로 visitIndex 0~3에 매핑된다.</summary>
-    private static AncientDialogue[] BuildShumitDialogues(string sfx0, string sfx1, string sfx2, string sfx3)
+    /// <summary>
+    /// visitIndex 0~3 대화 각각 <paramref name="lineCount"/>개의 말풍선 슬롯을 갖는 <see cref="AncientDialogue"/>를 만든다.
+    /// <c>ancients.json</c>에서 한 턴에 <c>\n</c>으로 묶여 있던 대사를 여러 줄 키로 쪼갰을 때, 여기 줄 수를 반드시 맞춘다.
+    /// </summary>
+    private static AncientDialogue DialogueForVisit(string primarySfx, int lineCount, int visitIndex, ArchitectAttackers? architectEndAttackers = null)
+    {
+        string[] sfx = new string[lineCount];
+        for (int i = 0; i < lineCount; i++)
+        {
+            sfx[i] = (i == 0 && !string.IsNullOrEmpty(primarySfx)) ? primarySfx : "";
+        }
+
+        return architectEndAttackers.HasValue
+            ? new AncientDialogue(sfx) { VisitIndex = visitIndex, EndAttackers = architectEndAttackers.Value }
+            : new AncientDialogue(sfx) { VisitIndex = visitIndex };
+    }
+
+    private static AncientDialogue[] BuildShumitDialoguesQuad(
+        string sfx0,
+        string sfx1,
+        string sfx2,
+        string sfx3,
+        int lines0,
+        int lines1,
+        int lines2,
+        int lines3)
     {
         return new[]
         {
-            new AncientDialogue(sfx0, "") { VisitIndex = 0 },
-            new AncientDialogue(sfx1, "") { VisitIndex = 1 },
-            new AncientDialogue(sfx2, "") { VisitIndex = 2 },
-            new AncientDialogue(sfx3, "") { VisitIndex = 3 },
+            DialogueForVisit(sfx0, lines0, 0),
+            DialogueForVisit(sfx1, lines1, 1),
+            DialogueForVisit(sfx2, lines2, 2),
+            DialogueForVisit(sfx3, lines3, 3),
         };
     }
 
@@ -90,13 +114,17 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "NEOW", BuildShumitDialogues(
+            Inject(__result, "NEOW", BuildShumitDialoguesQuad(
                 "event:/sfx/npcs/neow/neow_welcome",
                 "event:/sfx/npcs/neow/neow_curious",
                 "event:/sfx/npcs/neow/neow_sleepy",
-                "event:/sfx/npcs/neow/neow_sleepy"));
+                "event:/sfx/npcs/neow/neow_sleepy",
+                lines0: 3,
+                lines1: 4,
+                lines2: 4,
+                lines3: 3));
 
-            InjectFirstMeeting(__result, "NEOW", lineCount: 5, sfx: "event:/sfx/npcs/neow/neow_welcome");
+            InjectFirstMeeting(__result, "NEOW", lineCount: 9, sfx: "event:/sfx/npcs/neow/neow_welcome");
         }
     }
 
@@ -106,11 +134,12 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "DARV", BuildShumitDialogues(
+            Inject(__result, "DARV", BuildShumitDialoguesQuad(
                 "event:/sfx/npcs/darv/darv_introduction",
                 "event:/sfx/npcs/darv/darv_excited",
                 "event:/sfx/npcs/darv/darv_endeared",
-                "event:/sfx/npcs/darv/darv_excited"));
+                "event:/sfx/npcs/darv/darv_excited",
+                4, 4, 4, 3));
         }
     }
 
@@ -120,7 +149,7 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "PAEL", BuildShumitDialogues("", "", "", ""));
+            Inject(__result, "PAEL", BuildShumitDialoguesQuad("", "", "", "", 3, 4, 4, 3));
         }
     }
 
@@ -130,7 +159,7 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "OROBAS", BuildShumitDialogues("", "", "", ""));
+            Inject(__result, "OROBAS", BuildShumitDialoguesQuad("", "", "", "", 4, 4, 3, 4));
         }
     }
 
@@ -140,7 +169,7 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "VAKUU", BuildShumitDialogues("", "", "", ""));
+            Inject(__result, "VAKUU", BuildShumitDialoguesQuad("", "", "", "", 4, 4, 4, 3));
         }
     }
 
@@ -150,7 +179,7 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "TEZCATARA", BuildShumitDialogues("", "", "", ""));
+            Inject(__result, "TEZCATARA", BuildShumitDialoguesQuad("", "", "", "", 4, 4, 4, 4));
         }
     }
 
@@ -160,7 +189,7 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "TANX", BuildShumitDialogues("", "", "", ""));
+            Inject(__result, "TANX", BuildShumitDialoguesQuad("", "", "", "", 4, 4, 4, 3));
         }
     }
 
@@ -170,13 +199,13 @@ internal static class FrontierAncientDialoguesPatch
         [HarmonyPostfix]
         private static void Postfix(ref AncientDialogueSet __result)
         {
-            Inject(__result, "NONUPEIPE", BuildShumitDialogues("", "", "", ""));
+            Inject(__result, "NONUPEIPE", BuildShumitDialoguesQuad("", "", "", "", 4, 4, 4, 4));
         }
     }
 
     /// <summary>
     /// <see cref="TheArchitect.DefineDialogues"/>는 <c>private static</c>이므로 reflection으로 target을 지정한다.
-    /// Architect는 visitIndex 0~3까지 채운다. visitIndex 0이 첫 클리어 엔딩 멘트(5줄).
+    /// Architect는 visitIndex 0~3까지 채운다. visitIndex 0이 첫 클리어 엔딩 멘트(말풍선 10줄, <c>ancients.json</c>과 동기).
     /// <c>EndAttackers</c>를 <see cref="ArchitectAttackers.Both"/>로 설정해 본가와 동일한 마무리 연출을 보여준다.
     /// </summary>
     [HarmonyPatch]
@@ -196,26 +225,10 @@ internal static class FrontierAncientDialoguesPatch
         {
             var dialogues = new AncientDialogue[]
             {
-                new AncientDialogue("", "", "", "", "")
-                {
-                    VisitIndex = 0,
-                    EndAttackers = ArchitectAttackers.Both,
-                },
-                new AncientDialogue("", "")
-                {
-                    VisitIndex = 1,
-                    EndAttackers = ArchitectAttackers.Both,
-                },
-                new AncientDialogue("", "")
-                {
-                    VisitIndex = 2,
-                    EndAttackers = ArchitectAttackers.Both,
-                },
-                new AncientDialogue("", "")
-                {
-                    VisitIndex = 3,
-                    EndAttackers = ArchitectAttackers.Both,
-                },
+                DialogueForVisit("", 10, 0, ArchitectAttackers.Both),
+                DialogueForVisit("", 4, 1, ArchitectAttackers.Both),
+                DialogueForVisit("", 4, 2, ArchitectAttackers.Both),
+                DialogueForVisit("", 4, 3, ArchitectAttackers.Both),
             };
 
             Inject(__result, "THE_ARCHITECT", dialogues);

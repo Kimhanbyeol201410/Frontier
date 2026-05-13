@@ -28,20 +28,14 @@ public sealed class TongsCard : ShumitCard
     };
 
     public TongsCard()
-        : base(0, CardType.Skill, CardRarity.Common, TargetType.None)
+        : base(0, CardType.Skill, CardRarity.Uncommon, TargetType.None)
     {
     }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        // 0~1 자유 선택 — 강화 없이 종료(스킵) 허용. 발열은 카드 선택 결과와 무관하게 항상 적용.
-        CardSelectorPrefs prefs = new(CardSelectorPrefs.UpgradeSelectionPrompt, 0, 1);
-        IEnumerable<CardModel> picked = await CardSelectCmd.FromHand(
-            choiceContext,
-            Owner,
-            prefs,
-            (CardModel c) => c.IsUpgradable && !ReferenceEquals(c, this),
-            this);
+        // 0~1 자유 선택 + 강화 미리보기 — 강화 없이 종료(스킵) 허용. 발열은 카드 선택과 무관하게 항상 적용.
+        IReadOnlyList<CardModel> picked = await FrontierUpgradeSelectUtil.SelectFromHandWithPreviewAsync(Owner, this, 1);
         CardModel? target = picked.FirstOrDefault();
         if (target != null)
         {

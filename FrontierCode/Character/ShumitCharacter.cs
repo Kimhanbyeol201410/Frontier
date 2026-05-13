@@ -41,7 +41,7 @@ public sealed class ShumitCharacter : PlaceholderCharacterModel
 	/// <summary>보상/상점 등 캐릭터 카드 풀. Ironclad 풀을 쓰면 슈미트 카드가 보상에 나오지 않으므로 전용 풀을 둔다.</summary>
 	public override CardPoolModel CardPool => ModelDb.CardPool<ShumitCardPool>();
 
-	public override RelicPoolModel RelicPool => ModelDb.RelicPool<IroncladRelicPool>();
+	public override RelicPoolModel RelicPool => ModelDb.RelicPool<ShumitRelicPool>();
 	public override PotionPoolModel PotionPool => ModelDb.PotionPool<IroncladPotionPool>();
 
 	/// <summary>

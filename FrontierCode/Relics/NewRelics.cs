@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
@@ -21,7 +21,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace Frontier.Relics;
 
-[Pool(typeof(EventRelicPool))]
+[Pool(typeof(ShumitRelicPool))]
 public sealed class HeatproofApronRelic : CustomRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Common;
@@ -43,7 +43,7 @@ public sealed class HeatproofApronRelic : CustomRelicModel
     }
 }
 
-[Pool(typeof(EventRelicPool))]
+[Pool(typeof(ShumitRelicPool))]
 public sealed class HephaestusBloodRelic : CustomRelicModel
 {
     private const int HeatPerStrength = 20;
@@ -95,7 +95,9 @@ public sealed class FusionerHammerRelic : CustomRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Event;
 
-    public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
+    // 카드 사용 「전」에 [활력] 을 부여한다. AfterCardPlayed 로 두면 카드 자신의 공격(특히 멀티히트)에는
+    // 적용되지 않으므로, BeforeCardPlayed 로 옮겨 사용 카드의 첫 공격부터 활력 보너스가 들어가게 한다.
+    public override async Task BeforeCardPlayed(CardPlay cardPlay)
     {
         if (cardPlay.Card.Owner != base.Owner || cardPlay.Card.CurrentUpgradeLevel <= 0)
         {
@@ -150,7 +152,7 @@ internal static class FrontierShumitRelicGate
 }
 
 /// <summary>끝없는 노력 — 휴식처 모루 행동 시 강화 카드 2장 추가 선택 가능.</summary>
-[Pool(typeof(EventRelicPool))]
+[Pool(typeof(ShumitRelicPool))]
 public sealed class EndlessLaborRelic : CustomRelicModel
 {
     private const int ExtraSmithCount = 2;
@@ -178,7 +180,7 @@ public sealed class EndlessLaborRelic : CustomRelicModel
 }
 
 /// <summary>타지않는 육체 — [신체 화상] 임계값을 200 → 300으로 변경. 실제 임계값 변경은 <c>HeatPower.AfterTurnEnd</c>에서 처리.</summary>
-[Pool(typeof(EventRelicPool))]
+[Pool(typeof(ShumitRelicPool))]
 public sealed class UnburnableBodyRelic : CustomRelicModel
 {
     public override RelicRarity Rarity => RelicRarity.Uncommon;
@@ -187,7 +189,7 @@ public sealed class UnburnableBodyRelic : CustomRelicModel
 }
 
 /// <summary>걸작 박물관 — 전투 시작 시 보유한 걸작 카드 1장당 힘 2, 민첩 2, 에너지 2를 얻고 시작.</summary>
-[Pool(typeof(EventRelicPool))]
+[Pool(typeof(ShumitRelicPool))]
 public sealed class MasterpieceMuseumRelic : CustomRelicModel
 {
     private const int BonusPerMasterpiece = 2;
@@ -226,7 +228,7 @@ public sealed class MasterpieceMuseumRelic : CustomRelicModel
 }
 
 /// <summary>무한히 불타는 화로 — 전투 시작 시 [열기] 70 즉시 획득, 매 [화상] 드로우 시 화상 카드를 소진시키고 카드 1장 드로우 + [열기] 20 획득.</summary>
-[Pool(typeof(EventRelicPool))]
+[Pool(typeof(ShumitRelicPool))]
 public sealed class EternallyBurningFurnaceRelic : CustomRelicModel
 {
     private const int InitialHeat = 70;

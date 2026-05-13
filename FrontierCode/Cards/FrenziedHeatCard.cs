@@ -13,22 +13,26 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 광란의 열기 — 멈출 수 없는 열기 «걸작 5» 변환 카드.
-//   - 모든 적에게 피해를 2회 명중.
-//   - 매 명중 시 «열기 HeatDivisor마다 DamagePer» 만큼 추가 피해.
-//   - 강화: DamagePer +1 (기본 6 → 7 → 8…). base damage·HeatDivisor는 고정.
+// 광란의 열기 — 멈출 수 없는 열기 «걸작» 변환 카드.
+//   - 모든 적에게 피해를 2회 명중 (활력 등은 단일 AttackCommand 안에서 두 히트에 모두 적용).
+//   - 열기 20당 히트당 추가 데미지(HeatStep, 기본 4) — 멈출 수 없는 열기 스케일링을 변환 후에도 약하게 계승.
+//   - 발동 후 열기 HeatGain(기본 40) 획득.
+//   - 재련 5: 강화 시 카운터 감소.
 [Pool(typeof(ShumitCardPool))]
 public sealed class FrenziedHeatCard : ShumitCard
 {
-    private const string HeatDivisorKey = "HeatDivisor";
-    private const string DamagePerKey = "DamagePer";
     private const int HitCount = 2;
+    private const int HeatChunk = 20;
+    private const string HeatStepKey = "HeatStep";
+    private const string HeatGainKey = "Heat";
+    private const string ReforgeLeftKey = "ReforgeLeft";
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(22m, ValueProp.Move),
-        new DynamicVar(HeatDivisorKey, 15m),
-        new DynamicVar(DamagePerKey, 6m),
+        new DamageVar(12m, ValueProp.Move),
+        new DynamicVar(HeatStepKey, 4m),
+        new DynamicVar(HeatGainKey, 40m),
+        new DynamicVar(ReforgeLeftKey, 5m),
     };
 
     public FrenziedHeatCard()
@@ -41,19 +45,27 @@ public sealed class FrenziedHeatCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        int heat = Owner.Creature.GetPower<HeatPower>()?.Amount ?? 0;
-        int divisor = System.Math.Max(1, DynamicVars[HeatDivisorKey].IntValue);
-        decimal bonus = (heat / divisor) * DynamicVars[DamagePerKey].BaseValue;
-        decimal total = DynamicVars.Damage.BaseValue + bonus;
         CombatState combatState = FrontierCombatStateHelper.RequireFor(Owner);
-        for (int i = 0; i < HitCount; i++)
-        {
-            await DamageCmd.Attack(total).FromCard(this).TargetingAllOpponents(combatState).Execute(choiceContext);
-        }
+
+        // 열기 비례 추가 데미지는 가열된 망치 패턴과 동일하게 (열기 / 20) × HeatStep.
+        int heat = Owner.Creature.GetPower<HeatPower>()?.Amount ?? 0;
+        int step = System.Math.Max(1, DynamicVars[HeatStepKey].IntValue);
+        decimal bonus = (heat / HeatChunk) * step;
+        decimal total = DynamicVars.Damage.BaseValue + bonus;
+
+        // 단일 AttackCommand 로 멀티히트 처리. VigorPower 등이 모든 히트에 적용되게.
+        await DamageCmd.Attack(total)
+            .WithHitCount(HitCount)
+            .FromCard(this)
+            .TargetingAllOpponents(combatState)
+            .Execute(choiceContext);
+
+        await PowerCmd.Apply<HeatPower>(Owner.Creature, DynamicVars[HeatGainKey].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
     {
-        DynamicVars[DamagePerKey].UpgradeValueBy(1m);
+        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars[ReforgeLeftKey].UpgradeValueBy(-1m);
     }
 }

@@ -27,7 +27,7 @@ public sealed class ThermalCoolingCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new BlockVar(10m, ValueProp.Move),
+        new BlockVar(18m, ValueProp.Move),
         new DynamicVar(HeatLossKey, 20m),
     };
 
@@ -59,7 +59,7 @@ public sealed class ThermalCoolingCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(5m);
+        DynamicVars.Block.UpgradeValueBy(7m);
         DynamicVars[HeatLossKey].UpgradeValueBy(10m);
     }
 }

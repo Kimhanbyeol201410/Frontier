@@ -36,7 +36,14 @@ public sealed class ImpurityCompressionCard : ShumitCard
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        List<CardModel> burns = PileType.Draw.GetPile(Owner).Cards.Where(static (CardModel c) => c is Burn).ToList();
+        // 뽑을 카드 더미·손·버린 카드 더미 전체에서 화상을 모아서 일괄 소멸. 추가 피해는 소멸 수에 비례.
+        PileType[] searchPiles = new[] { PileType.Draw, PileType.Hand, PileType.Discard };
+        List<CardModel> burns = new List<CardModel>();
+        foreach (PileType pile in searchPiles)
+        {
+            burns.AddRange(pile.GetPile(Owner).Cards.Where(static (CardModel c) => c is Burn));
+        }
+
         int n = burns.Count;
         foreach (CardModel b in burns)
         {

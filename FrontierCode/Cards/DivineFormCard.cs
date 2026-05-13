@@ -12,14 +12,14 @@ using Frontier.Powers;
 
 namespace Frontier.Cards;
 
-// 신의 형상 (3코 희귀 파워, 강화 시 2코):
+// 신의 형상 (4코 희귀 파워, 강화 시 3코):
 //   - 사용 즉시 손패의 강화 가능한 모든 카드를 1회 강화.
 //   - 이후 매 내 턴 시작마다 같은 효과 반복(ShumitDivineFormPower).
 [Pool(typeof(ShumitCardPool))]
 public sealed class DivineFormCard : ShumitCard
 {
 	public DivineFormCard()
-		: base(3, CardType.Power, CardRarity.Rare, TargetType.Self)
+		: base(4, CardType.Power, CardRarity.Rare, TargetType.Self)
 	{
 	}
 

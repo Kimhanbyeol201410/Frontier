@@ -25,7 +25,7 @@ public sealed class OilCoolingCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new BlockVar(8m, ValueProp.Move),
+        new BlockVar(5m, ValueProp.Move),
         new DynamicVar(HeatReductionKey, 5m),
     };
 
@@ -50,7 +50,7 @@ public sealed class OilCoolingCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        base.DynamicVars.Block.UpgradeValueBy(2m);
+        base.DynamicVars.Block.UpgradeValueBy(3m);
         base.DynamicVars[HeatReductionKey].UpgradeValueBy(5m);
     }
 }

@@ -24,7 +24,7 @@ public sealed class FurnaceMaintenanceCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new BlockVar(16m, ValueProp.Move),
+        new BlockVar(12m, ValueProp.Move),
         new DynamicVar(HeatGainKey, 10m),
         new EnergyVar("FurnaceBonusEnergy", 2),
     };
@@ -48,6 +48,6 @@ public sealed class FurnaceMaintenanceCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars.Block.UpgradeValueBy(6m);
+        DynamicVars.Block.UpgradeValueBy(4m);
     }
 }

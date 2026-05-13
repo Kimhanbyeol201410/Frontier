@@ -1,6 +1,8 @@
 {
   "FRONTIER-BROKEN_FORGE_RELIC.title": "판단의 눈",
   "FRONTIER-BROKEN_FORGE_RELIC.description": "모든 카드에 [gold]재련[/gold] 2가 부여됩니다.",
+  "FRONTIER-DIVINE_EYE_RELIC.title": "신의 눈",
+  "FRONTIER-DIVINE_EYE_RELIC.description": "모든 카드에 [gold]재련[/gold] 4가 부여됩니다.\n모든 카드의 [gold]걸작[/gold] 수치가 5 감소합니다.",
   "FRONTIER-HEATPROOF_APRON_RELIC.title": "내열 가죽 앞치마",
   "FRONTIER-HEATPROOF_APRON_RELIC.description": "[gold]열기[/gold]를 얻을 때마다 방어도 2를 얻습니다.",
   "FRONTIER-HEPHAESTUS_BLOOD_RELIC.title": "헤파이스토스의 피",

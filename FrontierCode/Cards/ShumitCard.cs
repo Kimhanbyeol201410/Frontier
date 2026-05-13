@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using BaseLib.Abstracts;
 using Frontier.Extensions;
+using Frontier.Relics;
 using Frontier.Resources;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 
 namespace Frontier.Cards;
@@ -18,10 +20,31 @@ public abstract class ShumitCard : CustomCardModel
     {
     }
 
-    /// <summary>Exhaust, Retain 등. <see cref="FrontierKeywords.Heat"/>는 <c>AutoKeywordPosition.None</c>이라 하단 키워드 줄에는 붙지 않고, 카드 호버 시 열기 설명 툴팁만 제공한다.</summary>
+    /// <summary>Exhaust, Retain 등 카드 자체 특성으로서의 키워드. 카드 라벨/effect 동작과 직결되므로 여기에 명시.</summary>
     protected virtual IEnumerable<CardKeyword> ShumitCanonicalKeywords => Enumerable.Empty<CardKeyword>();
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords => ShumitCanonicalKeywords.Append(FrontierKeywords.Heat);
+    public override IEnumerable<CardKeyword> CanonicalKeywords => ShumitCanonicalKeywords;
+
+    /// <summary>
+    /// 카드 설명에 등장하는 모든 키워드/파워/상태 카드의 호버 설명을 <see cref="FrontierAutoHoverTips"/>가
+    /// 자동으로 감지해 노출한다. 슈미트 카드뿐 아니라 «열기/신체 화상/취약/약화/힘/민첩/활력/화상/재련»…
+    /// 등 description 안 <c>[gold]...[/gold]</c> 토큰에 매칭되는 모든 호버가 한 번에 채워진다.
+    /// </summary>
+    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    {
+        get
+        {
+            foreach (IHoverTip baseTip in base.ExtraHoverTips)
+            {
+                yield return baseTip;
+            }
+
+            foreach (IHoverTip auto in FrontierAutoHoverTips.CollectFor(this))
+            {
+                yield return auto;
+            }
+        }
+    }
 
     /// <summary>카드별 PNG가 없으면 <c>images/packed/card_portraits/shumit/placeholder.png</c>를 쓴다.</summary>
     public override string PortraitPath => ResolvePortraitPath($"{Id.Entry.RemoveFrontierPrefix().ToLowerInvariant()}.png".CardImagePath());
@@ -33,6 +56,13 @@ public abstract class ShumitCard : CustomCardModel
     public override Texture2D? CustomPortrait => _cachedPortrait ??= LoadPortraitFromPckOrNull();
 
     private Texture2D? _cachedPortrait;
+
+    /// <summary>카드가 새로 생성되어 슈미트 덱·전투 더미에 추가될 때 호출. «신의 눈» 보유 시 «걸작» 카드의 <c>MasterpieceLeft</c> 표시값을 -5 동기화한다.</summary>
+    public override void AfterCreated()
+    {
+        base.AfterCreated();
+        DivineEyeRelic.ApplyMasterpieceReductionIfApplicable(this);
+    }
 
     private Texture2D? LoadPortraitFromPckOrNull()
     {

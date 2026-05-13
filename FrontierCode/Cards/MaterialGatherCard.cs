@@ -38,6 +38,5 @@ public sealed class MaterialGatherCard : ShumitCard
     protected override void OnUpgrade()
     {
         DynamicVars.Block.UpgradeValueBy(3m);
-        DynamicVars[DrawCountKey].UpgradeValueBy(1m);
     }
 }

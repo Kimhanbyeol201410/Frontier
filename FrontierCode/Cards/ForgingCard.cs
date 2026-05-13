@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Utils;
-using MegaCrit.Sts2.Core.CardSelection;
+using Frontier.Characters;
+using Frontier.Utilities;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -12,7 +12,6 @@ using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace Frontier.Cards;
-using Frontier.Characters;
 
 [Pool(typeof(ShumitCardPool))]
 public sealed class ForgingCard : ShumitCard
@@ -45,15 +44,9 @@ public sealed class ForgingCard : ShumitCard
             return;
         }
 
-        // 0 ~ pickCount 자유 선택 — 강화 없이 종료(스킵) 허용.
-        CardSelectorPrefs prefs = new(CardSelectorPrefs.UpgradeSelectionPrompt, 0, pickCount);
-        IEnumerable<CardModel> picked = await CardSelectCmd.FromHand(
-            choiceContext,
-            Owner,
-            prefs,
-            (CardModel c) => c.IsUpgradable && !ReferenceEquals(c, this),
-            this);
-        foreach (CardModel c in picked.ToList())
+        // 0 ~ pickCount 자유 선택 + 강화 미리보기 — 강화 없이 종료(스킵) 허용.
+        IReadOnlyList<CardModel> picked = await FrontierUpgradeSelectUtil.SelectFromHandWithPreviewAsync(Owner, this, pickCount);
+        foreach (CardModel c in picked)
         {
             if (c.IsUpgradable)
             {

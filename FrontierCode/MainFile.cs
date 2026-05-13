@@ -1,4 +1,4 @@
-﻿using Frontier.Cards;
+using Frontier.Cards;
 using Godot.Bridge;
 using Godot;
 using HarmonyLib;
@@ -55,6 +55,7 @@ public static class ModStart
     {
         var icon = new RelicIconData(FrontierAssetPaths.VanillaRelicFallbackPng, FrontierAssetPaths.VanillaRelicFallbackPng, FrontierAssetPaths.VanillaRelicFallbackPng);
         RelicImageOverridePatch.AddOverride<BrokenForgeRelic>(icon);
+        RelicImageOverridePatch.AddOverride<DivineEyeRelic>(icon);
         RelicImageOverridePatch.AddOverride<HeatproofApronRelic>(icon);
         RelicImageOverridePatch.AddOverride<HephaestusBloodRelic>(icon);
         RelicImageOverridePatch.AddOverride<AncientAnvilRelic>(icon);
@@ -114,21 +115,22 @@ internal static class FrontierRules
     public const int ReforgeUnlimited = -1;
     public const int InfiniteUpgradeCap = 999;
     /// <summary>키는 <see cref="MegaCrit.Sts2.Core.Models.ModelDb.GetEntry"/> + PrefixIdPatch 이후의 <c>card.Id.Entry</c> (예: FRONTIER-BELLOWS_CARD).</summary>
-    // 슈미트.md: «재련.»만 적힌 카드는 제한 없음. «재련 N»은 베이스 1에 +N.
+    // 슈미트.md: «재련.»만 적힌 카드는 제한 없음. «재련 N»은 강화 N회 가능 (MaxUpgradeLevel = N, 베이스 1 가산 없음).
     private static readonly Dictionary<string, int> ReforgeByCardId = new()
     {
         ["FRONTIER-BELLOWS_CARD"] = ReforgeUnlimited, // 풀무질 — 재련.
         [AnvilMemoryCardEntry] = ReforgeUnlimited, // 모루의 기억 — 재련.
         ["FRONTIER-BURNING_STRIKE_CARD"] = ReforgeUnlimited, // 불태우는 일격 — 재련.
-        ["FRONTIER-SPARK_BURST_CARD"] = 9, // 불꽃 튀기기 — 재련 10 (베이스 1 + 보너스 9 = MaxUpgradeLevel 10).
+        ["FRONTIER-SPARK_BURST_CARD"] = 10, // 불꽃 튀기기 — 재련 10 (강화 10회 가능).
         ["FRONTIER-STEAM_RELEASE_CARD"] = 10, // 증기 배출 — 재련 10.
+        ["FRONTIER-HEATED_SHIELD_CARD"] = 5, // 달궈진 방패 — 재련 5 (열기 보너스를 반복 강화).
         ["FRONTIER-REFINING_CARD"] = ReforgeUnlimited, // 정련 — 처치 시 영구 강화, 재련 제한 없음.
     };
 
     private static readonly Dictionary<string, int> MasterpieceByCardId = new()
     {
-        ["FRONTIER-ANVIL_ECHO_CARD"] = 5, // 모루의 잔향 — 걸작 5.
-        ["FRONTIER-UNSTOPPABLE_HEAT_CARD"] = 5, // 멈출 수 없는 열기 — 걸작 5.
+        ["FRONTIER-ANVIL_ECHO_CARD"] = 10, // 모루의 잔향 — 걸작 10. 신의 눈 보유 시 -5 (실효 5).
+        ["FRONTIER-UNSTOPPABLE_HEAT_CARD"] = 10, // 멈출 수 없는 열기 — 걸작 10. 신의 눈 보유 시 -5 (실효 5).
     };
 
     /// <summary>두 번째 인자는 강화된 카드 — 비전투(휴식처 등)에서는 <see cref="CardModel.CardScope"/>가 런 스코프를 씁니다.</summary>
@@ -207,10 +209,19 @@ internal static class FrontierRules
             return baseBonus;
         }
 
-        // 슈미트 카드는 BrokenForgeRelic이 시작 렐릭이라 사실상 항상 보유 상태이다.
+        // 슈미트 카드는 시작 유물(판단의 눈 / 신의 눈)이 항상 보유 상태이다.
         // deserialize(card.Owner == null) 또는 canonical 카드(card.IsCanonical)의 경우
         // Owner / RelicList 접근이 불가능하므로 안전하게 최소 보장만 적용한다.
         Player? owner = card.IsCanonical ? null : card.Owner;
+
+        // 신의 눈 — 재련 최소 4 보장. 판단의 눈을 대체하므로 우선 검사.
+        bool hasDivineEye = owner != null && owner.GetRelic<DivineEyeRelic>() != null;
+        if (hasDivineEye)
+        {
+            return Math.Max(baseBonus, 4);
+        }
+
+        // 판단의 눈 — 재련 최소 2 보장. canonical/deserialize 시점은 판단의 눈 보유로 가정(슈미트 기본).
         bool hasBrokenForge = owner == null || owner.GetRelic<BrokenForgeRelic>() != null;
         if (hasBrokenForge)
         {
@@ -220,19 +231,29 @@ internal static class FrontierRules
         return baseBonus;
     }
 
+    /// <summary>카드 자체의 «걸작 N» 원본 값 — 유물 보정 미적용. <see cref="DivineEyeRelic"/> 등이 «걸작» 카드 여부 판별에 사용한다.</summary>
+    public static int GetMasterpieceValueRaw(CardModel card)
+    {
+        if (card?.Id?.Entry == null) return 0;
+        return MasterpieceByCardId.TryGetValue(card.Id.Entry, out int value) ? value : 0;
+    }
+
     public static int GetMasterpieceValue(CardModel card)
     {
-        if (card?.Id?.Entry == null)
+        int value = GetMasterpieceValueRaw(card);
+        if (value <= 0)
         {
             return 0;
         }
 
-        if (MasterpieceByCardId.TryGetValue(card.Id.Entry, out int value))
+        // 신의 눈 보유 시 변환 트리거 -5 (최소 1).
+        Player? owner = card.IsCanonical ? null : card.Owner;
+        if (owner != null && owner.GetRelic<DivineEyeRelic>() != null)
         {
-            return value;
+            value = Math.Max(1, value - DivineEyeRelic.MasterpieceReduction);
         }
 
-        return 0;
+        return value;
     }
 
     public static Func<Player, CardModel, CardModel>? GetMasterpieceTransformFactory(CardModel card)
@@ -273,14 +294,15 @@ public static class FrontierUpgradeCapPatch
             return;
         }
 
-        // 재련 보너스가 없으면 최대 강화 1.
+        // 재련 보너스가 없으면 vanilla 기본 강화(+1) 유지.
         if (reforge <= 0)
         {
             __result = 1;
             return;
         }
 
-        __result += reforge;
+        // 재련 N = 강화 N회. (vanilla +1 가산하지 않음 — «재련 2»는 정확히 +2 까지만 강화.)
+        __result = reforge;
     }
 }
 
@@ -391,6 +413,13 @@ public sealed class BodyBurnPower : CustomPowerModel
     public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
     {
         if (Amount <= 0 || cardPlay.Card.Owner?.Creature != Owner)
+        {
+            return;
+        }
+
+        // «목숨을 걸어» 카드 자체로는 [신체 화상] 데미지가 트리거되지 않도록 한다.
+        // 이 카드가 [신체 화상] 을 부여하는 카드이므로, 사용 직후 자기 자신으로 데미지를 입는 것은 의도와 다르다.
+        if (cardPlay.Card is BetYourLifeCard)
         {
             return;
         }

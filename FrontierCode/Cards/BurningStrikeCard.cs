@@ -24,7 +24,7 @@ public sealed class BurningStrikeCard : ShumitCard
     };
 
     public BurningStrikeCard()
-        : base(1, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
+        : base(2, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
     {
     }
 

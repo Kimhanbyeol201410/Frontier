@@ -10,12 +10,18 @@ using Frontier.Powers;
 
 namespace Frontier.Cards;
 
+// 증기 배출 — 재련 10: 강화할수록 설명의 남은 재련 수가 10→0으로 감소.
 [Pool(typeof(ShumitCardPool))]
 public sealed class SteamReleaseCard : ShumitCard
 {
     private const string VentDamageKey = "VentDamage";
+    private const string ReforgeLeftKey = "ReforgeLeft";
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(VentDamageKey, 4m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
+    {
+        new DynamicVar(VentDamageKey, 4m),
+        new DynamicVar(ReforgeLeftKey, 10m),
+    };
 
     public SteamReleaseCard()
         : base(3, CardType.Power, CardRarity.Uncommon, TargetType.Self)
@@ -35,5 +41,6 @@ public sealed class SteamReleaseCard : ShumitCard
     protected override void OnUpgrade()
     {
         DynamicVars[VentDamageKey].UpgradeValueBy(3m);
+        DynamicVars[ReforgeLeftKey].UpgradeValueBy(-1m);
     }
 }

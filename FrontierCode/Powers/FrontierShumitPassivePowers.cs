@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -21,17 +22,33 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace Frontier.Powers;
 
-/// <summary>턴 종료 시 열기 감소 (냉각 시스템).</summary>
+/// <summary>턴 종료 시 열기 감소 + 턴 시작 시 방어도 (냉각 시스템).</summary>
 public sealed class ShumitCoolingSystemPower : CustomPowerModel
 {
-	/// <summary>턴 시작 시 부여하는 방어도. 강화·다른 카드와 무관하게 고정.</summary>
-	private const int BlockPerTurn = 5;
+	/// <summary>턴 시작 시 부여하는 방어도. 카드 강화 레벨에 따라 카드에서 <see cref="SetBlockPerTurn"/> 으로 갱신된다.</summary>
+	private const string BlockPerTurnKey = "BlockPerTurn";
 
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
 
+	protected override IEnumerable<DynamicVar> CanonicalVars => new[]
+	{
+		new DynamicVar(BlockPerTurnKey, 5m),
+	};
+
 	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
+
+	/// <summary>카드 인스턴스의 «BlockPerTurn» 강화 값을 power 에 동기화. 중복 사용 시 더 큰 값을 유지한다.</summary>
+	public void SetBlockPerTurn(decimal value)
+	{
+		AssertMutable();
+		DynamicVar var = DynamicVars[BlockPerTurnKey];
+		if (value > var.BaseValue)
+		{
+			var.BaseValue = value;
+		}
+	}
 
 	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
 	{
@@ -41,16 +58,20 @@ public sealed class ShumitCoolingSystemPower : CustomPowerModel
 		}
 
 		await FrontierHeatUtil.ReduceHeat(choiceContext, Owner, Amount, null);
-		await CreatureCmd.GainBlock(Owner, BlockPerTurn, ValueProp.Move, null);
+		await CreatureCmd.GainBlock(Owner, DynamicVars[BlockPerTurnKey].BaseValue, ValueProp.Move, null);
 	}
 }
 
-/// <summary>뜨거워진 대장간: 매 턴 종료 시 현재 열기 ÷ <see cref="CustomPowerModel.Amount"/>(분모) 만큼 체력을 회복.</summary>
+/// <summary>뜨거워진 대장간: 매 턴 종료 시 현재 열기 ÷ <see cref="CustomPowerModel.Amount"/>(분모) 만큼 체력을 회복.
+/// <para>여러 장 사용 시 분모가 누적되면 회복량이 오히려 감소하므로 <see cref="IsInstanced"/>=true 로 각 카드를 별도 인스턴스로 동작시킨다.</para>
+/// </summary>
 public sealed class ShumitHeatedForgePower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
+
+	public override bool IsInstanced => true;
 
 	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
 
@@ -127,8 +148,8 @@ public sealed class ShumitCoolHeadNextTurnPower : CustomPowerModel
 [CustomID("FRONTIER-SHUMIT_VENTILATION_THIS_TURN_POWER")]
 public sealed class ShumitVentilationThisTurnPower : CustomPowerModel
 {
-	/// <summary>환기 발동 시 카드 사용마다 부여하는 방어도. 강화·다른 카드와 무관하게 고정.</summary>
-	private const int BlockPerCard = 3;
+	/// <summary>환기 발동 시 카드 사용마다 부여하는 방어도. <see cref="IsInstanced"/>=true 이므로 각 인스턴스가 자신만의 값을 가지며, 카드(강화 단계) 측에서 적용 직후 덮어 설정한다.</summary>
+	public int BlockPerCard { get; set; } = 3;
 
 	public override PowerType Type => PowerType.Buff;
 
@@ -146,7 +167,10 @@ public sealed class ShumitVentilationThisTurnPower : CustomPowerModel
 		}
 
 		await FrontierHeatUtil.ReduceHeat(context, Owner, Amount, cardPlay.Card);
-		await CreatureCmd.GainBlock(Owner, BlockPerCard, ValueProp.Move, cardPlay);
+		if (BlockPerCard > 0)
+		{
+			await CreatureCmd.GainBlock(Owner, BlockPerCard, ValueProp.Move, cardPlay);
+		}
 	}
 
 	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
@@ -185,7 +209,8 @@ public sealed class ShumitFuelMaxNextTurnEnergyPower : CustomPowerModel
 	}
 }
 
-/// <summary>턴 시작 시 열기·힘 (뜨거운 노력). <see cref="CustomPowerModel.Amount"/>는 열기이며 힘은 열기 10당 1.</summary>
+/// <summary>턴 시작 시 열기 부여 (뜨거운 노력). <see cref="CustomPowerModel.Amount"/>는 매 턴 부여 열기.
+/// 힘은 카드 사용 시점에 카드의 <c>StrGain</c> 값만큼 1회만 즉시 부여하므로 본 파워에서는 처리하지 않는다.</summary>
 public sealed class ShumitFearlessFlamePower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
@@ -193,7 +218,7 @@ public sealed class ShumitFearlessFlamePower : CustomPowerModel
 	public override PowerStackType StackType => PowerStackType.Counter;
 
 	protected override IEnumerable<IHoverTip> ExtraHoverTips
-		=> new IHoverTip[] { HoverTipFactory.FromKeyword(FrontierKeywords.Heat), HoverTipFactory.FromPower<StrengthPower>() };
+		=> new IHoverTip[] { HoverTipFactory.FromKeyword(FrontierKeywords.Heat) };
 
 	public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
 	{
@@ -203,11 +228,6 @@ public sealed class ShumitFearlessFlamePower : CustomPowerModel
 		}
 
 		await FrontierHeatUtil.ApplyHeat(choiceContext, Owner, Amount, null);
-		decimal str = Amount / 10m;
-		if (str > 0m)
-		{
-			await PowerCmd.Apply<StrengthPower>(Owner, str, Owner, null, silent: false);
-		}
 	}
 }
 
@@ -333,13 +353,13 @@ public sealed class ShumitFlameArmorPower : CustomPowerModel
 	}
 }
 
-/// <summary>화염의 심장: 플레이어 소유 [화상](Burn) 카드가 전투 더미에 새로 들어올 때마다 에너지 1 획득.</summary>
+/// <summary>화염의 심장: 플레이어 소유 [화상](Burn) 카드가 전투 더미에 새로 들어올 때마다 에너지 <see cref="CustomPowerModel.Amount"/> 획득.</summary>
 [CustomID("FRONTIER-SHUMIT_HEART_OF_FLAME_ENERGY_POWER")]
 public sealed class ShumitHeartOfFlameEnergyPower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
 
-	public override PowerStackType StackType => PowerStackType.Single;
+	public override PowerStackType StackType => PowerStackType.Counter;
 
 	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[]
 	{
@@ -368,13 +388,13 @@ public sealed class ShumitHeartOfFlameEnergyPower : CustomPowerModel
 	}
 }
 
-/// <summary>신의 형상: 내 턴 시작 시 손패의 강화 가능한 모든 카드를 1회 강화.</summary>
+/// <summary>신의 형상: 내 턴 시작 시 손패의 강화 가능한 모든 카드를 1회 강화. <see cref="CustomPowerModel.Amount"/> 는 보유 표시용 카운터.</summary>
 [CustomID("FRONTIER-SHUMIT_DIVINE_FORM_POWER")]
 public sealed class ShumitDivineFormPower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
 
-	public override PowerStackType StackType => PowerStackType.Single;
+	public override PowerStackType StackType => PowerStackType.Counter;
 
 	public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
 	{
@@ -415,14 +435,39 @@ public sealed class ShumitNextAttackHeatPower : CustomPowerModel
 	}
 }
 
-/// <summary>이번 턴 강화된 공격 사용 시 열기 보정 (금속 액화).</summary>
+/// <summary>금속 액화: 이번 턴 강화된 공격 카드 비용 0, 사용 시마다 열기·뽑을 더미에 화상 1장.</summary>
 public sealed class ShumitUpgradedAttackBonusHeatPower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
 
-	public override PowerStackType StackType => PowerStackType.Counter;
+	/// <summary>동일 턴 중 카드 여러 장 사용 시 중복 버프 방지.</summary>
+	public override PowerStackType StackType => PowerStackType.Single;
 
 	protected override IEnumerable<IHoverTip> ExtraHoverTips => ShumitPowerKeywordHoverTips.Heat();
+
+	public override bool TryModifyEnergyCostInCombat(CardModel card, decimal originalCost, out decimal modifiedCost)
+	{
+		modifiedCost = originalCost;
+		if (card?.Owner?.Creature != Owner || !Owner.IsPlayer)
+		{
+			return false;
+		}
+
+		if (card.Type != CardType.Attack || card.CurrentUpgradeLevel <= 0)
+		{
+			return false;
+		}
+
+		switch (card.Pile?.Type)
+		{
+			case PileType.Hand:
+			case PileType.Play:
+				modifiedCost = 0m;
+				return true;
+			default:
+				return false;
+		}
+	}
 
 	public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
 	{
@@ -437,6 +482,15 @@ public sealed class ShumitUpgradedAttackBonusHeatPower : CustomPowerModel
 		}
 
 		await FrontierHeatUtil.ApplyHeat(context, Owner, Amount, cardPlay.Card);
+
+		Player? player = Owner.Player;
+		if (player == null || FrontierCombatStateHelper.TryGetFor(player) is not CombatState combatState)
+		{
+			return;
+		}
+
+		CardModel burn = combatState.CreateCard<Burn>(player);
+		await CardPileCmd.Add(burn, PileType.Draw, CardPilePosition.Random, cardPlay.Card);
 	}
 
 	public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
@@ -448,9 +502,12 @@ public sealed class ShumitUpgradedAttackBonusHeatPower : CustomPowerModel
 	}
 }
 
-/// <summary>접쇠: 이번 턴 「다음 강화된 카드 1장」이 효과를 «Amount»번 추가 발동(슈미트: 재사용).</summary>
+/// <summary>접쇠: 이번 턴 「다음 강화된 카드 1장」이 효과를 «Amount»번 추가 발동(슈미트: 재사용). 추가 재사용 1회당 <see cref="HeatPerReplay"/> 열기 획득.</summary>
 public sealed class FoldedSteelReplayPower : CustomPowerModel
 {
+	/// <summary>추가 재사용 1회당 부여하는 열기. 자격 조건(소유자/강화 카드/접쇠 자체 제외)을 충족해 ModifyCardPlayCount 가 실제로 카운트를 증가시킨 경우에만 적용된다.</summary>
+	private const int HeatPerReplay = 15;
+
 	public override PowerType Type => PowerType.Buff;
 
 	public override PowerStackType StackType => PowerStackType.Counter;
@@ -469,6 +526,13 @@ public sealed class FoldedSteelReplayPower : CustomPowerModel
 
 	public override async Task AfterModifyingCardPlayCount(CardModel card)
 	{
+		// 이 hook은 ModifyCardPlayCount 가 실제로 카운트를 변경한 modifier 에 대해서만 호출됨(Hook.cs).
+		// 따라서 Amount 가 그대로 추가 재사용 횟수와 동일하다.
+		int gain = Amount * HeatPerReplay;
+		if (gain > 0)
+		{
+			await PowerCmd.Apply<HeatPower>(Owner, gain, Owner, null);
+		}
 		await PowerCmd.Remove(this);
 	}
 
@@ -481,22 +545,22 @@ public sealed class FoldedSteelReplayPower : CustomPowerModel
 	}
 }
 
-/// <summary>명인의 긍지 — 카드 강화 시 방어도.</summary>
+/// <summary>명인의 긍지 — 카드 강화 시 방어도 <see cref="CustomPowerModel.Amount"/> 획득.</summary>
 public sealed class ShumitMasterPridePower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
 
-	public override PowerStackType StackType => PowerStackType.Single;
+	public override PowerStackType StackType => PowerStackType.Counter;
 
 	protected override IEnumerable<IHoverTip> ExtraHoverTips => new IHoverTip[] { HoverTipFactory.Static(StaticHoverTip.Block) };
 }
 
-/// <summary>목숨을 걸어 — 열기·신체 화상 감소 무효, 카드 타입별 보너스(스킬=힘, 공격=민첩).</summary>
+/// <summary>목숨을 걸어 — 열기·신체 화상 감소 무효, 카드 타입별 보너스(스킬=힘, 공격=민첩). <see cref="CustomPowerModel.Amount"/> 는 보유 표시용 카운터.</summary>
 public sealed class ShumitBetYourLifePower : CustomPowerModel
 {
 	public override PowerType Type => PowerType.Buff;
 
-	public override PowerStackType StackType => PowerStackType.Single;
+	public override PowerStackType StackType => PowerStackType.Counter;
 
 	public static bool IsActive(Creature? creature)
 		=> creature?.GetPower<ShumitBetYourLifePower>() != null;
