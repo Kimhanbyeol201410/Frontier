@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dqfrontier_char_sel_bg"]
 
-[ext_resource type="Texture2D" path="res://sts2-frontier/images/charui/char_select_shumit.png" id="1_bg"]
+[ext_resource type="Texture2D" path="res://sts2-frontier/images/charui/bg.jpg" id="1_bg"]
 
 [node name="ShumitCharacterSelectBg" type="Control"]
 layout_mode = 3

@@ -29,7 +29,7 @@ namespace Frontier.Relics;
 /// <c>MasterpieceLeft</c> 표시값을 -5 동기화하여, 카드 텍스트와 실제 변환 시점이 일치하도록 한다.</para>
 /// </summary>
 [Pool(typeof(EventRelicPool))]
-public sealed class DivineEyeRelic : CustomRelicModel
+public sealed class DivineEyeRelic : FrontierRelicModel
 {
     /// <summary>걸작 카드 표시 카운터에서 차감하는 값. <see cref="FrontierRules.GetMasterpieceValue"/> 와 동일 값 유지.</summary>
     public const int MasterpieceReduction = 5;

@@ -2,12 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b0be6bexoxt0x"
-valid=false
+uid="uid://s6a5xug1kn4s"
+path="res://.godot/imported/frontier-ancient_anvil_relic.png-026ffa731a7337e54fbddd29965f2e92.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
-source_file="res://sts2-frontier/images/charui/char_select_shumit_locked.png"
+source_file="res://images/relics/frontier-ancient_anvil_relic.png"
+dest_files=["res://.godot/imported/frontier-ancient_anvil_relic.png-026ffa731a7337e54fbddd29965f2e92.ctex"]
 
 [params]
 
