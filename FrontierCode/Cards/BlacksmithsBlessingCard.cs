@@ -13,8 +13,8 @@ using Frontier.Characters;
 namespace Frontier.Cards;
 
 // 대장장이의 가호 — «열기 HeatPerStat 마다 StatPerStack 의 힘/민첩» 패턴.
-//   - 기본: 열기 40당 힘 1, 민첩 1.
-//   - 강화: 열기 40당 얻는 힘/민첩 1 → 2 (StatPerStack +1). 발동 빈도(HeatPerStat=40)는 고정.
+//   - 기본: 열기 30당 힘 1, 민첩 1.
+//   - 강화: 열기 30당 얻는 힘/민첩 1 → 2 (StatPerStack +1). 발동 빈도(HeatPerStat=30)는 고정.
 [Pool(typeof(ShumitCardPool))]
 public sealed class BlacksmithsBlessingCard : ShumitCard
 {
@@ -23,7 +23,7 @@ public sealed class BlacksmithsBlessingCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new[]
     {
-        new DynamicVar(HeatPerStatKey, 40m),
+        new DynamicVar(HeatPerStatKey, 30m),
         new DynamicVar(StatPerStackKey, 1m),
     };
 

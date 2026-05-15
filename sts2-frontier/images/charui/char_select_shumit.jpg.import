@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dix0velimvocy"
-path="res://.godot/imported/bg.jpg-fe786a622995b4e2e77bf66a16eb1b81.ctex"
+uid="uid://csx0av21uht6e"
+path="res://.godot/imported/char_select_shumit.jpg-0ba0660b7423738be4a0dc3a23f508fe.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sts2-frontier/images/charui/bg.jpg"
-dest_files=["res://.godot/imported/bg.jpg-fe786a622995b4e2e77bf66a16eb1b81.ctex"]
+source_file="res://sts2-frontier/images/charui/char_select_shumit.jpg"
+dest_files=["res://.godot/imported/char_select_shumit.jpg-0ba0660b7423738be4a0dc3a23f508fe.ctex"]
 
 [params]
 

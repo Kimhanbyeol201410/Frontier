@@ -23,6 +23,10 @@ public sealed class ShumitCharacter : PlaceholderCharacterModel
 	public const string CharacterId = "FRONTIER-SHUMIT_CHARACTER";
 
 	public override Color NameColor => new Color("FFB74D");
+
+	/// <summary>맵 그리기 펜 — <see cref="ShumitCardPool.FrameBorderColor"/> 와 동일.</summary>
+	public override Color MapDrawingColor => ShumitCardPool.FrameBorderColor;
+
 	public override CharacterGender Gender => CharacterGender.Feminine;
 	public override int StartingHp => 70;
 
@@ -69,15 +73,19 @@ public sealed class ShumitCharacter : PlaceholderCharacterModel
 	/// <summary>Soldoros 모드와 동일 패턴: BaseLib 프리픽스가 <c>CustomCharacterSelect*</c> 를 사용한다.</summary>
 	public override string CustomCharacterSelectBg => "char_select/char_select_bg_shumit.tscn".FrontierScenePath();
 
-	/// <summary>버튼 일러 — JPEG가 <c>.png</c> 확장자로 있어 Godot 임포트가 깨지므로 <c>charui/select.jpg</c> 로 둔다.</summary>
-	public override string? CustomCharacterSelectIconPath => "select.jpg".CharacterUiPath();
+	/// <summary>캐릭터 선택 버튼 일러 (<c>charui/image.png</c>).</summary>
+	public override string? CustomCharacterSelectIconPath => "image.png".CharacterUiPath();
 
 	/// <summary>잠금·해제 동일 일러.</summary>
-	public override string? CustomCharacterSelectLockedIconPath => "select.jpg".CharacterUiPath();
+	public override string? CustomCharacterSelectLockedIconPath => "image.png".CharacterUiPath();
 
-	public override string? CustomIconTexturePath => "character_icon_shumit.jpg".CharacterUiPath();
+	/// <summary>전투 상단 아이콘 — 임시로 내열 가죽 앞치마 유물 일러 사용.</summary>
+	public override string? CustomIconTexturePath => "character_icon_shumit.png".CharacterUiPath();
 
-	/// <summary>전투 상단 등 — <see cref="CustomIconTexturePath"/> (JPEG는 <c>.jpg</c> 확장자로 둔다).</summary>
+	/// <summary>맵 위 플레이어 마커 — 임시로 내열 가죽 앞치마 일러 사용.</summary>
+	public override string? CustomMapMarkerPath => "map_marker_shumit.png".CharacterUiPath();
+
+	/// <summary>전투 상단 등 — <see cref="CustomIconTexturePath"/>.</summary>
 	public override Control CustomIcon
 	{
 		get

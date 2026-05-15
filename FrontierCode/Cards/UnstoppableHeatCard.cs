@@ -61,6 +61,7 @@ public sealed class UnstoppableHeatCard : ShumitCard
 
     protected override void OnUpgrade()
     {
+        DynamicVars.Damage.UpgradeValueBy(1m);
         DynamicVars[DamagePerKey].UpgradeValueBy(1m);
         DynamicVars[MasterpieceLeftKey].UpgradeValueBy(-1m);
     }

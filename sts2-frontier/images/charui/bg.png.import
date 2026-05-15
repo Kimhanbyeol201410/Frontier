@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://6cf43yrt45fc"
-path="res://.godot/imported/select.jpg-94d015ba8f811f12cd4493cf4e206dc2.ctex"
+uid="uid://dlmrxdxxrlw0k"
+path="res://.godot/imported/bg.png-70c673a5bf178f0dcf5663d02f6b6b83.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sts2-frontier/images/charui/select.jpg"
-dest_files=["res://.godot/imported/select.jpg-94d015ba8f811f12cd4493cf4e206dc2.ctex"]
+source_file="res://sts2-frontier/images/charui/bg.png"
+dest_files=["res://.godot/imported/bg.png-70c673a5bf178f0dcf5663d02f6b6b83.ctex"]
 
 [params]
 

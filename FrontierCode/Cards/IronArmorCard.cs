@@ -11,7 +11,7 @@ using Frontier.Characters;
 
 namespace Frontier.Cards;
 
-// 철갑옷 토큰: 판금(Plating) 6(→8).
+// 철갑옷 토큰: 판금(Plating) 4(→6).
 [Pool(typeof(ShumitCardPool))]
 public sealed class IronArmorCard : TokenCardBase
 {
@@ -19,7 +19,7 @@ public sealed class IronArmorCard : TokenCardBase
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DynamicVar("Plating", 6m),
+        new DynamicVar("Plating", 4m),
     };
 
     public IronArmorCard()

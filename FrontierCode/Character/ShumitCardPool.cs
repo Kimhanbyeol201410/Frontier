@@ -29,15 +29,15 @@ public sealed class ShumitCardPool : CustomCardPoolModel
 
 	// 카드 프레임(테두리) 색 — 요청: 색상(H) 11, 채도 240, 명도 120, RGB(225,69,0).
 	// H/S/V 스케일이 도구마다 달라 RGB를 최종 기준으로 두고, Shader·HSV는 그 RGB에서 유도한다.
-	private static readonly Color s_frameBorderColor = new(225f / 255f, 69f / 255f, 0f);
+	public static readonly Color FrameBorderColor = new(225f / 255f, 69f / 255f, 0f);
 
-	public override Color ShaderColor => s_frameBorderColor;
+	public override Color ShaderColor => FrameBorderColor;
 
-	public override float H => s_frameBorderColor.H;
+	public override float H => FrameBorderColor.H;
 
-	public override float S => s_frameBorderColor.S;
+	public override float S => FrameBorderColor.S;
 
-	public override float V => s_frameBorderColor.V;
+	public override float V => FrameBorderColor.V;
 
 	/// <summary>
 	/// 걸작(모루의 잔향 +5) 변환으로만 얻도록, <see cref="CardPoolModel.GetUnlockedCards"/> 결과에서 제외한다.
