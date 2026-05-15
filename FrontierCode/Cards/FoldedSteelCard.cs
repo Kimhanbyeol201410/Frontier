@@ -30,7 +30,7 @@ public sealed class FoldedSteelCard : ShumitCard
     };
 
     public FoldedSteelCard()
-        : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)
+        : base(1, CardType.Skill, CardRarity.Rare, TargetType.None)
     {
     }
 

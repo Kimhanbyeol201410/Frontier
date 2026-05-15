@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Frontier.Cards;
+using Frontier.Extensions;
 using BaseLib.Abstracts;
 using BaseLib.Utils.NodeFactories;
 using Godot;
@@ -12,7 +13,6 @@ using MegaCrit.Sts2.Core.Models.PotionPools;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Models.Relics;
 using Frontier.Relics;
-using Frontier.Resources;
 
 namespace Frontier.Characters;
 
@@ -23,6 +23,10 @@ public sealed class ShumitCharacter : PlaceholderCharacterModel
 	public const string CharacterId = "FRONTIER-SHUMIT_CHARACTER";
 
 	public override Color NameColor => new Color("FFB74D");
+
+	/// <summary>맵 그리기 펜 — <see cref="ShumitCardPool.FrameBorderColor"/> 와 동일.</summary>
+	public override Color MapDrawingColor => ShumitCardPool.FrameBorderColor;
+
 	public override CharacterGender Gender => CharacterGender.Feminine;
 	public override int StartingHp => 70;
 
@@ -32,11 +36,6 @@ public sealed class ShumitCharacter : PlaceholderCharacterModel
 	/// <c>Defect1Epoch</c> 진행 여부로 결정한다.
 	/// </summary>
 	protected override CharacterModel? UnlocksAfterRunAs => ModelDb.Character<Defect>();
-
-	// CustomCharacterSelectLockedIconPath 는 의도적으로 오버라이드하지 않는다.
-	// PCK 에 ctex 가 없는 PNG 경로를 주면 ResourceLoader.Load 가 실패한다.
-	// 잠금 상태 슈미트 아이콘은 FrontierShumitCharSelectVisualPatches.ApplyShumitIcons 가
-	// Init 끝난 뒤 PNG 를 직접 읽어 교체한다.
 
 	/// <summary>보상/상점 등 캐릭터 카드 풀. Ironclad 풀을 쓰면 슈미트 카드가 보상에 나오지 않으므로 전용 풀을 둔다.</summary>
 	public override CardPoolModel CardPool => ModelDb.CardPool<ShumitCardPool>();
@@ -71,29 +70,30 @@ public sealed class ShumitCharacter : PlaceholderCharacterModel
 	public override IReadOnlyList<RelicModel> StartingRelics => new RelicModel[1] { ModelDb.Relic<BrokenForgeRelic>() };
 	public override string PlaceholderID => "ironclad";
 
-	/// <summary>
-	/// 전투 상단 등 커스텀 아이콘 — <c>ResourceLoader</c> 대신 PNG 바이너리 로드(PCK에 원본 PNG만 있어도 됨).
-	/// 캐릭터 선택 버튼·배경은 <c>FrontierShumitCharSelectVisualPatches</c> 가 동일 PNG로 덮어쓴다.
-	/// </summary>
+	/// <summary>Soldoros 모드와 동일 패턴: BaseLib 프리픽스가 <c>CustomCharacterSelect*</c> 를 사용한다.</summary>
+	public override string CustomCharacterSelectBg => "char_select/char_select_bg_shumit.tscn".FrontierScenePath();
+
+	/// <summary>캐릭터 선택 버튼 일러 (<c>charui/image.png</c>).</summary>
+	public override string? CustomCharacterSelectIconPath => "image.png".CharacterUiPath();
+
+	/// <summary>잠금·해제 동일 일러.</summary>
+	public override string? CustomCharacterSelectLockedIconPath => "image.png".CharacterUiPath();
+
+	/// <summary>전투 상단 아이콘 — 임시로 내열 가죽 앞치마 유물 일러 사용.</summary>
+	public override string? CustomIconTexturePath => "character_icon_shumit.png".CharacterUiPath();
+
+	/// <summary>맵 위 플레이어 마커 — 임시로 내열 가죽 앞치마 일러 사용.</summary>
+	public override string? CustomMapMarkerPath => "map_marker_shumit.png".CharacterUiPath();
+
+	/// <summary>전투 상단 등 — <see cref="CustomIconTexturePath"/>.</summary>
 	public override Control CustomIcon
 	{
 		get
 		{
-			Texture2D? tex = FrontierResPngTexture.TryLoadTexture2DFromRes(ShumitCharUiPaths.TopBarIcon);
-			if (tex != null)
-			{
-				TextureRect tr = new();
-				tr.Texture = tex;
-				tr.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
-				tr.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
-				return tr;
-			}
-
-			Control fallback = NodeFactory<Control>.CreateFromResource("res://images/ui/top_panel/character_icon_ironclad.png");
-			fallback.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
-			return fallback;
+			Control icon = NodeFactory<Control>.CreateFromResource(CustomIconTexturePath!);
+			icon.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+			return icon;
 		}
 	}
 
 }
-

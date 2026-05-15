@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Utils;
 using Frontier.Characters;
@@ -10,7 +9,6 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Nodes.CommonUi;
 
 namespace Frontier.Cards;
 
@@ -22,14 +20,6 @@ public sealed class BetYourLifeCard : ShumitCard
     private const string DexBonusKey = "DexBonus";
     private const string BodyBurnGainKey = "BodyBurnGain";
 
-    private static readonly PileType[] UpgradePiles =
-    {
-        PileType.Hand,
-        PileType.Draw,
-        PileType.Discard,
-        PileType.Exhaust,
-    };
-
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
         new DynamicVar(StrBonusKey, 1m),
@@ -38,7 +28,7 @@ public sealed class BetYourLifeCard : ShumitCard
     };
 
     public BetYourLifeCard()
-        : base(0, CardType.Power, CardRarity.Rare, TargetType.Self)
+        : base(2, CardType.Power, CardRarity.Rare, TargetType.Self)
     {
     }
 
@@ -48,23 +38,6 @@ public sealed class BetYourLifeCard : ShumitCard
             Owner,
             DynamicVars[StrBonusKey].IntValue,
             DynamicVars[DexBonusKey].IntValue);
-
-        foreach (PileType pileType in UpgradePiles)
-        {
-            IReadOnlyList<CardModel> cards = pileType.GetPile(Owner).Cards;
-            if (cards.Count == 0)
-            {
-                continue;
-            }
-
-            foreach (CardModel c in cards.ToList())
-            {
-                if (c.IsUpgradable)
-                {
-                    CardCmd.Upgrade(c, CardPreviewStyle.HorizontalLayout);
-                }
-            }
-        }
 
         await CreatureCmd.TriggerAnim(Owner.Creature, "Cast", Owner.Character.CastAnimDelay);
         await PowerCmd.Apply<ShumitBetYourLifePower>(Owner.Creature, 1m, Owner.Creature, this);
@@ -78,7 +51,6 @@ public sealed class BetYourLifeCard : ShumitCard
 
     protected override void OnUpgrade()
     {
-        DynamicVars[StrBonusKey].UpgradeValueBy(1m);
-        DynamicVars[DexBonusKey].UpgradeValueBy(1m);
+        EnergyCost.UpgradeBy(-1);
     }
 }

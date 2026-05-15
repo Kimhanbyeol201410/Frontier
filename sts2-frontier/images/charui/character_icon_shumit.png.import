@@ -2,12 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cwqy3gjbr4oso"
-valid=false
+uid="uid://bftccepagwixc"
+path="res://.godot/imported/character_icon_shumit.png-f9fe0b4523f92839f43f647c4c3ca086.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://sts2-frontier/images/charui/character_icon_shumit.png"
+dest_files=["res://.godot/imported/character_icon_shumit.png-f9fe0b4523f92839f43f647c4c3ca086.ctex"]
 
 [params]
 

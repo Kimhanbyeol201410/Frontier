@@ -21,7 +21,7 @@ public sealed class ColdGestureCard : ShumitCard
 
     protected override IEnumerable<DynamicVar> CanonicalVars => new DynamicVar[]
     {
-        new DamageVar(5m, ValueProp.Move),
+        new DamageVar(3m, ValueProp.Move),
         new BlockVar(3m, ValueProp.Move),
         new DynamicVar(HeatLossKey, 5m),
     };

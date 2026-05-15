@@ -2,12 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://drxlvmhu8747f"
-valid=false
+uid="uid://bnyufskqhdfew"
+path="res://.godot/imported/frontier-endless_labor_relic_outline.png-6149f5a0df17557b57e4abbbe21135c6.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
-source_file="res://sts2-frontier/images/charui/char_select_shumit.png"
+source_file="res://images/relics/frontier-endless_labor_relic_outline.png"
+dest_files=["res://.godot/imported/frontier-endless_labor_relic_outline.png-6149f5a0df17557b57e4abbbe21135c6.ctex"]
 
 [params]
 

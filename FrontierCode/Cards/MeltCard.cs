@@ -28,7 +28,7 @@ public sealed class MeltCard : ShumitCard
     protected override IEnumerable<CardKeyword> ShumitCanonicalKeywords => new[] { CardKeyword.Exhaust };
 
     public MeltCard()
-        : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)
+        : base(1, CardType.Skill, CardRarity.Common, TargetType.None)
     {
     }
 

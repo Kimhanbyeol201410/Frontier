@@ -2,6 +2,28 @@
 
 기준일: 저장소 기준 스냅샷. 데이터는 `sts2-frontier/localization/kor|eng/relics.json`, 유물 구현 `FrontierCode/Relics/*.cs`, 풀 정의 `FrontierCode/Character/ShumitRelicPool.cs`, 캐릭터 풀 연결 `FrontierCode/Character/ShumitCharacter.cs`를 따름.
 
+## 유물 아트 (PNG, `res://images/relics/`)
+
+게임 `RelicModel`은 **`images/relics/{엔트리 ID 소문자}.png`** 를 큰 아이콘·아틀라스 폴백에 사용한다. 모드 Godot 프로젝트에서는 **`images/relics/`** 아래에 두고, `export_presets.cfg`의 `include_filter`에 포함된 `images/**/*`로 PCK에 실린다.
+
+| 엔트리 ID | 본체 PNG | 아웃라인 PNG (`FrontierRelicModel`) |
+|-----------|----------|--------------------------------------|
+| `FRONTIER-ANCIENT_ANVIL_RELIC` | `frontier-ancient_anvil_relic.png` | `frontier-ancient_anvil_relic_outline.png` |
+| `FRONTIER-BROKEN_FORGE_RELIC` | `frontier-broken_forge_relic.png` | `frontier-broken_forge_relic_outline.png` |
+| `FRONTIER-DIVINE_EYE_RELIC` | `frontier-divine_eye_relic.png` | `frontier-divine_eye_relic_outline.png` |
+| `FRONTIER-ENDLESS_LABOR_RELIC` | `frontier-endless_labor_relic.png` | `frontier-endless_labor_relic_outline.png` |
+| `FRONTIER-ETERNALLY_BURNING_FURNACE_RELIC` | `frontier-eternally_burning_furnace_relic.png` | `frontier-eternally_burning_furnace_relic_outline.png` |
+| `FRONTIER-FUSIONER_ANVIL_RELIC` | `frontier-fusioner_anvil_relic.png` | `frontier-fusioner_anvil_relic_outline.png` |
+| `FRONTIER-FUSIONER_HAMMER_RELIC` | `frontier-fusioner_hammer_relic.png` | `frontier-fusioner_hammer_relic_outline.png` |
+| `FRONTIER-FUSIONER_TONGS_RELIC` | `frontier-fusioner_tongs_relic.png` | `frontier-fusioner_tongs_relic_outline.png` |
+| `FRONTIER-HEATPROOF_APRON_RELIC` | `frontier-heatproof_apron_relic.png` | `frontier-heatproof_apron_relic_outline.png` |
+| `FRONTIER-HEPHAESTUS_BLOOD_RELIC` | `frontier-hephaestus_blood_relic.png` | `frontier-hephaestus_blood_relic_outline.png` |
+| `FRONTIER-MASTERPIECE_MUSEUM_RELIC` | `frontier-masterpiece_museum_relic.png` | `frontier-masterpiece_museum_relic_outline.png` |
+| `FRONTIER-UNBURNABLE_BODY_RELIC` | `frontier-unburnable_body_relic.png` | `frontier-unburnable_body_relic_outline.png` |
+
+- **아웃라인**: 위 표 오른쪽 파일명. 예전 `*_out.png` 작업물은 `frontier-…_relic_outline.png` 로 두면 된다(이번에 반영함). `FrontierRelicModel`이 없으면 본체 PNG만 쓴다.
+- **융합자 3종** 전용 그림이 없어 당분간 `sts2-frontier/images/relics/relic_placeholder.png`를 복사해 두었다. 교체 시 같은 파일명으로 덮어쓰면 된다.
+
 ## 요약
 
 | 구분 | 개수 |

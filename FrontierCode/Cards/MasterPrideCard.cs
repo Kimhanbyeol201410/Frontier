@@ -16,10 +16,10 @@ public sealed class MasterPrideCard : ShumitCard
 {
     private const string BlockPerUpgradeKey = "BlockPerUpgrade";
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(BlockPerUpgradeKey, 5m) };
+    protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new DynamicVar(BlockPerUpgradeKey, 3m) };
 
     public MasterPrideCard()
-        : base(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+        : base(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
     {
     }
 

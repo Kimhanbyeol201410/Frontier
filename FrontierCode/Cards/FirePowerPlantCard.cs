@@ -22,7 +22,7 @@ public sealed class FirePowerPlantCard : ShumitCard
     protected override IEnumerable<DynamicVar> CanonicalVars => new[] { new EnergyVar(EnergyOnBurnKey, 1) };
 
     public FirePowerPlantCard()
-        : base(1, CardType.Skill, CardRarity.Uncommon, TargetType.None)
+        : base(1, CardType.Skill, CardRarity.Common, TargetType.None)
     {
     }
 
